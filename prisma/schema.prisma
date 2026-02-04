@@ -1,0 +1,111 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id            String        @id @default(cuid())
+  name          String?
+  email         String        @unique
+  emailVerified DateTime?
+  image         String?
+  role          UserRole      @default(USER)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  accessGrants  AccessGrant[]
+  accounts      Account[]
+  sessions      Session[]
+  wills         Will[]        @relation("Owner")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Will {
+  id           String        @id @default(cuid())
+  userId       String
+  status       WillStatus    @default(DRAFT)
+  isPaid       Boolean       @default(false)
+  paymentId    String?
+  data         Json          @default("{}")
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  accessGrants AccessGrant[]
+  user         User          @relation("Owner", fields: [userId], references: [id], onDelete: Cascade)
+  versions     WillVersion[]
+}
+
+model WillVersion {
+  id         String   @id @default(cuid())
+  willId     String
+  snapshot   Json
+  changeLog  String?
+  versionNum Int      @default(1)
+  createdAt  DateTime @default(now())
+  will       Will     @relation(fields: [willId], references: [id], onDelete: Cascade)
+}
+
+model AccessGrant {
+  id         String          @id @default(cuid())
+  willId     String
+  lawyerId   String
+  permission PermissionLevel @default(VIEW)
+  createdAt  DateTime        @default(now())
+  lawyer     User            @relation(fields: [lawyerId], references: [id], onDelete: Cascade)
+  will       Will            @relation(fields: [willId], references: [id], onDelete: Cascade)
+
+  @@unique([willId, lawyerId])
+}
+
+enum UserRole {
+  USER
+  LAWYER
+  ADMIN
+}
+
+enum WillStatus {
+  DRAFT
+  REVIEW_PENDING
+  PAID
+  COMPLETED
+}
+
+enum PermissionLevel {
+  VIEW
+  COMMENT
+  EDIT
+}
