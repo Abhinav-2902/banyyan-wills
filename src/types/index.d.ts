@@ -16,3 +16,11 @@ export type ActionResponse<T = null> = {
   error?: string;
   fieldErrors?: Record<string, string[]>;
 };
+
+export interface WillDashboardDTO {
+  id: string;
+  status: 'DRAFT' | 'PAID' | 'COMPLETED'; // Match your Prisma Enum
+  lastEdited: Date;
+  title: string; // Extracted from the JSON blob
+  progress: number; // A calculated percentage (0-100)
+}

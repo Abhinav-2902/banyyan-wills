@@ -1,30 +1,99 @@
 import { auth } from "@/auth";
+import { getUserDashboard } from "@/server/services/will-service";
+import { WillCardStub } from "@/components/dashboard/will-card-stub";
+import { redirect } from "next/navigation";
+import Link from "next/link";
 
 export default async function DashboardPage() {
   const session = await auth();
 
-  return (
-    <div className="p-8">
-      <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
-      <p className="text-muted-foreground mt-2">
-        Welcome back, {session?.user?.name || "User"}!
-      </p>
-      
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mt-8">
-        <div className="rounded-xl border bg-card text-card-foreground shadow p-6">
-          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <h3 className="tracking-tight text-sm font-medium">Total Applications</h3>
-          </div>
-          <div className="text-2xl font-bold">0</div>
-        </div>
-        {/* Add more cards as needed */}
-      </div>
+  if (!session?.user?.id) {
+    redirect("/login");
+  }
 
-      <div className="mt-8">
-        <h3 className="text-xl font-semibold mb-4">Recent Activity</h3>
-        <div className="rounded-md border p-4 bg-white">
-          <p className="text-sm text-gray-500">No recent activity.</p>
+  const wills = await getUserDashboard(session.user.id);
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-[#FFF9F5] to-[#FFF5F0]">
+      <div className="container mx-auto px-4 py-12 max-w-7xl">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 mb-12">
+          <div>
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-2">
+              My Wills
+            </h1>
+            <p className="text-gray-600 text-lg">
+              Manage and track your estate planning documents
+            </p>
+          </div>
+          <Link
+            href="/editor" 
+            className="inline-flex items-center justify-center rounded-lg text-base font-semibold transition-all duration-200 bg-[#FF6B6B] text-white hover:bg-[#FF5555] shadow-md hover:shadow-lg px-6 py-3 whitespace-nowrap"
+          >
+            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            Create New Will
+          </Link>
         </div>
+
+        {/* Content */}
+        {wills.length > 0 ? (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {wills.map((will) => (
+              <WillCardStub key={will.id} will={will} />
+            ))}
+          </div>
+        ) : (
+          <div className="flex min-h-[500px] flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-300 bg-white/50 backdrop-blur-sm p-12 text-center">
+            <div className="flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-[#FF6B6B]/10 to-[#FF6B6B]/5 mb-6">
+              <svg
+                className="h-12 w-12 text-[#FF6B6B]"
+                fill="none"
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+              >
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+                <path d="M16 13H8" />
+                <path d="M16 17H8" />
+                <path d="M10 9H8" />
+              </svg>
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-3">
+              Plan for Tomorrow, With Peace Today
+            </h2>
+            <p className="text-gray-600 text-lg max-w-md mb-8">
+              Creating a will doesn&apos;t have to feel overwhelming. We&apos;ll guide you through each step with care, helping you protect what matters most.
+            </p>
+            <Link
+              href="/editor"
+              className="inline-flex items-center justify-center rounded-lg text-base font-semibold transition-all duration-200 bg-[#FF6B6B] text-white hover:bg-[#FF5555] shadow-md hover:shadow-lg px-8 py-3.5"
+            >
+              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+              Get Started
+            </Link>
+            <div className="flex items-center gap-6 mt-8 text-sm text-gray-500">
+              <div className="flex items-center gap-2">
+                <svg className="w-5 h-5 text-[#FF6B6B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+                <span className="font-medium">Legally Sound</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <svg className="w-5 h-5 text-[#FF6B6B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+                <span className="font-medium">Secure & Private</span>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

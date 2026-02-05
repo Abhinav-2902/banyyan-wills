@@ -1,6 +1,6 @@
 "use server";
 
-import { requireAuth } from "./auth";
+import { requireAuth } from "./require-auth";
 
 export async function testProtectedAction() {
   try {
