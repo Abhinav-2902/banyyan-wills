@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 
 const PROTECTED_ROUTES = ["/dashboard", "/editor", "/settings"];
-const AUTH_ROUTES = ["/auth/login", "/auth/register"];
+const AUTH_ROUTES = ["/login", "/register"];
 
 export default auth((req) => {
   const { nextUrl } = req;
@@ -29,7 +29,7 @@ export default auth((req) => {
 
     const encodedCallbackUrl = encodeURIComponent(callbackUrl);
     return NextResponse.redirect(
-      new URL(`/auth/login?callbackUrl=${encodedCallbackUrl}`, nextUrl)
+      new URL(`/login?callbackUrl=${encodedCallbackUrl}`, nextUrl)
     );
   }
 
