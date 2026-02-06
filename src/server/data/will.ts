@@ -51,3 +51,39 @@ export async function findWillsByUser(userId: string): Promise<WillDashboardDTO[
     };
   });
 }
+
+/**
+ * Upsert a will record - create new or update existing
+ * @param userId - The user ID who owns the will (enforced for security)
+ * @param data - The will form data as JSON
+ * @param willId - Optional will ID for updates
+ * @returns The created or updated Will record
+ */
+export async function upsertWill(
+  userId: string,
+  data: Prisma.InputJsonValue,
+  willId?: string
+) {
+  if (willId) {
+    // Update existing will - ensure userId matches for security
+    return await prisma.will.update({
+      where: {
+        id: willId,
+        userId: userId, // Enforce ownership
+      },
+      data: {
+        data: data,
+        updatedAt: new Date(),
+      },
+    });
+  } else {
+    // Create new will with DRAFT status
+    return await prisma.will.create({
+      data: {
+        userId: userId,
+        status: "DRAFT",
+        data: data,
+      },
+    });
+  }
+}
