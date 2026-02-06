@@ -14,10 +14,9 @@ export default async function DashboardPage() {
   const wills = await getUserDashboard(session.user.id);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#FFF9F5] to-[#FFF5F0]">
-      <div className="container mx-auto px-4 py-12 max-w-7xl">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 mb-12">
+    <>
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 mb-8">
           <div>
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-2">
               My Wills
@@ -94,7 +93,6 @@ export default async function DashboardPage() {
             </div>
           </div>
         )}
-      </div>
-    </div>
+    </>
   );
 }

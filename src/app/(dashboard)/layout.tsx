@@ -1,5 +1,7 @@
-import { auth, signOut } from "@/auth";
+import { auth } from "@/auth";
 import { redirect } from "next/navigation";
+import { Sidebar } from "@/components/dashboard/sidebar";
+import { UserNav } from "@/components/dashboard/user-nav";
 
 export default async function DashboardLayout({
   children,
@@ -12,32 +14,34 @@ export default async function DashboardLayout({
   if (!session?.user) redirect("/login");
 
   return (
-    <div className="flex min-h-screen flex-col md:flex-row">
-      {/* Sidebar Placeholder */}
-      <aside className="w-full bg-slate-900 text-white md:w-64 p-6">
-        <h1 className="text-xl font-bold">Banyyan Wills</h1>
-        <nav className="mt-6 flex flex-col gap-2">
-          {/* Nav Links */}
-          <div className="bg-slate-800 p-2 rounded">Dashboard</div>
-          <div className="p-2">My Applications</div>
-          <div className="p-2">Settings</div>
-           <form
-            action={async () => {
-              "use server";
-              await signOut();
-            }}
-          >
-            <button className="p-2 w-full text-left hover:bg-slate-800 rounded text-red-300 hover:text-red-200">
-              Sign Out
-            </button>
-          </form>
-        </nav>
-      </aside>
+    <div className="min-h-screen bg-gray-50">
+      {/* Sidebar - Fixed on desktop, hidden on mobile */}
+      <Sidebar />
 
-      {/* Main Content */}
-      <main className="flex-1 bg-gray-50 p-6">
-        {children}
-      </main>
+      {/* Main Content Area */}
+      <div className="lg:pl-64">
+        {/* Header - Sticky */}
+        <header className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
+          <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
+            {/* Mobile menu button placeholder - will add later */}
+            <div className="flex flex-1 items-center">
+              {/* Empty for now, can add search or breadcrumbs later */}
+            </div>
+            
+            {/* User Navigation */}
+            <div className="flex items-center gap-x-4 lg:gap-x-6">
+              <UserNav />
+            </div>
+          </div>
+        </header>
+
+        {/* Main Content - Scrollable */}
+        <main className="py-10">
+          <div className="px-4 sm:px-6 lg:px-8">
+            {children}
+          </div>
+        </main>
+      </div>
     </div>
   );
 }
