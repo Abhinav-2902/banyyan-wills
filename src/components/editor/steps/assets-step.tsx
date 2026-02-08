@@ -125,7 +125,7 @@ export function AssetsStep() {
                   {...register(`assets.${index}.description`)}
                   placeholder="Describe this asset in detail (minimum 10 characters)"
                   rows={3}
-                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#FF6B6B] focus:border-[#FF6B6B] text-gray-900 font-medium placeholder:text-gray-400 placeholder:font-normal ${
                     errors.assets?.[index]?.description
                       ? "border-red-500"
                       : "border-gray-300"

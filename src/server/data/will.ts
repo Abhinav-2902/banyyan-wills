@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { WillDashboardDTO } from "@/types";
 import { Prisma } from "@prisma/client";
+import { calculateWillProgress } from "@/lib/utils/calculate-will-progress";
+import { WillInputData } from "@/lib/validations/will";
 
 export async function findWillsByUser(userId: string): Promise<WillDashboardDTO[]> {
   const wills = await prisma.will.findMany({
@@ -47,7 +49,7 @@ export async function findWillsByUser(userId: string): Promise<WillDashboardDTO[
       status: will.status as WillDashboardDTO["status"], 
       lastEdited: will.updatedAt,
       title: title,
-      progress: 10, // Hardcoded for now
+      progress: calculateWillProgress(will.data as WillInputData),
     };
   });
 }
@@ -103,3 +105,29 @@ export async function findWillById(willId: string, userId?: string) {
   });
 }
 
+/**
+ * Delete a Will by ID
+ * @param willId - The Will ID to delete
+ * @param userId - The user ID who owns the Will
+ * @throws Error if Will not found, not owned by user, or is finalized
+ */
+export async function deleteWill(willId: string, userId: string) {
+  // Verify ownership and status
+  const will = await prisma.will.findUnique({
+    where: { id: willId, userId },
+    select: { status: true },
+  });
+
+  if (!will) {
+    throw new Error("Will not found or you don't have permission to delete it");
+  }
+
+  if (will.status === "PAID" || will.status === "COMPLETED") {
+    throw new Error("Cannot delete a finalized will");
+  }
+
+  // Delete the Will
+  await prisma.will.delete({
+    where: { id: willId, userId },
+  });
+}

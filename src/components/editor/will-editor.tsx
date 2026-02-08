@@ -140,9 +140,9 @@ export function WillEditor({ initialData, willId }: WillEditorProps) {
                   <div
                     className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold ${
                       index < currentStep
-                        ? "bg-green-500 text-white"
+                        ? "bg-gradient-to-br from-[#FF6B6B] to-[#FF8E8E] text-white"
                         : index === currentStep
-                        ? "bg-blue-500 text-white"
+                        ? "bg-[#FF6B6B] text-white"
                         : "bg-gray-200 text-gray-600"
                     }`}
                   >
@@ -155,7 +155,7 @@ export function WillEditor({ initialData, willId }: WillEditorProps) {
                   <span
                     className={`text-sm mt-2 ${
                       index === currentStep
-                        ? "font-semibold text-blue-600"
+                        ? "font-semibold text-[#FF6B6B]"
                         : "text-gray-600"
                     }`}
                   >
@@ -165,7 +165,7 @@ export function WillEditor({ initialData, willId }: WillEditorProps) {
                 {index < STEPS.length - 1 && (
                   <div
                     className={`h-1 flex-1 mx-2 ${
-                      index < currentStep ? "bg-green-500" : "bg-gray-200"
+                      index < currentStep ? "bg-gradient-to-r from-[#FF6B6B] to-[#FF8E8E]" : "bg-gray-200"
                     }`}
                   />
                 )}

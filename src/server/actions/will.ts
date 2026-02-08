@@ -5,6 +5,7 @@ import { willSchema, WillInputData } from "@/lib/validations/will";
 import { saveWillDraft } from "@/server/services/will-service";
 import { ActionResponse, WillDashboardDTO } from "@/types";
 import { revalidatePath } from "next/cache";
+import { calculateWillProgress } from "@/lib/utils/calculate-will-progress";
 
 /**
  * Server Action to save a will draft
@@ -54,8 +55,8 @@ export async function saveWillAction(
         id: savedWill.id,
         status: savedWill.status as WillDashboardDTO["status"],
         lastEdited: savedWill.updatedAt,
-        title: "Draft Saved", // Will be extracted from data in real implementation
-        progress: 10,
+        title: "Draft Saved",
+        progress: calculateWillProgress(validationResult.data as unknown as WillInputData),
       },
     };
   } catch (error) {
@@ -167,6 +168,45 @@ export async function autoSaveWillAction(
     return {
       success: false,
       error: error instanceof Error ? error.message : "Failed to auto-save",
+    };
+  }
+}
+
+/**
+ * Server Action to delete a Will
+ * @param willId - The Will ID to delete
+ * @returns ActionResponse indicating success or failure
+ */
+export async function deleteWillAction(willId: string): Promise<ActionResponse<void>> {
+  try {
+    // 1. Verify authentication
+    const session = await auth();
+    if (!session?.user?.id) {
+      return {
+        success: false,
+        error: "You must be logged in to delete a will",
+      };
+    }
+
+    // 2. Import deleteWill from data layer
+    const { deleteWill } = await import("@/server/data/will");
+
+    // 3. Delete the Will
+    await deleteWill(willId, session.user.id);
+
+    // 4. Revalidate dashboard
+    revalidatePath("/dashboard");
+
+    // 5. Return success
+    return {
+      success: true,
+      data: undefined,
+    };
+  } catch (error) {
+    console.error("Error deleting will:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Failed to delete will",
     };
   }
 }

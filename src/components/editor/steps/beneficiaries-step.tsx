@@ -1,6 +1,6 @@
 "use client";
 
-import { useFormContext, useFieldArray } from "react-hook-form";
+import { useFormContext, useFieldArray, useWatch } from "react-hook-form";
 import { WillFormData } from "@/lib/validations/will";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,7 +16,6 @@ export function BeneficiariesStep() {
   const {
     control,
     register,
-    watch,
     formState: { errors },
   } = useFormContext<WillFormData>();
 
@@ -25,7 +24,12 @@ export function BeneficiariesStep() {
     name: "beneficiaries",
   });
 
-  const beneficiaries = watch("beneficiaries");
+  // Use useWatch for real-time reactive updates
+  const beneficiaries = useWatch({
+    control,
+    name: "beneficiaries",
+  });
+
   const totalPercentage = beneficiaries?.reduce(
     (sum, b) => sum + (Number(b.percentage) || 0),
     0
@@ -48,6 +52,7 @@ export function BeneficiariesStep() {
         </p>
       </div>
 
+
       {/* Total Percentage Indicator */}
       <div className={`p-4 rounded-lg border-2 ${
         totalPercentage === 100
@@ -57,7 +62,7 @@ export function BeneficiariesStep() {
           : "bg-yellow-50 border-yellow-500"
       }`}>
         <div className="flex items-center justify-between">
-          <span className="font-semibold">Total Allocation:</span>
+          <span className="font-semibold text-gray-900">Total Allocation:</span>
           <span className={`text-lg font-bold ${
             totalPercentage === 100
               ? "text-green-700"
@@ -69,7 +74,7 @@ export function BeneficiariesStep() {
           </span>
         </div>
         {totalPercentage !== 100 && (
-          <p className="text-sm mt-1 text-gray-600">
+          <p className="text-sm mt-1 text-gray-700 font-medium">
             {totalPercentage < 100
               ? `You need to allocate ${100 - totalPercentage}% more`
               : `You've over-allocated by ${totalPercentage - 100}%`}
