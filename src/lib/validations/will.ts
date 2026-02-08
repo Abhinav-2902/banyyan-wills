@@ -7,6 +7,13 @@ eighteenYearsAgo.setFullYear(eighteenYearsAgo.getFullYear() - 18);
 export const willInputSchema = z.object({
   fullName: z.string().min(2, "Full Name must be at least 2 characters"),
   dob: z.string().min(1, "Date of birth is required"),
+  email: z.string().email("Invalid email address").optional().or(z.literal("")),
+  phone: z.string()
+    .refine((val) => val === "" || val.replace(/\D/g, '').length >= 10, {
+      message: "Phone must have at least 10 digits"
+    })
+    .optional()
+    .or(z.literal("")),
   residency: z.string().min(1, "Residency is required"),
   
   assets: z.array(
@@ -30,6 +37,13 @@ export const willInputSchema = z.object({
 export const willSchema = z.object({
   fullName: z.string().min(2, "Full Name must be at least 2 characters"),
   dob: z.coerce.date().max(eighteenYearsAgo, "You must be at least 18 years old"),
+  email: z.string().email("Invalid email address").optional().or(z.literal("")),
+  phone: z.string()
+    .refine((val) => val === "" || val.replace(/\D/g, '').length >= 10, {
+      message: "Phone must have at least 10 digits"
+    })
+    .optional()
+    .or(z.literal("")),
   residency: z.string().min(1, "Residency is required"),
   
   assets: z.array(
@@ -48,6 +62,10 @@ export const willSchema = z.object({
     })
   ).default([]),
 }).refine((data) => {
+  // Allow empty beneficiaries (user hasn't filled it out yet)
+  if (data.beneficiaries.length === 0) return true;
+  
+  // If there are beneficiaries, total must equal 100%
   const total = data.beneficiaries.reduce((sum, b) => sum + b.percentage, 0);
   return total === 100;
 }, {

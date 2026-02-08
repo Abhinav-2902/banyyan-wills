@@ -1,4 +1,5 @@
 import { WillDashboardDTO } from "@/types";
+import Link from "next/link";
 
 interface WillCardStubProps {
   will: WillDashboardDTO;
@@ -17,6 +18,9 @@ export function WillCardStub({ will }: WillCardStubProps) {
         return "bg-gray-50 text-gray-700 border-gray-200";
     }
   };
+
+  // Determine if the Will is editable
+  const isEditable = will.status === "DRAFT";
 
   return (
     <div className="group flex flex-col rounded-xl border border-gray-200 bg-white p-6 shadow-sm transition-all duration-200 hover:shadow-md hover:border-gray-300">
@@ -59,12 +63,21 @@ export function WillCardStub({ will }: WillCardStubProps) {
       </div>
 
       {/* Action Button */}
-      <button 
-        className="w-full rounded-lg border-2 border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 hover:border-[#FF6B6B] hover:text-[#FF6B6B] transition-all duration-200 uppercase tracking-wide cursor-not-allowed opacity-60"
-        disabled
-      >
-        Edit (Coming Soon)
-      </button>
+      {isEditable ? (
+        <Link
+          href={`/editor/${will.id}`}
+          className="w-full rounded-lg border-2 border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 hover:border-[#FF6B6B] hover:text-[#FF6B6B] hover:bg-[#FFF5F5] transition-all duration-200 uppercase tracking-wide text-center"
+        >
+          Edit Will
+        </Link>
+      ) : (
+        <button 
+          className="w-full rounded-lg border-2 border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 transition-all duration-200 uppercase tracking-wide cursor-not-allowed opacity-60"
+          disabled
+        >
+          View Only
+        </button>
+      )}
     </div>
   );
 }

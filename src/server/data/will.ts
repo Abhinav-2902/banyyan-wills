@@ -87,3 +87,19 @@ export async function upsertWill(
     });
   }
 }
+
+/**
+ * Find a single Will by ID
+ * @param willId - The Will ID to fetch
+ * @param userId - Optional user ID to enforce ownership
+ * @returns The Will record or null if not found
+ */
+export async function findWillById(willId: string, userId?: string) {
+  return await prisma.will.findFirst({
+    where: {
+      id: willId,
+      ...(userId && { userId }), // Only include userId filter if provided
+    },
+  });
+}
+

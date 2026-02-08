@@ -1,7 +1,7 @@
 "use server";
 
 import { auth } from "@/auth";
-import { willSchema } from "@/lib/validations/will";
+import { willSchema, WillInputData } from "@/lib/validations/will";
 import { saveWillDraft } from "@/server/services/will-service";
 import { ActionResponse, WillDashboardDTO } from "@/types";
 import { revalidatePath } from "next/cache";
@@ -63,6 +63,110 @@ export async function saveWillAction(
     return {
       success: false,
       error: error instanceof Error ? error.message : "Failed to save draft",
+    };
+  }
+}
+
+/**
+ * Server Action to create a new empty Will draft
+ * @returns ActionResponse with the new Will ID for redirection
+ */
+export async function createNewWillAction(): Promise<ActionResponse<{ id: string }>> {
+  try {
+    // 1. Authentication check
+    const session = await auth();
+    if (!session?.user?.id) {
+      return {
+        success: false,
+        error: "Unauthorized",
+      };
+    }
+
+    // 2. Create empty Will with default values
+    const defaultDate = new Date();
+    defaultDate.setFullYear(defaultDate.getFullYear() - 18);
+    
+    const defaultWillData = {
+      fullName: "",
+      dob: defaultDate.toISOString().split('T')[0], // Format: YYYY-MM-DD string
+      email: "",
+      phone: "",
+      residency: "",
+      assets: [],
+      beneficiaries: [],
+    };
+
+    // 3. Call service layer to create the draft
+    const newWill = await saveWillDraft(
+      session.user.id,
+      defaultWillData,
+      undefined // No willId = create new
+    );
+
+    // 4. Revalidate dashboard
+    revalidatePath("/dashboard");
+
+    // 5. Return success with the new Will ID
+    return {
+      success: true,
+      data: {
+        id: newWill.id,
+      },
+    };
+  } catch (error) {
+    console.error("Error creating new will:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Failed to create new will",
+    };
+  }
+}
+
+/**
+ * Server Action for auto-save (no validation)
+ * Allows saving incomplete/invalid data during editing
+ * @param data - The will form data (may be incomplete)
+ * @param willId - Will ID to update
+ * @returns ActionResponse with success/error
+ */
+export async function autoSaveWillAction(
+  data: unknown,
+  willId: string
+): Promise<ActionResponse<void>> {
+  try {
+    // 1. Authentication check
+    const session = await auth();
+    if (!session?.user?.id) {
+      return {
+        success: false,
+        error: "Unauthorized",
+      };
+    }
+
+    // 2. NO VALIDATION - just save the data as-is
+    // This allows auto-save to work with incomplete/invalid data
+    
+    // 3. Call service layer to save the draft
+    await saveWillDraft(
+      session.user.id,
+      data as WillInputData, // Cast to WillInputData without validation
+      willId
+    );
+
+    // 4. Revalidate relevant paths
+    revalidatePath("/dashboard");
+    revalidatePath(`/editor/${willId}`);
+
+    // 5. Return success
+    return {
+      success: true,
+      data: undefined,
+    };
+  } catch (error) {
+    console.error("Error auto-saving will:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Failed to auto-save",
     };
   }
 }
