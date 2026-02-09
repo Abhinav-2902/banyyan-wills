@@ -14,7 +14,7 @@ export default async function EditorPage({ searchParams }: EditorPageProps) {
   const session = await auth();
 
   if (!session?.user?.id) {
-    redirect("/login");
+    redirect("/");
   }
 
   let initialData: WillFormData | undefined;

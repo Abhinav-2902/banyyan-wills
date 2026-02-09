@@ -1,82 +1,157 @@
 import { auth } from "@/auth";
 import { getUserDashboard } from "@/server/services/will-service";
-import { WillCardStub } from "@/components/dashboard/will-card-stub";
 import { CreateWillButton } from "@/components/dashboard/create-will-button";
 import { redirect } from "next/navigation";
+import Link from "next/link";
+import { FileText, Clock, CheckCircle2, ArrowRight } from "lucide-react";
 
 export default async function DashboardPage() {
   const session = await auth();
 
   if (!session?.user?.id) {
-    redirect("/login");
+    redirect("/");
   }
 
   const wills = await getUserDashboard(session.user.id);
+  
+  // Calculate statistics
+  const totalWills = wills.length;
+  const drafts = wills.filter(w => w.status === "DRAFT").length;
+  const completed = wills.filter(w => w.status === "COMPLETED" || w.status === "PAID").length;
+  const recentWills = wills.slice(0, 3);
 
   return (
     <>
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 mb-8">
-          <div>
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-2">
-              My Wills
-            </h1>
-            <p className="text-gray-600 text-lg">
-              Manage and track your estate planning documents
-            </p>
+      <div className="mb-8">
+        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-2">
+          Welcome back, {session.user.name?.split(" ")[0] || "there"}!
+        </h1>
+        <p className="text-gray-600 text-lg">
+          Here&apos;s an overview of your estate planning progress
+        </p>
+      </div>
+
+      {/* Statistics Cards */}
+      <div className="grid gap-6 md:grid-cols-3 mb-8">
+        {/* Total Wills */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#FF6B6B]/10">
+              <FileText className="h-6 w-6 text-[#FF6B6B]" />
+            </div>
           </div>
-          <CreateWillButton />
+          <h3 className="text-3xl font-bold text-gray-900 mb-1">{totalWills}</h3>
+          <p className="text-gray-600">Total Wills</p>
         </div>
 
-        {/* Content */}
-        {wills.length > 0 ? (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {wills.map((will) => (
-              <WillCardStub key={will.id} will={will} />
+        {/* Drafts */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-orange-100">
+              <Clock className="h-6 w-6 text-orange-600" />
+            </div>
+          </div>
+          <h3 className="text-3xl font-bold text-gray-900 mb-1">{drafts}</h3>
+          <p className="text-gray-600">In Progress</p>
+        </div>
+
+        {/* Completed */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-green-100">
+              <CheckCircle2 className="h-6 w-6 text-green-600" />
+            </div>
+          </div>
+          <h3 className="text-3xl font-bold text-gray-900 mb-1">{completed}</h3>
+          <p className="text-gray-600">Completed</p>
+        </div>
+      </div>
+
+      {/* Quick Actions */}
+      <div className="bg-gradient-to-br from-[#FF6B6B] to-[#FF8787] rounded-2xl shadow-lg p-8 mb-8 text-white">
+        <h2 className="text-2xl font-bold mb-2">Ready to get started?</h2>
+        <p className="text-white/90 mb-6">
+          Create a new will or continue working on your existing drafts
+        </p>
+        <div className="flex flex-wrap gap-4">
+          <CreateWillButton />
+          {drafts > 0 && (
+            <Link
+              href="/dashboard/wills"
+              className="inline-flex items-center justify-center rounded-lg text-base font-semibold transition-all duration-200 bg-white text-[#FF6B6B] hover:bg-gray-50 shadow-md hover:shadow-lg px-6 py-3 whitespace-nowrap"
+            >
+              View My Wills
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Link>
+          )}
+        </div>
+      </div>
+
+      {/* Recent Activity */}
+      {recentWills.length > 0 && (
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold text-gray-900">Recent Activity</h2>
+            <Link
+              href="/dashboard/wills"
+              className="text-[#FF6B6B] hover:text-[#FF5555] font-semibold text-sm flex items-center gap-1"
+            >
+              View all
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+          <div className="space-y-4">
+            {recentWills.map((will) => (
+              <Link
+                key={will.id}
+                href={`/editor/${will.id}`}
+                className="flex items-center justify-between p-4 rounded-lg border border-gray-200 hover:border-[#FF6B6B] hover:bg-[#FF6B6B]/5 transition-all group"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100 group-hover:bg-[#FF6B6B]/10">
+                    <FileText className="h-5 w-5 text-gray-600 group-hover:text-[#FF6B6B]" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900">{will.title}</h3>
+                    <p className="text-sm text-gray-600">
+                      Last edited {new Date(will.lastEdited).toLocaleDateString()}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                    will.status === "DRAFT" 
+                      ? "bg-orange-100 text-orange-700"
+                      : will.status === "COMPLETED" || will.status === "PAID"
+                      ? "bg-green-100 text-green-700"
+                      : "bg-blue-100 text-blue-700"
+                  }`}>
+                    {will.status === "DRAFT" ? "Draft" : will.status}
+                  </span>
+                  <ArrowRight className="h-5 w-5 text-gray-400 group-hover:text-[#FF6B6B]" />
+                </div>
+              </Link>
             ))}
           </div>
-        ) : (
-          <div className="flex min-h-[500px] flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-300 bg-white/50 backdrop-blur-sm p-12 text-center">
-            <div className="flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-[#FF6B6B]/10 to-[#FF6B6B]/5 mb-6">
-              <svg
-                className="h-12 w-12 text-[#FF6B6B]"
-                fill="none"
-                stroke="currentColor"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-              >
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                <polyline points="14 2 14 8 20 8" />
-                <path d="M16 13H8" />
-                <path d="M16 17H8" />
-                <path d="M10 9H8" />
-              </svg>
-            </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-3">
-              Plan for Tomorrow, With Peace Today
-            </h2>
-            <p className="text-gray-600 text-lg max-w-md mb-8">
-              Creating a will doesn&apos;t have to feel overwhelming. We&apos;ll guide you through each step with care, helping you protect what matters most.
-            </p>
-            <CreateWillButton />
-            <div className="flex items-center gap-6 mt-8 text-sm text-gray-500">
-              <div className="flex items-center gap-2">
-                <svg className="w-5 h-5 text-[#FF6B6B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                </svg>
-                <span className="font-medium">Legally Sound</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <svg className="w-5 h-5 text-[#FF6B6B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                </svg>
-                <span className="font-medium">Secure & Private</span>
-              </div>
-            </div>
+        </div>
+      )}
+
+      {/* Empty State */}
+      {totalWills === 0 && (
+        <div className="flex min-h-[400px] flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-300 bg-white/50 backdrop-blur-sm p-12 text-center">
+          <div className="flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-[#FF6B6B]/10 to-[#FF6B6B]/5 mb-6">
+            <FileText className="h-12 w-12 text-[#FF6B6B]" />
           </div>
-        )}
+          <h2 className="text-2xl font-bold text-gray-900 mb-3">
+            Start Your Estate Planning Journey
+          </h2>
+          <p className="text-gray-600 text-lg max-w-md mb-8">
+            Take the first step in protecting your legacy. Create your first will today.
+          </p>
+          <CreateWillButton />
+        </div>
+      )}
     </>
   );
 }

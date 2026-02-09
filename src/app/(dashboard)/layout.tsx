@@ -11,7 +11,7 @@ export default async function DashboardLayout({
   const session = await auth();
   
   // Middleware protects this too, but double check is good practice
-  if (!session?.user) redirect("/login");
+  if (!session?.user) redirect("/");
 
   return (
     <div className="min-h-screen bg-gray-50">

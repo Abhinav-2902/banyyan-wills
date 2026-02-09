@@ -38,7 +38,9 @@ export function Sidebar() {
         <nav className="flex flex-1 flex-col">
           <ul role="list" className="flex flex-1 flex-col gap-y-2">
             {navigation.map((item) => {
-              const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
+              // Exact match or starts with the href followed by a slash, but not if it's a parent of another nav item
+              const isActive = pathname === item.href || 
+                (pathname.startsWith(item.href + "/") && item.href !== "/dashboard");
               return (
                 <li key={item.name}>
                   <Link
