@@ -1,7 +1,7 @@
 "use server";
 
 import { auth } from "@/auth";
-import { willSchema, WillInputData } from "@/lib/validations/will";
+import { completeWillSchema, type CompleteWillFormData } from "@/lib/validations/will";
 import { saveWillDraft } from "@/server/services/will-service";
 import { ActionResponse, WillDashboardDTO } from "@/types";
 import { revalidatePath } from "next/cache";
@@ -27,8 +27,8 @@ export async function saveWillAction(
       };
     }
 
-    // 2. Validation using Zod schema
-    const validationResult = willSchema.safeParse(data);
+    // 2. Validation using Zod schema (partial validation for drafts)
+    const validationResult = completeWillSchema.partial().safeParse(data);
     if (!validationResult.success) {
       return {
         success: false,
@@ -56,7 +56,7 @@ export async function saveWillAction(
         status: savedWill.status as WillDashboardDTO["status"],
         lastEdited: savedWill.updatedAt,
         title: "Draft Saved",
-        progress: calculateWillProgress(validationResult.data as unknown as WillInputData),
+        progress: calculateWillProgress(validationResult.data as unknown as CompleteWillFormData),
       },
     };
   } catch (error) {
@@ -160,7 +160,7 @@ export async function autoSaveWillAction(
     // 3. Call service layer to save the draft
     await saveWillDraft(
       session.user.id,
-      data as WillInputData, // Cast to WillInputData without validation
+      data as Partial<CompleteWillFormData>, // Cast without validation for auto-save
       willId
     );
 

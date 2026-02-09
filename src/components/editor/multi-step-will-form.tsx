@@ -1,0 +1,203 @@
+"use client";
+
+import { useState, useEffect, useCallback } from "react";
+import { useForm, FormProvider } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
+import { StepProgress } from "./step-progress";
+import { SaveButton } from "./save-button";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import { completeWillSchema, type CompleteWillFormData } from "@/lib/validations/will";
+import { saveWillAction } from "@/server/actions/will";
+
+interface MultiStepWillFormProps {
+  initialData?: Partial<CompleteWillFormData>;
+  willId?: string;
+}
+
+export function MultiStepWillForm({ initialData, willId }: MultiStepWillFormProps) {
+  const router = useRouter();
+  const [currentStep, setCurrentStep] = useState(1);
+  const [completedSteps, setCompletedSteps] = useState<number[]>([]);
+  const [isSaving, setIsSaving] = useState(false);
+
+  const methods = useForm<CompleteWillFormData>({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resolver: zodResolver(completeWillSchema) as any,
+    mode: "onChange",
+    defaultValues: initialData || {},
+  });
+
+  const { handleSubmit, trigger, formState } = methods;
+
+  const handleSaveDraft = useCallback(async () => {
+    setIsSaving(true);
+    try {
+      const formData = methods.getValues();
+      const result = await saveWillAction(formData, willId);
+      
+      if (result.success) {
+        console.log("Draft saved successfully");
+        methods.reset(formData); // Reset dirty state
+      } else {
+        console.error("Failed to save draft:", result.error);
+      }
+    } catch (error) {
+      console.error("Error saving draft:", error);
+    } finally {
+      setIsSaving(false);
+    }
+  }, [methods, willId]);
+
+  // Auto-save on form change (debounced)
+  useEffect(() => {
+    if (!formState.isDirty) return;
+
+    const timer = setTimeout(() => {
+      handleSaveDraft();
+    }, 3000); // Auto-save after 3 seconds of inactivity
+
+    return () => clearTimeout(timer);
+  }, [formState.isDirty, handleSaveDraft]);
+
+  const validateCurrentStep = async (): Promise<boolean> => {
+    const stepKey = `step${currentStep}` as keyof CompleteWillFormData;
+    const isValid = await trigger(stepKey);
+    return isValid;
+  };
+
+  const handleNext = async () => {
+    const isValid = await validateCurrentStep();
+    
+    if (isValid) {
+      // Mark current step as completed
+      if (!completedSteps.includes(currentStep)) {
+        setCompletedSteps([...completedSteps, currentStep]);
+      }
+      
+      // Save draft before moving to next step
+      await handleSaveDraft();
+      
+      // Move to next step
+      if (currentStep < 7) {
+        setCurrentStep(currentStep + 1);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    }
+  };
+
+  const handlePrevious = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
+  const onSubmit = async (data: CompleteWillFormData) => {
+    setIsSaving(true);
+    try {
+      const result = await saveWillAction(data, willId);
+      
+      if (result.success) {
+        // Redirect to dashboard or success page
+        router.push("/dashboard/wills");
+      } else {
+        console.error("Failed to submit will:", result.error);
+        alert(result.error || "Failed to submit will");
+      }
+    } catch (error) {
+      console.error("Error submitting will:", error);
+      alert("An unexpected error occurred");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const renderStepContent = () => {
+    switch (currentStep) {
+      case 1:
+        return <div className="p-6">Step 1: Testator Details (Coming Soon)</div>;
+      case 2:
+        return <div className="p-6">Step 2: Family Details (Coming Soon)</div>;
+      case 3:
+        return <div className="p-6">Step 3: Asset Details (Coming Soon)</div>;
+      case 4:
+        return <div className="p-6">Step 4: Beneficiaries (Coming Soon)</div>;
+      case 5:
+        return <div className="p-6">Step 5: Guardianship (Coming Soon)</div>;
+      case 6:
+        return <div className="p-6">Step 6: Executor Details (Coming Soon)</div>;
+      case 7:
+        return <div className="p-6">Step 7: Final Provisions (Coming Soon)</div>;
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <FormProvider {...methods}>
+      <div className="min-h-screen bg-gray-50">
+        {/* Progress Indicator */}
+        <StepProgress currentStep={currentStep} completedSteps={completedSteps} />
+
+        {/* Form Content */}
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+          <form onSubmit={handleSubmit(onSubmit as any)}>
+            {/* Step Content */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 mb-6">
+              {renderStepContent()}
+            </div>
+
+            {/* Navigation Buttons */}
+            <div className="flex items-center justify-between bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+              <div className="flex items-center gap-4">
+                {currentStep > 1 && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handlePrevious}
+                    className="flex items-center gap-2"
+                  >
+                    <ArrowLeft className="h-4 w-4" />
+                    Previous
+                  </Button>
+                )}
+              </div>
+
+              <div className="flex items-center gap-4">
+                {/* Save Draft Button */}
+                <SaveButton
+                  onSave={handleSaveDraft}
+                  isPending={isSaving}
+                  isDirty={formState.isDirty}
+                />
+
+                {/* Next/Submit Button */}
+                {currentStep < 7 ? (
+                  <Button
+                    type="button"
+                    onClick={handleNext}
+                    className="flex items-center gap-2 bg-[#FF6B6B] hover:bg-[#FF5555] text-white"
+                  >
+                    Next
+                    <ArrowRight className="h-4 w-4" />
+                  </Button>
+                ) : (
+                  <Button
+                    type="submit"
+                    disabled={isSaving}
+                    className="bg-green-600 hover:bg-green-700 text-white"
+                  >
+                    {isSaving ? "Submitting..." : "Submit Will"}
+                  </Button>
+                )}
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </FormProvider>
+  );
+}

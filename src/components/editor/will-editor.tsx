@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { willInputSchema, WillInputData } from "@/lib/validations/will";
+import { completeWillSchema, type CompleteWillFormData } from "@/lib/validations/will";
 import { saveWillAction, autoSaveWillAction } from "@/server/actions/will";
 import { useAutoSave } from "@/hooks/use-auto-save";
 import { PersonalDetailsStep } from "./steps/personal-details-step";
@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Check, Loader2 } from "lucide-react";
 
 interface WillEditorProps {
-  initialData: WillInputData;
+  initialData: Partial<CompleteWillFormData>;
   willId: string;
 }
 
@@ -33,9 +33,9 @@ export function WillEditor({ initialData, willId }: WillEditorProps) {
   const [submitMessage, setSubmitMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
   // Initialize form with zodResolver
-  const form = useForm<WillInputData>({
+  const form = useForm<Partial<CompleteWillFormData>>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    resolver: zodResolver(willInputSchema) as any,
+    resolver: zodResolver(completeWillSchema.partial()) as any,
     defaultValues: initialData,
     mode: "onChange",
   });
@@ -58,7 +58,7 @@ export function WillEditor({ initialData, willId }: WillEditorProps) {
 
   const handleNext = async () => {
     // Validate current step fields before proceeding
-    let fieldsToValidate: (keyof WillInputData)[] = [];
+    let fieldsToValidate: string[] = [];
 
     if (currentStep === 0) {
       fieldsToValidate = ["fullName", "dob", "email", "phone", "residency"];

@@ -1,8 +1,8 @@
 import { auth } from "@/auth";
 import { findWillById } from "@/server/data/will";
-import { WillEditor } from "@/components/editor/will-editor";
+import { MultiStepWillForm } from "@/components/editor/multi-step-will-form";
 import { redirect } from "next/navigation";
-import { WillInputData } from "@/lib/validations/will";
+import { CompleteWillFormData } from "@/lib/validations/will";
 
 interface EditorPageProps {
   params: Promise<{
@@ -39,17 +39,11 @@ export default async function EditorPage({ params }: EditorPageProps) {
   }
 
 
-  // 5. Parse the Will data and ensure DOB is in string format
-  // The data field is JSON, cast it to WillInputData
+  // 5. Parse the Will data
+  // The data field is JSON, cast it to CompleteWillFormData
   // We don't validate here because we want to allow users to fill out empty/invalid forms
-  const willData = will.data as WillInputData;
-  
-  // Convert DOB to string format if it's a Date object (for HTML date input)
-  if (willData.dob && typeof willData.dob !== 'string') {
-    const date = new Date(willData.dob);
-    willData.dob = date.toISOString().split('T')[0]; // Format: YYYY-MM-DD
-  }
+  const willData = will.data as Partial<CompleteWillFormData>;
 
-  // 6. Render the WillEditor client component
-  return <WillEditor initialData={willData} willId={will.id} />;
+  // 6. Render the MultiStepWillForm client component
+  return <MultiStepWillForm initialData={willData} willId={will.id} />;
 }

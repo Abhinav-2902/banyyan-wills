@@ -1,59 +1,56 @@
-import { WillInputData } from "@/lib/validations/will";
+import { CompleteWillFormData } from "@/lib/validations/will";
 
 /**
- * Calculate the completion progress of a Will based on filled fields
- * @param data - The Will form data
+ * Calculate the completion progress of a Will based on filled steps
+ * @param data - The Will form data (partial)
  * @returns Progress percentage (0-100)
  */
-export function calculateWillProgress(data: WillInputData): number {
-  let filledFields = 0;
-  let totalFields = 0;
+export function calculateWillProgress(data: Partial<CompleteWillFormData>): number {
+  let completedSteps = 0;
+  const totalSteps = 7;
 
-  // Personal Details (5 fields)
-  totalFields += 5;
-  if (data.fullName && data.fullName.trim().length >= 2) filledFields++;
-  // Handle both Date and string types for DOB (data from DB might be Date)
-  if (data.dob) {
-    const dobValue = typeof data.dob === 'string' ? data.dob : (data.dob as unknown as Date).toISOString();
-    if (dobValue && dobValue.length > 0) filledFields++;
-  }
-  if (data.email && data.email.trim().length > 0) filledFields++;
-  if (data.phone && data.phone.trim().length >= 10) filledFields++;
-  if (data.residency && data.residency.trim().length > 0) filledFields++;
-
-  // Assets (1 field - has at least one valid asset)
-  totalFields += 1;
-  if (data.assets && data.assets.length > 0) {
-    const hasValidAsset = data.assets.some(
-      (asset) =>
-        asset.type &&
-        asset.description &&
-        asset.description.length >= 10 &&
-        asset.estimatedValue > 0
-    );
-    if (hasValidAsset) filledFields++;
+  // Step 1: Testator Details
+  if (data.step1?.fullName && data.step1?.dateOfBirth && data.step1?.residentialAddress?.city) {
+    completedSteps++;
   }
 
-  // Beneficiaries (1 field - has beneficiaries totaling 100%)
-  totalFields += 1;
-  if (data.beneficiaries && data.beneficiaries.length > 0) {
-    const totalPercentage = data.beneficiaries.reduce(
-      (sum, b) => sum + (Number(b.percentage) || 0),
+  // Step 2: Family Details
+  if (data.step2?.father && data.step2?.mother) {
+    completedSteps++;
+  }
+
+  // Step 3: Asset Details
+  if (data.step3) {
+    completedSteps++;
+  }
+
+  // Step 4: Beneficiaries
+  if (data.step4?.beneficiaries && data.step4.beneficiaries.length > 0) {
+    const totalPercentage = data.step4.beneficiaries.reduce(
+      (sum, b) => sum + (b.sharePercentage || 0),
       0
     );
-    const hasValidBeneficiaries = data.beneficiaries.every(
-      (b) =>
-        b.fullName &&
-        b.fullName.length >= 2 &&
-        b.relationship &&
-        b.relationship.length > 0 &&
-        b.percentage >= 1 &&
-        b.percentage <= 100
-    );
-    if (hasValidBeneficiaries && totalPercentage === 100) filledFields++;
+    if (totalPercentage === 100) {
+      completedSteps++;
+    }
+  }
+
+  // Step 5: Guardianship (conditional - only if has minor children)
+  if (data.step5?.hasMinorChildren === false || data.step5?.primaryGuardian) {
+    completedSteps++;
+  }
+
+  // Step 6: Executor
+  if (data.step6?.primaryExecutor) {
+    completedSteps++;
+  }
+
+  // Step 7: Additional Provisions
+  if (data.step7?.witness1 && data.step7?.witness2 && data.step7?.placeOfExecution) {
+    completedSteps++;
   }
 
   // Calculate percentage
-  const progress = Math.round((filledFields / totalFields) * 100);
+  const progress = Math.round((completedSteps / totalSteps) * 100);
   return Math.min(100, Math.max(0, progress)); // Clamp between 0-100
 }

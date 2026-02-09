@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { WillDashboardDTO } from "@/types";
 import { Prisma } from "@prisma/client";
 import { calculateWillProgress } from "@/lib/utils/calculate-will-progress";
-import { WillInputData } from "@/lib/validations/will";
+import { CompleteWillFormData } from "@/lib/validations/will";
 
 export async function findWillsByUser(userId: string): Promise<WillDashboardDTO[]> {
   const wills = await prisma.will.findMany({
@@ -30,7 +30,7 @@ export async function findWillsByUser(userId: string): Promise<WillDashboardDTO[
       status: will.status as WillDashboardDTO["status"], 
       lastEdited: will.updatedAt,
       title: title,
-      progress: calculateWillProgress(will.data as WillInputData),
+      progress: calculateWillProgress(will.data as Partial<CompleteWillFormData>),
     };
   });
 }
