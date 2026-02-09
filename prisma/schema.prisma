@@ -59,6 +59,7 @@ model VerificationToken {
 model Will {
   id           String        @id @default(cuid())
   userId       String
+  name         String?       // User-defined name for the will
   status       WillStatus    @default(DRAFT)
   isPaid       Boolean       @default(false)
   paymentId    String?

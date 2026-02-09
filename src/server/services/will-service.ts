@@ -19,13 +19,15 @@ export async function getUserDashboard(userId: string): Promise<WillDashboardDTO
  * @param userId - The user ID who owns the will
  * @param data - The will form data
  * @param willId - Optional will ID for updates
+ * @param name - Optional name for the will
  * @returns The saved will record
  * @throws Error if trying to edit a finalized will
  */
 export async function saveWillDraft(
   userId: string,
   data: Record<string, unknown>,
-  willId?: string
+  willId?: string,
+  name?: string
 ) {
   // If updating an existing will, validate it's not finalized
   if (willId) {
@@ -43,8 +45,8 @@ export async function saveWillDraft(
     }
   }
 
-  // Call DAL to upsert the will
-  const savedWill = await upsertWill(userId, data as Prisma.InputJsonValue, willId);
+  // Call DAL to upsert the will with name
+  const savedWill = await upsertWill(userId, data as Prisma.InputJsonValue, willId, name);
 
   return savedWill;
 }

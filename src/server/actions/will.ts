@@ -70,9 +70,10 @@ export async function saveWillAction(
 
 /**
  * Server Action to create a new empty Will draft
+ * @param name - Optional name for the will
  * @returns ActionResponse with the new Will ID for redirection
  */
-export async function createNewWillAction(): Promise<ActionResponse<{ id: string }>> {
+export async function createNewWillAction(name?: string): Promise<ActionResponse<{ id: string }>> {
   try {
     // 1. Authentication check
     const session = await auth();
@@ -83,7 +84,15 @@ export async function createNewWillAction(): Promise<ActionResponse<{ id: string
       };
     }
 
-    // 2. Create empty Will with default values
+    // 2. Validate name if provided
+    if (name && name.length > 100) {
+      return {
+        success: false,
+        error: "Will name must be less than 100 characters",
+      };
+    }
+
+    // 3. Create empty Will with default values
     const defaultDate = new Date();
     defaultDate.setFullYear(defaultDate.getFullYear() - 18);
     
@@ -97,17 +106,18 @@ export async function createNewWillAction(): Promise<ActionResponse<{ id: string
       beneficiaries: [],
     };
 
-    // 3. Call service layer to create the draft
+    // 4. Call service layer to create the draft with name
     const newWill = await saveWillDraft(
       session.user.id,
       defaultWillData,
-      undefined // No willId = create new
+      undefined, // No willId = create new
+      name // Pass the name to service layer
     );
 
-    // 4. Revalidate dashboard
+    // 5. Revalidate dashboard
     revalidatePath("/dashboard");
 
-    // 5. Return success with the new Will ID
+    // 6. Return success with the new Will ID
     return {
       success: true,
       data: {
