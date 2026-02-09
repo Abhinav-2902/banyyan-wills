@@ -47,7 +47,8 @@ export default async function EditorPage({ searchParams }: EditorPageProps) {
       
       initialData = {
         fullName: (data.fullName as string) || "",
-        dob: data.dob ? new Date(data.dob as string) : new Date(new Date().setFullYear(new Date().getFullYear() - 18)),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        dob: data.dob ? new Date(data.dob as string) : undefined as any, // Force user to select DOB
         residency: (data.residency as string) || "",
         assets: (data.assets as WillFormData["assets"]) || [],
         beneficiaries: (data.beneficiaries as WillFormData["beneficiaries"]) || [],

@@ -3,9 +3,13 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { register } from "@/server/actions/register";
-import Link from "next/link";
 
-export function RegisterForm() {
+interface RegisterFormProps {
+  onSuccess?: () => void;
+  onSwitchToLogin?: () => void;
+}
+
+export function RegisterForm({ onSuccess, onSwitchToLogin }: RegisterFormProps = {}) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -35,10 +39,13 @@ export function RegisterForm() {
         setError(result.error);
       } else if (result.success) {
         setSuccess(result.success);
-        // Optional: Redirect to login after delay
-        setTimeout(() => {
-          router.push("/login");
-        }, 2000);
+        onSuccess?.();
+        // Optional: Redirect to login after delay if not in dialog mode
+        if (!onSwitchToLogin) {
+          setTimeout(() => {
+            router.push("/login");
+          }, 2000);
+        }
       }
     } catch (err) {
       console.error(err);
@@ -62,7 +69,7 @@ export function RegisterForm() {
               type="text"
               placeholder="John Doe"
               disabled={isLoading}
-              className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-black placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#FF6B6B] focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50"
               value={formData.name}
               onChange={handleInputChange}
             />
@@ -77,7 +84,7 @@ export function RegisterForm() {
               type="email"
               placeholder="name@example.com"
               disabled={isLoading}
-              className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-black placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#FF6B6B] focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50"
               value={formData.email}
               onChange={handleInputChange}
             />
@@ -92,7 +99,7 @@ export function RegisterForm() {
               type="password"
               placeholder="••••••••"
               disabled={isLoading}
-              className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-black placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#FF6B6B] focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50"
               value={formData.password}
               onChange={handleInputChange}
             />
@@ -113,7 +120,7 @@ export function RegisterForm() {
           <button
             type="submit"
             disabled={isLoading}
-            className="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-white bg-[#FF6B6B] rounded-lg hover:bg-[#FF5252] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#FF6B6B] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {isLoading && (
               <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
@@ -123,12 +130,24 @@ export function RegisterForm() {
         </div>
       </form>
 
-      <div className="text-center text-sm">
-        Already have an account?{" "}
-        <Link href="/login" className="underline hover:text-blue-600">
-          Login
-        </Link>
-      </div>
+      {onSwitchToLogin ? (
+        <div className="text-center text-sm text-gray-600">
+          Already have an account?{" "}
+          <button
+            onClick={onSwitchToLogin}
+            className="font-medium text-[#FF6B6B] hover:text-[#FF5252] transition-colors"
+          >
+            Login
+          </button>
+        </div>
+      ) : (
+        <div className="text-center text-sm text-gray-600">
+          Already have an account?{" "}
+          <a href="/login" className="font-medium text-[#FF6B6B] hover:text-[#FF5252] transition-colors">
+            Login
+          </a>
+        </div>
+      )}
     </div>
   );
 }

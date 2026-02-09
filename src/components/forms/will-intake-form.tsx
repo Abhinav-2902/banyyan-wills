@@ -22,7 +22,8 @@ export function WillIntakeForm({ initialData, willId }: WillIntakeFormProps) {
     resolver: zodResolver(willSchema) as any,
     defaultValues: initialData || {
       fullName: "",
-      dob: new Date(new Date().setFullYear(new Date().getFullYear() - 18)),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      dob: undefined as any, // Force user to select a date
       residency: "",
       assets: [],
       beneficiaries: [],
@@ -101,6 +102,7 @@ export function WillIntakeForm({ initialData, willId }: WillIntakeFormProps) {
           <Input
             id="dob"
             type="date"
+            required
             {...form.register("dob")}
           />
           {form.formState.errors.dob && (

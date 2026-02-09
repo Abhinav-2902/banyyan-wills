@@ -45,6 +45,7 @@ export function PersonalDetailsStep() {
           <Input
             id="dob"
             type="date"
+            required
             {...register("dob")}
             className={errors.dob ? "border-red-500" : ""}
           />

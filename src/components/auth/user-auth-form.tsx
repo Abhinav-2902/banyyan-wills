@@ -4,7 +4,11 @@ import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
-export function UserAuthForm() {
+interface UserAuthFormProps {
+  onSuccess?: () => void;
+}
+
+export function UserAuthForm({ onSuccess }: UserAuthFormProps = {}) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
@@ -35,6 +39,7 @@ export function UserAuthForm() {
       if (result?.error) {
         setError("Invalid email or password");
       } else {
+        onSuccess?.();
         router.push("/dashboard");
         router.refresh();
       }
@@ -74,7 +79,7 @@ export function UserAuthForm() {
               autoComplete="email"
               autoCorrect="off"
               disabled={isLoading || isGoogleLoading}
-              className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-black placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#FF6B6B] focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50"
               value={formData.email}
               onChange={handleInputChange}
             />
@@ -89,7 +94,7 @@ export function UserAuthForm() {
               type="password"
               placeholder="••••••••"
               disabled={isLoading || isGoogleLoading}
-              className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-black placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#FF6B6B] focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50"
               value={formData.password}
               onChange={handleInputChange}
             />
@@ -104,7 +109,7 @@ export function UserAuthForm() {
           <button
             type="submit"
             disabled={isLoading || isGoogleLoading}
-            className="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-white bg-[#FF6B6B] rounded-lg hover:bg-[#FF5252] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#FF6B6B] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {isLoading && (
               <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
