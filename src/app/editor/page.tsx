@@ -48,6 +48,23 @@ export default async function EditorPage({ searchParams }: EditorPageProps) {
   }
 
   return (
-    <MultiStepWillForm initialData={initialData} willId={willId} />
+    <div className="max-w-5xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
+      <div className="mb-8 text-center sm:text-left">
+        <h1 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl font-serif">
+          Last Will & Testament
+        </h1>
+        <p className="mt-2 text-lg text-gray-600">
+          Create or edit your legally valid will.
+        </p>
+      </div>
+
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <MultiStepWillForm initialData={initialData} willId={willId} />
+      </div>
+    
+      <div className="mt-8 text-center text-sm text-gray-500">
+        <p>Your progress is saved securely.</p>
+      </div>
+    </div>
   );
 }

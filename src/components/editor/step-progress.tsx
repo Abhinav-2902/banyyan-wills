@@ -26,35 +26,34 @@ const STEPS: Step[] = [
 
 export function StepProgress({ currentStep, completedSteps }: StepProgressProps) {
   return (
-    <div className="w-full bg-white border-b border-gray-200 sticky top-0 z-10">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {/* Mobile: Current Step Only */}
+    <div className="w-full mb-8">
+      <div className="max-w-4xl mx-auto px-4 sm:px-0">
+        {/* Mobile: Simple Progress Bar */}
         <div className="block lg:hidden">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-gray-600">
-              Step {currentStep} of {STEPS.length}
-            </span>
-            <span className="text-sm text-gray-500">
-              {Math.round((completedSteps.length / STEPS.length) * 100)}% Complete
+            <div>
+              <span className="text-xs font-semibold uppercase tracking-wider text-rose-500">
+                Step {currentStep} of {STEPS.length}
+              </span>
+              <p className="text-lg font-bold text-gray-900 mt-0.5">
+                {STEPS[currentStep - 1].title}
+              </p>
+            </div>
+            <span className="text-sm font-medium text-gray-500">
+              {Math.round((completedSteps.length / STEPS.length) * 100)}%
             </span>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-2">
+          <div className="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden">
             <div
-              className="bg-[#FF6B6B] h-2 rounded-full transition-all duration-300"
+              className="bg-[#FF6B6B] h-full rounded-full transition-all duration-500 ease-out"
               style={{ width: `${(completedSteps.length / STEPS.length) * 100}%` }}
             />
           </div>
-          <p className="mt-2 text-base font-semibold text-gray-900">
-            {STEPS[currentStep - 1].title}
-          </p>
-          <p className="text-sm text-gray-600">
-            {STEPS[currentStep - 1].description}
-          </p>
         </div>
 
-        {/* Desktop: All Steps */}
-        <nav className="hidden lg:block" aria-label="Progress">
-          <ol className="flex items-center justify-between">
+        {/* Desktop: Horizontal Stepper */}
+        <nav className="hidden lg:block py-4" aria-label="Progress">
+          <ol className="flex items-center w-full">
             {STEPS.map((step, stepIdx) => {
               const isCompleted = completedSteps.includes(step.number);
               const isCurrent = currentStep === step.number;
@@ -64,67 +63,50 @@ export function StepProgress({ currentStep, completedSteps }: StepProgressProps)
                 <li
                   key={step.number}
                   className={cn(
-                    "relative",
-                    stepIdx !== STEPS.length - 1 ? "pr-8 sm:pr-20 flex-1" : ""
+                    "relative flex flex-col items-center",
+                    stepIdx !== STEPS.length - 1 ? "flex-1" : ""
                   )}
                 >
-                  {/* Connector Line */}
-                  {stepIdx !== STEPS.length - 1 && (
+                   {/* Connector Line (Behind circles) */}
+                   {stepIdx !== STEPS.length - 1 && (
                     <div
-                      className="absolute top-4 left-4 -ml-px mt-0.5 h-0.5 w-full"
+                      className="absolute top-4 left-1/2 w-full h-[2px] -z-10 bg-gray-200"
                       aria-hidden="true"
                     >
                       <div
                         className={cn(
-                          "h-full transition-all duration-300",
-                          isCompleted ? "bg-[#FF6B6B]" : "bg-gray-300"
+                          "h-full transition-all duration-500 ease-out bg-[#FF6B6B]",
+                          isCompleted ? "w-full" : "w-0"
                         )}
                       />
                     </div>
                   )}
 
-                  {/* Step Circle */}
-                  <div className="relative flex items-start group">
-                    <span className="flex h-9 items-center">
-                      <span
-                        className={cn(
-                          "relative z-10 flex h-8 w-8 items-center justify-center rounded-full transition-all duration-200",
-                          isCompleted &&
-                            "bg-[#FF6B6B] group-hover:bg-[#FF5555]",
-                          isCurrent &&
-                            "border-2 border-[#FF6B6B] bg-white ring-4 ring-[#FF6B6B]/20",
-                          isUpcoming && "border-2 border-gray-300 bg-white"
-                        )}
-                      >
-                        {isCompleted ? (
-                          <Check className="h-5 w-5 text-white" />
-                        ) : (
-                          <span
-                            className={cn(
-                              "text-sm font-semibold",
-                              isCurrent && "text-[#FF6B6B]",
-                              isUpcoming && "text-gray-500"
-                            )}
-                          >
-                            {step.number}
-                          </span>
-                        )}
-                      </span>
-                    </span>
-                    <span className="ml-4 flex min-w-0 flex-col">
-                      <span
-                        className={cn(
-                          "text-sm font-semibold transition-colors",
-                          isCurrent && "text-[#FF6B6B]",
-                          isCompleted && "text-gray-900",
-                          isUpcoming && "text-gray-500"
-                        )}
-                      >
-                        {step.title}
-                      </span>
-                      <span className="text-xs text-gray-500">
-                        {step.description}
-                      </span>
+                  {/* Circle Indicator */}
+                  <div 
+                    className={cn(
+                      "flex items-center justify-center w-8 h-8 rounded-full border-2 transition-all duration-300 bg-white z-10",
+                      isCompleted && "border-[#FF6B6B] bg-[#FF6B6B] text-white",
+                      isCurrent && "border-[#FF6B6B] ring-4 ring-rose-50 text-[#FF6B6B]",
+                      isUpcoming && "border-gray-300 text-gray-400"
+                    )}
+                  >
+                    {isCompleted ? (
+                      <Check className="w-4 h-4" strokeWidth={3} />
+                    ) : (
+                      <span className="text-xs font-bold">{step.number}</span>
+                    )}
+                  </div>
+                  
+                  {/* Label */}
+                  <div className="mt-2 text-center">
+                    <span
+                      className={cn(
+                        "block text-xs font-semibold uppercase tracking-wider transition-colors duration-300",
+                        isCurrent ? "text-[#FF6B6B]" : isCompleted ? "text-gray-900" : "text-gray-400"
+                      )}
+                    >
+                      {step.title}
                     </span>
                   </div>
                 </li>

@@ -10,6 +10,8 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { completeWillSchema, type CompleteWillFormData } from "@/lib/validations/will";
 import { saveWillAction } from "@/server/actions/will";
+import { Step2FamilyDetails } from "./steps/step2-family-details";
+import { Step1TestatorDetails } from "./steps/step1-testator-details";
 
 interface MultiStepWillFormProps {
   initialData?: Partial<CompleteWillFormData>;
@@ -117,9 +119,9 @@ export function MultiStepWillForm({ initialData, willId }: MultiStepWillFormProp
   const renderStepContent = () => {
     switch (currentStep) {
       case 1:
-        return <div className="p-6">Step 1: Testator Details (Coming Soon)</div>;
+        return <Step1TestatorDetails />;
       case 2:
-        return <div className="p-6">Step 2: Family Details (Coming Soon)</div>;
+        return <Step2FamilyDetails />;
       case 3:
         return <div className="p-6">Step 3: Asset Details (Coming Soon)</div>;
       case 4:
@@ -137,7 +139,7 @@ export function MultiStepWillForm({ initialData, willId }: MultiStepWillFormProp
 
   return (
     <FormProvider {...methods}>
-      <div className="min-h-screen bg-gray-50">
+      <div className="flex flex-col flex-1 w-full relative">
         {/* Progress Indicator */}
         <StepProgress currentStep={currentStep} completedSteps={completedSteps} />
 
