@@ -12,6 +12,7 @@ import { completeWillSchema, type CompleteWillFormData } from "@/lib/validations
 import { saveWillAction } from "@/server/actions/will";
 import { Step2FamilyDetails } from "./steps/step2-family-details";
 import { Step1TestatorDetails } from "./steps/step1-testator-details";
+import { Step3AssetDetails } from "./steps/step3-asset-details";
 
 interface MultiStepWillFormProps {
   initialData?: Partial<CompleteWillFormData>;
@@ -24,11 +25,66 @@ export function MultiStepWillForm({ initialData, willId }: MultiStepWillFormProp
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
   const [isSaving, setIsSaving] = useState(false);
 
+  // Define explicit default values to ensure nested objects are initialized
+  const defaultFormValues: Partial<CompleteWillFormData> = {
+    step1: {
+      fullName: "",
+      fatherMotherName: "",
+      age: 0,
+      dateOfBirth: "",
+      gender: "Male",
+      maritalStatus: "Single",
+      panNumber: "",
+      aadhaarNumber: "",
+      residentialAddress: {
+        addressLine1: "",
+        city: "",
+        state: "",
+        pinCode: "",
+        country: "India",
+      },
+      contactInfo: {
+        mobileNumber: "",
+        emailAddress: "",
+      },
+    },
+    step2: {
+      isMarried: false,
+      hasChildren: false,
+      children: [],
+      hasSiblings: false,
+      siblings: [],
+      father: { name: "", status: "Alive" },
+      mother: { name: "", status: "Alive" },
+    },
+    step3: {
+      hasImmovableProperty: false,
+      immovableProperties: [],
+      hasBankAccounts: false,
+      bankAccounts: [],
+      hasInvestments: false,
+      investments: [],
+      hasVehicles: false,
+      vehicles: [],
+      hasJewelryValuables: false,
+      jewelryValuables: undefined,
+      hasBusinessInterests: false,
+      businessInterests: [],
+      hasDigitalAssets: false,
+      digitalAssets: undefined,
+      hasDebts: false,
+      debts: [],
+    },
+  };
+
   const methods = useForm<CompleteWillFormData>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: zodResolver(completeWillSchema) as any,
     mode: "onChange",
-    defaultValues: initialData || {},
+    defaultValues: {
+      ...defaultFormValues,
+      ...(initialData || {}),
+    },
   });
 
   const { handleSubmit, trigger, formState } = methods;
@@ -71,6 +127,14 @@ export function MultiStepWillForm({ initialData, willId }: MultiStepWillFormProp
 
   const handleNext = async () => {
     const isValid = await validateCurrentStep();
+    console.log(`Step ${currentStep} validation result:`, isValid);
+    
+    if (!isValid) {
+      console.error("Validation errors for current step:", methods.formState.errors);
+      // Ensure specific step errors are logged if possible
+      const stepKey = `step${currentStep}` as keyof CompleteWillFormData;
+      console.error(`Specific errors for ${stepKey}:`, methods.formState.errors[stepKey]);
+    }
     
     if (isValid) {
       // Mark current step as completed
@@ -123,7 +187,7 @@ export function MultiStepWillForm({ initialData, willId }: MultiStepWillFormProp
       case 2:
         return <Step2FamilyDetails />;
       case 3:
-        return <div className="p-6">Step 3: Asset Details (Coming Soon)</div>;
+        return <Step3AssetDetails />;
       case 4:
         return <div className="p-6">Step 4: Beneficiaries (Coming Soon)</div>;
       case 5:

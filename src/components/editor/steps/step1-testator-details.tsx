@@ -55,7 +55,7 @@ export function Step1TestatorDetails() {
         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Full Name */}
           <div className="space-y-2">
-            <Label htmlFor="fullName">Full Name</Label>
+            <Label htmlFor="fullName">Full Name <span className="text-red-500">*</span></Label>
             <Input
               id="fullName"
               placeholder="e.g. Rajesh Kumar Sharma"
@@ -68,7 +68,7 @@ export function Step1TestatorDetails() {
 
           {/* Father's/Mother's Name */}
           <div className="space-y-2">
-            <Label htmlFor="fatherMotherName">Father&apos;s/Mother&apos;s Name</Label>
+            <Label htmlFor="fatherMotherName">Father&apos;s/Mother&apos;s Name <span className="text-red-500">*</span></Label>
             <Input
               id="fatherMotherName"
               placeholder="Parent's name"
@@ -81,7 +81,7 @@ export function Step1TestatorDetails() {
 
           {/* Date of Birth */}
           <div className="space-y-2">
-            <Label htmlFor="dateOfBirth">Date of Birth</Label>
+            <Label htmlFor="dateOfBirth">Date of Birth <span className="text-red-500">*</span></Label>
             <Input
               id="dateOfBirth"
               type="date"
@@ -112,7 +112,7 @@ export function Step1TestatorDetails() {
 
           {/* Gender */}
           <div className="space-y-2">
-            <Label>Gender</Label>
+            <Label>Gender <span className="text-red-500">*</span></Label>
             <Select
               onValueChange={(value) => setValue("step1.gender", value as "Male" | "Female" | "Other", { shouldValidate: true })}
               defaultValue={watch("step1.gender")}
@@ -133,7 +133,7 @@ export function Step1TestatorDetails() {
 
           {/* Marital Status */}
           <div className="space-y-2">
-            <Label>Marital Status</Label>
+            <Label>Marital Status <span className="text-red-500">*</span></Label>
             <Select
               onValueChange={(value) => setValue("step1.maritalStatus", value as "Single" | "Married" | "Divorced" | "Widowed" | "Separated", { shouldValidate: true })}
               defaultValue={watch("step1.maritalStatus")}
@@ -183,6 +183,10 @@ export function Step1TestatorDetails() {
               className="uppercase"
               maxLength={10}
               {...register("step1.panNumber")}
+              onChange={(e) => {
+                e.target.value = e.target.value.toUpperCase();
+                register("step1.panNumber").onChange(e);
+              }}
             />
             {errors.step1?.panNumber && (
               <p className="text-sm text-red-500">{errors.step1.panNumber.message}</p>
@@ -212,7 +216,7 @@ export function Step1TestatorDetails() {
         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Mobile Number */}
           <div className="space-y-2">
-            <Label htmlFor="mobileNumber">Mobile Number (10 digits)</Label>
+            <Label htmlFor="mobileNumber">Mobile Number (10 digits) <span className="text-red-500">*</span></Label>
             <div className="flex">
               <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
                 +91
@@ -232,7 +236,7 @@ export function Step1TestatorDetails() {
 
           {/* Email Address */}
           <div className="space-y-2">
-            <Label htmlFor="emailAddress">Email Address</Label>
+            <Label htmlFor="emailAddress">Email Address <span className="text-red-500">*</span></Label>
             <Input
               id="emailAddress"
               type="email"
@@ -287,7 +291,7 @@ export function Step1TestatorDetails() {
         <CardContent className="space-y-4">
           {/* Address Line 1 */}
           <div className="space-y-2">
-            <Label htmlFor="addressLine1">Address Line 1</Label>
+            <Label htmlFor="addressLine1">Address Line 1 <span className="text-red-500">*</span></Label>
             <Input
               id="addressLine1"
               placeholder="House No., Building Name, Street"
@@ -311,7 +315,7 @@ export function Step1TestatorDetails() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* City */}
             <div className="space-y-2">
-              <Label htmlFor="city">City</Label>
+              <Label htmlFor="city">City <span className="text-red-500">*</span></Label>
               <Input
                 id="city"
                 placeholder="City"
@@ -324,7 +328,7 @@ export function Step1TestatorDetails() {
 
             {/* State */}
             <div className="space-y-2">
-              <Label htmlFor="state">State</Label>
+              <Label htmlFor="state">State <span className="text-red-500">*</span></Label>
               <Input
                 id="state"
                 placeholder="State"
@@ -337,7 +341,7 @@ export function Step1TestatorDetails() {
 
             {/* PIN Code */}
             <div className="space-y-2">
-              <Label htmlFor="pinCode">PIN Code</Label>
+              <Label htmlFor="pinCode">PIN Code <span className="text-red-500">*</span></Label>
               <Input
                 id="pinCode"
                 placeholder="110001"
@@ -353,7 +357,7 @@ export function Step1TestatorDetails() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
              {/* Country */}
             <div className="space-y-2">
-              <Label htmlFor="country">Country</Label>
+              <Label htmlFor="country">Country <span className="text-red-500">*</span></Label>
               <Input
                 id="country"
                 defaultValue="India"
@@ -367,7 +371,13 @@ export function Step1TestatorDetails() {
               <Input
                 id="yearsAtAddress"
                 type="number"
-                 {...register("step1.residentialAddress.yearsAtAddress", { valueAsNumber: true })}
+                 {...register("step1.residentialAddress.yearsAtAddress", { 
+                   setValueAs: (v) => {
+                     if (v === "" || v === null || v === undefined) return undefined;
+                     const num = parseInt(v, 10);
+                     return isNaN(num) ? undefined : num;
+                   },
+                 })}
               />
             </div>
           </div>

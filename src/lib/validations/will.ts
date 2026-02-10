@@ -18,12 +18,12 @@ const pinCodeSchema = z.string()
 // PAN number validation
 const panNumberSchema = z.string()
   .regex(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, "Invalid PAN format (e.g., ABCDE1234F)")
-  .optional();
+  .or(z.literal(""));
 
 // Aadhaar number validation (12 digits)
 const aadhaarNumberSchema = z.string()
   .regex(/^\d{12}$/, "Aadhaar number must be 12 digits")
-  .optional();
+  .or(z.literal(""));
 
 // Email validation
 const emailSchema = z.string().email("Invalid email address");
@@ -59,9 +59,9 @@ export const testatorDetailsSchema = z.object({
   // Contact Information
   contactInfo: z.object({
     mobileNumber: mobileNumberSchema,
-    alternateMobileNumber: mobileNumberSchema.optional(),
+    alternateMobileNumber: mobileNumberSchema.or(z.literal("")).optional(),
     emailAddress: emailSchema,
-    alternateEmailAddress: emailSchema.optional(),
+    alternateEmailAddress: emailSchema.or(z.literal("")).optional(),
   }),
 });
 
@@ -114,6 +114,33 @@ export const familyDetailsSchema = z.object({
   hasSiblings: z.boolean(),
   numberOfSiblings: z.number().optional(),
   siblings: z.array(siblingDetailsSchema).optional(),
+}).refine((data) => {
+  // If married, spouse details are required
+  if (data.isMarried && !data.spouse) {
+    return false;
+  }
+  return true;
+}, {
+  message: "Spouse details are required when married",
+  path: ["spouse"],
+}).refine((data) => {
+  // If has children, at least one child is required
+  if (data.hasChildren && (!data.children || data.children.length === 0)) {
+    return false;
+  }
+  return true;
+}, {
+  message: "At least one child is required when you have children",
+  path: ["children"],
+}).refine((data) => {
+  // If has siblings, at least one sibling is required
+  if (data.hasSiblings && (!data.siblings || data.siblings.length === 0)) {
+    return false;
+  }
+  return true;
+}, {
+  message: "At least one sibling is required when you have siblings",
+  path: ["siblings"],
 });
 
 // ============================================
@@ -203,22 +230,22 @@ const debtSchema = z.object({
 });
 
 export const assetDetailsSchema = z.object({
-  hasImmovableProperty: z.boolean(),
-  immovableProperties: z.array(immovablePropertySchema).optional(),
-  hasBankAccounts: z.boolean(),
-  bankAccounts: z.array(bankAccountSchema).optional(),
-  hasInvestments: z.boolean(),
-  investments: z.array(investmentSchema).optional(),
-  hasVehicles: z.boolean(),
-  vehicles: z.array(vehicleSchema).optional(),
-  hasJewelryValuables: z.boolean(),
+  hasImmovableProperty: z.boolean().default(false),
+  immovableProperties: z.array(immovablePropertySchema).default([]),
+  hasBankAccounts: z.boolean().default(false),
+  bankAccounts: z.array(bankAccountSchema).default([]),
+  hasInvestments: z.boolean().default(false),
+  investments: z.array(investmentSchema).default([]),
+  hasVehicles: z.boolean().default(false),
+  vehicles: z.array(vehicleSchema).default([]),
+  hasJewelryValuables: z.boolean().default(false),
   jewelryValuables: jewelryValuablesSchema.optional(),
-  hasBusinessInterests: z.boolean(),
-  businessInterests: z.array(businessInterestSchema).optional(),
-  hasDigitalAssets: z.boolean(),
+  hasBusinessInterests: z.boolean().default(false),
+  businessInterests: z.array(businessInterestSchema).default([]),
+  hasDigitalAssets: z.boolean().default(false),
   digitalAssets: digitalAssetSchema.optional(),
-  hasDebts: z.boolean(),
-  debts: z.array(debtSchema).optional(),
+  hasDebts: z.boolean().default(false),
+  debts: z.array(debtSchema).default([]),
 });
 
 // ============================================

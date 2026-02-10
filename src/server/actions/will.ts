@@ -28,19 +28,30 @@ export async function saveWillAction(
     }
 
     // 2. Validation using Zod schema (partial validation for drafts)
-    const validationResult = completeWillSchema.partial().safeParse(data);
-    if (!validationResult.success) {
+    if (typeof data !== 'object' || data === null) {
       return {
         success: false,
-        error: "Validation failed",
-        fieldErrors: validationResult.error.flatten().fieldErrors as Record<string, string[]>,
+        error: "Invalid data format: expected object",
       };
+    }
+
+    const validationResult = completeWillSchema.partial().safeParse(data);
+    let dataToSave: Partial<CompleteWillFormData> | Record<string, unknown>;
+
+    if (!validationResult.success) {
+      console.warn("Saving draft with validation warnings:", 
+        JSON.stringify(validationResult.error.flatten().fieldErrors)
+      );
+      // Proceed with raw data for drafts
+      dataToSave = data as Record<string, unknown>;
+    } else {
+      dataToSave = validationResult.data;
     }
 
     // 3. Call service layer to save the draft
     const savedWill = await saveWillDraft(
       session.user.id,
-      validationResult.data,
+      dataToSave as Record<string, unknown>,
       willId
     );
 
@@ -56,7 +67,7 @@ export async function saveWillAction(
         status: savedWill.status as WillDashboardDTO["status"],
         lastEdited: savedWill.updatedAt,
         title: "Draft Saved",
-        progress: calculateWillProgress(validationResult.data as unknown as CompleteWillFormData),
+        progress: calculateWillProgress(dataToSave as unknown as CompleteWillFormData),
       },
     };
   } catch (error) {
