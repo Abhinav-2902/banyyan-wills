@@ -415,7 +415,7 @@ const executorDetailsSchema = z.object({
     pinCode: pinCodeSchema,
   }),
   mobileNumber: mobileNumberSchema,
-  emailAddress: emailSchema.optional(),
+  emailAddress: emailSchema.or(z.literal("")).optional(),
   consentObtained: z.boolean().refine(val => val === true, "Executor consent is required"),
 });
 

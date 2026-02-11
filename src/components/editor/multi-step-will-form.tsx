@@ -15,6 +15,7 @@ import { Step1TestatorDetails } from "./steps/step1-testator-details";
 import { Step3AssetDetails } from "./steps/step3-asset-details";
 import { Step4Beneficiaries } from "./steps/step4-beneficiaries";
 import { Step5Guardianship } from "./steps/step5-guardianship";
+import { Step6Executor } from "./steps/step6-executor";
 
 interface MultiStepWillFormProps {
   initialData?: Partial<CompleteWillFormData>;
@@ -82,6 +83,46 @@ export function MultiStepWillForm({ initialData, willId }: MultiStepWillFormProp
       distributionType: "Equal distribution",
       totalPercentage: 0,
     },
+    step5: {
+      hasMinorChildren: false,
+      primaryGuardian: undefined,
+      alternateGuardian: undefined,
+      separatePropertyGuardian: false,
+      propertyGuardian: undefined,
+      specialInstructions: {
+         childCare: "",
+         educationPreferences: "",
+         religiousCulturalUpbringing: "",
+      },
+    },
+    step6: {
+      primaryExecutor: {
+         fullName: "",
+         relationship: "",
+         dateOfBirth: "",
+         age: 0,
+         mobileNumber: "",
+         emailAddress: "",
+         occupation: "",
+         panNumber: "",
+         address: {
+             addressLine1: "",
+             city: "",
+             state: "",
+             pinCode: "",
+         },
+         consentObtained: false,
+      },
+      hasAlternateExecutor: false,
+      alternateExecutor: undefined,
+      powers: {
+        canSellProperty: false,
+        canManageInvestments: false,
+        canSettleDebts: false,
+        canDistributeAssets: false,
+      },
+      remuneration: "No remuneration",
+    },
   };
 
   const methods = useForm<CompleteWillFormData>({
@@ -89,8 +130,66 @@ export function MultiStepWillForm({ initialData, willId }: MultiStepWillFormProp
     resolver: zodResolver(completeWillSchema) as any,
     mode: "onChange",
     defaultValues: {
-      ...defaultFormValues,
-      ...(initialData || {}),
+      step1: {
+        ...defaultFormValues.step1,
+        ...(initialData?.step1 || {}),
+        // Deep merge nested objects in Step 1
+        residentialAddress: {
+          ...defaultFormValues.step1?.residentialAddress,
+          ...(initialData?.step1?.residentialAddress || {}),
+        },
+        contactInfo: {
+          ...defaultFormValues.step1?.contactInfo,
+          ...(initialData?.step1?.contactInfo || {}),
+        },
+      },
+      step2: {
+        ...defaultFormValues.step2,
+        ...(initialData?.step2 || {}),
+      },
+      step3: {
+        ...defaultFormValues.step3,
+        ...(initialData?.step3 || {}),
+      },
+      step4: {
+        ...defaultFormValues.step4,
+        ...(initialData?.step4 || {}),
+      },
+      step5: {
+        ...defaultFormValues.step5,
+        ...(initialData?.step5 || {}),
+        // Ensure specialInstructions is merged correctly
+        specialInstructions: {
+          ...defaultFormValues.step5?.specialInstructions,
+          ...(initialData?.step5?.specialInstructions || {}),
+        },
+      },
+      step6: {
+        ...defaultFormValues.step6,
+        ...(initialData?.step6 || {}),
+        // Deep merge primaryExecutor to ensure address objects exist
+        primaryExecutor: {
+          ...defaultFormValues.step6?.primaryExecutor,
+          ...(initialData?.step6?.primaryExecutor || {}),
+          address: {
+            ...defaultFormValues.step6?.primaryExecutor?.address,
+            ...(initialData?.step6?.primaryExecutor?.address || {}),
+          },
+        },
+        // Deep merge alternateExecutor if it exists in initialData, otherwise keep it undefined/default
+        alternateExecutor: initialData?.step6?.alternateExecutor ? {
+            ...defaultFormValues.step6?.alternateExecutor,
+            ...initialData.step6.alternateExecutor,
+            address: {
+                ...defaultFormValues.step6?.alternateExecutor?.address,
+                ...(initialData.step6.alternateExecutor.address || {}),
+            }
+        } : defaultFormValues.step6?.alternateExecutor,
+        powers: {
+            ...defaultFormValues.step6?.powers,
+            ...(initialData?.step6?.powers || {}),
+        }
+      },
     },
   });
 
@@ -205,7 +304,7 @@ export function MultiStepWillForm({ initialData, willId }: MultiStepWillFormProp
       case 5:
         return <Step5Guardianship />;
       case 6:
-        return <div className="p-6">Step 6: Executor Details (Coming Soon)</div>;
+        return <Step6Executor />;
       case 7:
         return <div className="p-6">Step 7: Final Provisions (Coming Soon)</div>;
       default:
