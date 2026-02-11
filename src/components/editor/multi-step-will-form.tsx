@@ -16,6 +16,7 @@ import { Step3AssetDetails } from "./steps/step3-asset-details";
 import { Step4Beneficiaries } from "./steps/step4-beneficiaries";
 import { Step5Guardianship } from "./steps/step5-guardianship";
 import { Step6Executor } from "./steps/step6-executor";
+import { Step7AdditionalProvisions } from "./steps/step7-additional-provisions";
 
 interface MultiStepWillFormProps {
   initialData?: Partial<CompleteWillFormData>;
@@ -123,6 +124,27 @@ export function MultiStepWillForm({ initialData, willId }: MultiStepWillFormProp
       },
       remuneration: "No remuneration",
     },
+    step7: {
+        hasPreviousWill: false,
+        revokeAllPreviousWills: true,
+        placeOfExecution: "",
+        dateOfExecution: "",
+        soundMindDeclaration: false,
+        noUndueInfluenceDeclaration: false,
+        understandingDeclaration: false,
+        witness1: {
+            fullName: "",
+            address: "",
+            relationship: "",
+            age: 0,
+        },
+        witness2: {
+            fullName: "",
+            address: "",
+            relationship: "",
+            age: 0,
+        },
+    },
   };
 
   const methods = useForm<CompleteWillFormData>({
@@ -185,10 +207,23 @@ export function MultiStepWillForm({ initialData, willId }: MultiStepWillFormProp
                 ...(initialData.step6.alternateExecutor.address || {}),
             }
         } : defaultFormValues.step6?.alternateExecutor,
+
         powers: {
             ...defaultFormValues.step6?.powers,
             ...(initialData?.step6?.powers || {}),
         }
+      },
+      step7: {
+        ...defaultFormValues.step7,
+        ...(initialData?.step7 || {}),
+        witness1: {
+            ...defaultFormValues.step7?.witness1,
+            ...(initialData?.step7?.witness1 || {}),
+        },
+        witness2: {
+            ...defaultFormValues.step7?.witness2,
+            ...(initialData?.step7?.witness2 || {}),
+        },
       },
     },
   });
@@ -306,7 +341,7 @@ export function MultiStepWillForm({ initialData, willId }: MultiStepWillFormProp
       case 6:
         return <Step6Executor />;
       case 7:
-        return <div className="p-6">Step 7: Final Provisions (Coming Soon)</div>;
+        return <Step7AdditionalProvisions />;
       default:
         return null;
     }
