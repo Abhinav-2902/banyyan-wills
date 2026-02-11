@@ -170,8 +170,17 @@ const immovablePropertySchema = z.object({
   loanDetails: z.object({
     bankName: z.string(),
     loanAccountNumber: z.string().optional(),
-    outstandingAmount: z.number().optional(),
+    outstandingAmount: z.number().nullish(),
   }).optional(),
+}).refine((data) => {
+  // If hasLoan is false, loanDetails should not be validated
+  if (!data.hasLoan) {
+    return true;
+  }
+  // If hasLoan is true, loanDetails is optional but if present, must be valid
+  return true;
+}, {
+  message: "Loan details validation",
 });
 
 const bankAccountSchema = z.object({
@@ -246,6 +255,54 @@ export const assetDetailsSchema = z.object({
   digitalAssets: digitalAssetSchema.optional(),
   hasDebts: z.boolean().default(false),
   debts: z.array(debtSchema).default([]),
+}).refine((data) => {
+  if (data.hasImmovableProperty && data.immovableProperties.length === 0) {
+    return false;
+  }
+  return true;
+}, {
+  message: "Please add at least one property or uncheck 'Do you have immovable property'",
+  path: ["immovableProperties"],
+}).refine((data) => {
+  if (data.hasBankAccounts && data.bankAccounts.length === 0) {
+    return false;
+  }
+  return true;
+}, {
+  message: "Please add at least one bank account or uncheck 'Do you have bank accounts'",
+  path: ["bankAccounts"],
+}).refine((data) => {
+  if (data.hasInvestments && data.investments.length === 0) {
+    return false;
+  }
+  return true;
+}, {
+  message: "Please add at least one investment or uncheck 'Do you have investments'",
+  path: ["investments"],
+}).refine((data) => {
+  if (data.hasVehicles && data.vehicles.length === 0) {
+    return false;
+  }
+  return true;
+}, {
+  message: "Please add at least one vehicle or uncheck 'Do you have vehicles'",
+  path: ["vehicles"],
+}).refine((data) => {
+  if (data.hasBusinessInterests && data.businessInterests.length === 0) {
+    return false;
+  }
+  return true;
+}, {
+  message: "Please add at least one business interest or uncheck 'Do you have business interests'",
+  path: ["businessInterests"],
+}).refine((data) => {
+  if (data.hasDebts && data.debts.length === 0) {
+    return false;
+  }
+  return true;
+}, {
+  message: "Please add at least one debt or uncheck 'Do you have debts'",
+  path: ["debts"],
 });
 
 // ============================================

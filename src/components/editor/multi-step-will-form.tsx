@@ -13,6 +13,7 @@ import { saveWillAction } from "@/server/actions/will";
 import { Step2FamilyDetails } from "./steps/step2-family-details";
 import { Step1TestatorDetails } from "./steps/step1-testator-details";
 import { Step3AssetDetails } from "./steps/step3-asset-details";
+import { Step4Beneficiaries } from "./steps/step4-beneficiaries";
 
 interface MultiStepWillFormProps {
   initialData?: Partial<CompleteWillFormData>;
@@ -75,6 +76,11 @@ export function MultiStepWillForm({ initialData, willId }: MultiStepWillFormProp
       hasDebts: false,
       debts: [],
     },
+    step4: {
+      beneficiaries: [],
+      distributionType: "Equal distribution",
+      totalPercentage: 0,
+    },
   };
 
   const methods = useForm<CompleteWillFormData>({
@@ -97,7 +103,7 @@ export function MultiStepWillForm({ initialData, willId }: MultiStepWillFormProp
       
       if (result.success) {
         console.log("Draft saved successfully");
-        methods.reset(formData); // Reset dirty state
+        // Don't reset the form - it causes re-renders and loses focus
       } else {
         console.error("Failed to save draft:", result.error);
       }
@@ -114,7 +120,7 @@ export function MultiStepWillForm({ initialData, willId }: MultiStepWillFormProp
 
     const timer = setTimeout(() => {
       handleSaveDraft();
-    }, 3000); // Auto-save after 3 seconds of inactivity
+    }, 5000); // Auto-save after 5 seconds of inactivity (increased to reduce interruptions)
 
     return () => clearTimeout(timer);
   }, [formState.isDirty, handleSaveDraft]);
@@ -134,6 +140,11 @@ export function MultiStepWillForm({ initialData, willId }: MultiStepWillFormProp
       // Ensure specific step errors are logged if possible
       const stepKey = `step${currentStep}` as keyof CompleteWillFormData;
       console.error(`Specific errors for ${stepKey}:`, methods.formState.errors[stepKey]);
+      
+      // For step 3, log detailed array errors
+      if (currentStep === 3 && methods.formState.errors.step3) {
+        console.error("Step 3 detailed errors:", JSON.stringify(methods.formState.errors.step3, null, 2));
+      }
     }
     
     if (isValid) {
@@ -189,7 +200,7 @@ export function MultiStepWillForm({ initialData, willId }: MultiStepWillFormProp
       case 3:
         return <Step3AssetDetails />;
       case 4:
-        return <div className="p-6">Step 4: Beneficiaries (Coming Soon)</div>;
+        return <Step4Beneficiaries />;
       case 5:
         return <div className="p-6">Step 5: Guardianship (Coming Soon)</div>;
       case 6:

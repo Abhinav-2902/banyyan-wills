@@ -176,7 +176,9 @@ export function ImmovablePropertySection() {
                         <Label>Your Share Percentage (%)</Label>
                         <Input 
                            type="number"
-                           {...register(`step3.immovableProperties.${index}.sharePercentage`, { valueAsNumber: true })}
+                           {...register(`step3.immovableProperties.${index}.sharePercentage`, { 
+                             setValueAs: (v) => v === "" || v === null || isNaN(v) ? undefined : Number(v)
+                           })}
                            placeholder="50" 
                            max={100}
                         />
@@ -216,10 +218,16 @@ export function ImmovablePropertySection() {
                     <div className="space-y-2">
                       <Label>City <span className="text-red-500">*</span></Label>
                       <Input {...register(`step3.immovableProperties.${index}.address.city`)} />
+                      {errors.step3?.immovableProperties?.[index]?.address?.city && (
+                        <p className="text-sm text-destructive">{errors.step3.immovableProperties[index]?.address?.city?.message}</p>
+                      )}
                     </div>
                     <div className="space-y-2">
                       <Label>State <span className="text-red-500">*</span></Label>
                       <Input {...register(`step3.immovableProperties.${index}.address.state`)} />
+                      {errors.step3?.immovableProperties?.[index]?.address?.state && (
+                        <p className="text-sm text-destructive">{errors.step3.immovableProperties[index]?.address?.state?.message}</p>
+                      )}
                     </div>
                      <div className="space-y-2">
                       <Label>PIN Code <span className="text-red-500">*</span></Label>
@@ -227,6 +235,9 @@ export function ImmovablePropertySection() {
                         {...register(`step3.immovableProperties.${index}.address.pinCode`)} 
                         maxLength={6} 
                       />
+                      {errors.step3?.immovableProperties?.[index]?.address?.pinCode && (
+                        <p className="text-sm text-destructive">{errors.step3.immovableProperties[index]?.address?.pinCode?.message}</p>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -234,11 +245,13 @@ export function ImmovablePropertySection() {
                 {/* Area & Value */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                    <div className="space-y-2">
-                    <Label>Area Size <span className="text-red-500">*</span></Label>
+                    <Label>Area Size & Unit <span className="text-red-500">*</span></Label>
                     <div className="flex gap-2">
                        <Input 
                           type="number" 
-                          {...register(`step3.immovableProperties.${index}.areaSize`, { valueAsNumber: true })} 
+                          {...register(`step3.immovableProperties.${index}.areaSize`, { 
+                            setValueAs: (v) => v === "" || isNaN(v) ? undefined : Number(v)
+                          })} 
                           placeholder="Size"
                        />
                        <Select
@@ -259,6 +272,9 @@ export function ImmovablePropertySection() {
                           </SelectContent>
                        </Select>
                     </div>
+                    {errors.step3?.immovableProperties?.[index]?.areaSize && (
+                      <p className="text-sm text-destructive">{errors.step3.immovableProperties[index]?.areaSize?.message}</p>
+                    )}
                   </div>
                   <div className="space-y-2">
                     <Label>Survey/Plot No.</Label>
@@ -268,7 +284,9 @@ export function ImmovablePropertySection() {
                     <Label>Value (Approx ₹)</Label>
                     <Input 
                       type="number"
-                      {...register(`step3.immovableProperties.${index}.approximateValue`, { valueAsNumber: true })} 
+                      {...register(`step3.immovableProperties.${index}.approximateValue`, { 
+                        setValueAs: (v) => v === "" || v === null || isNaN(v) ? undefined : Number(v)
+                      })} 
                       placeholder="Current Market Value"
                     />
                   </div>
@@ -303,6 +321,10 @@ export function ImmovablePropertySection() {
                       checked={hasLoan}
                       onCheckedChange={(checked) => {
                         setValue(`step3.immovableProperties.${index}.hasLoan`, checked === true);
+                        // Clear loan details when unchecked
+                        if (!checked) {
+                          setValue(`step3.immovableProperties.${index}.loanDetails`, undefined);
+                        }
                       }}
                     />
                     <Label htmlFor={`hasLoan-${index}`} className="text-sm font-medium">
@@ -320,7 +342,9 @@ export function ImmovablePropertySection() {
                          <Label>Outstanding Amount (₹)</Label>
                          <Input 
                             type="number"
-                            {...register(`step3.immovableProperties.${index}.loanDetails.outstandingAmount`, { valueAsNumber: true })} 
+                            {...register(`step3.immovableProperties.${index}.loanDetails.outstandingAmount`, { 
+                              setValueAs: (v) => v === "" || v === null || isNaN(v) ? undefined : Number(v)
+                            })} 
                          />
                       </div>
                     </div>
