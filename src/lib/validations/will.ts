@@ -370,7 +370,7 @@ const guardianDetailsSchema = z.object({
   dateOfBirth: z.string().min(1, "Date of birth is required"),
   address: z.string().min(5, "Address is required"),
   mobileNumber: mobileNumberSchema,
-  emailAddress: emailSchema.optional(),
+  emailAddress: emailSchema.or(z.literal("")).optional(),
   occupation: z.string().optional(),
   consentObtained: z.boolean().refine(val => val === true, "Guardian consent is required"),
 });

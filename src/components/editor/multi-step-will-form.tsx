@@ -14,6 +14,7 @@ import { Step2FamilyDetails } from "./steps/step2-family-details";
 import { Step1TestatorDetails } from "./steps/step1-testator-details";
 import { Step3AssetDetails } from "./steps/step3-asset-details";
 import { Step4Beneficiaries } from "./steps/step4-beneficiaries";
+import { Step5Guardianship } from "./steps/step5-guardianship";
 
 interface MultiStepWillFormProps {
   initialData?: Partial<CompleteWillFormData>;
@@ -202,7 +203,7 @@ export function MultiStepWillForm({ initialData, willId }: MultiStepWillFormProp
       case 4:
         return <Step4Beneficiaries />;
       case 5:
-        return <div className="p-6">Step 5: Guardianship (Coming Soon)</div>;
+        return <Step5Guardianship />;
       case 6:
         return <div className="p-6">Step 6: Executor Details (Coming Soon)</div>;
       case 7:
