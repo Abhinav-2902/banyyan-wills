@@ -34,6 +34,29 @@ export function Step4Beneficiaries() {
     name: "step4.beneficiaries",
   });
 
+  const distributionType = useWatch({
+    control,
+    name: "step4.distributionType",
+  });
+
+  // Effect to handle Equal Distribution logic
+  useEffect(() => {
+    if (distributionType === "Equal distribution" && beneficiaries?.length > 0) {
+      const equalShare = Number((100 / beneficiaries.length).toFixed(2));
+      
+      // Update each beneficiary's share
+      beneficiaries.forEach((_, index) => {
+        // Only update if the value is different to avoid infinite loops
+        if (beneficiaries[index].sharePercentage !== equalShare) {
+            setValue(`step4.beneficiaries.${index}.sharePercentage`, equalShare, {
+                shouldValidate: true,
+                shouldDirty: true
+            });
+        }
+      });
+    }
+  }, [distributionType, beneficiaries?.length, setValue]); // eslint-disable-line react-hooks/exhaustive-deps
+
   // Calculate total percentage
   const totalPercentage = beneficiaries?.reduce((sum, b) => sum + (Number(b.sharePercentage) || 0), 0) || 0;
 
@@ -168,14 +191,22 @@ export function Step4Beneficiaries() {
                     </div>
 
                     {/* Share Percentage */}
-                    <div className="space-y-2 bg-blue-50/50 p-2 rounded-md border border-blue-100">
-                      <Label className="text-blue-900">Share Percentage (%) <span className="text-red-500">*</span></Label>
+                    <div className={`space-y-2 p-2 rounded-md border ${
+                        distributionType === "Equal distribution" 
+                        ? "bg-gray-100 border-gray-200 opacity-80" 
+                        : "bg-blue-50/50 border-blue-100"
+                    }`}>
+                      <Label className={distributionType === "Equal distribution" ? "text-gray-700" : "text-blue-900"}>
+                        Share Percentage (%) {distributionType !== "Equal distribution" && <span className="text-red-500">*</span>}
+                        {distributionType === "Equal distribution" && <span className="text-xs font-normal ml-2">(Auto-calculated)</span>}
+                      </Label>
                       <Input 
                         type="number" 
                         min={0} 
                         max={100} 
                         {...register(`step4.beneficiaries.${index}.sharePercentage`, { valueAsNumber: true })} 
                         className="bg-white"
+                        disabled={distributionType === "Equal distribution"}
                       />
                        {errors.step4?.beneficiaries?.[index]?.sharePercentage && (
                         <p className="text-sm text-destructive">{errors.step4.beneficiaries[index]?.sharePercentage?.message}</p>

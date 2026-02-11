@@ -325,7 +325,7 @@ const beneficiarySchema = z.object({
   }),
   mobileNumber: mobileNumberSchema.optional(),
   emailAddress: emailSchema.optional(),
-  sharePercentage: z.number().min(0).max(100),
+  sharePercentage: z.number().min(0, "Must be positive").max(100, "Cannot exceed 100%"),
   specificAssets: z.string().optional(),
 });
 
@@ -345,8 +345,16 @@ export const beneficiaryDistributionSchema = z.object({
     relationship: z.string(),
   }).optional(),
 }).refine((data) => {
-  const total = data.beneficiaries.reduce((sum, b) => sum + b.sharePercentage, 0);
-  return total === 100;
+  const total = data.beneficiaries.reduce((sum, b) => {
+    // Handle potential NaN or undefined values
+    const share = typeof b.sharePercentage === 'number' && !isNaN(b.sharePercentage) 
+      ? b.sharePercentage 
+      : 0;
+    return sum + share;
+  }, 0);
+  
+  // Allow small floating point error (e.g. 99.99 or 100.01)
+  return Math.abs(total - 100) < 0.1;
 }, {
   message: "Total beneficiary allocation must equal exactly 100%",
   path: ["totalPercentage"],
