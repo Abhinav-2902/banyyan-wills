@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useFormContext, useWatch, Controller } from "react-hook-form";
+import { useFormContext, Controller } from "react-hook-form";
 import { CompleteWillFormData } from "@/lib/validations/will";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

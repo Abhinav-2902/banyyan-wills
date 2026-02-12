@@ -17,6 +17,7 @@ import { Step4Beneficiaries } from "./steps/step4-beneficiaries";
 import { Step5Guardianship } from "./steps/step5-guardianship";
 import { Step6Executor } from "./steps/step6-executor";
 import { Step7AdditionalProvisions } from "./steps/step7-additional-provisions";
+import { DownloadPDFButton } from "./download-pdf-button";
 
 interface MultiStepWillFormProps {
   initialData?: Partial<CompleteWillFormData>;
@@ -272,9 +273,36 @@ export function MultiStepWillForm({ initialData, willId }: MultiStepWillFormProp
     
     if (!isValid) {
       console.error("Validation errors for current step:", methods.formState.errors);
-      // Ensure specific step errors are logged if possible
+      
+      // Log the data attempting to be validated
       const stepKey = `step${currentStep}` as keyof CompleteWillFormData;
+      const stepData = methods.getValues(stepKey);
+      console.error(`Data for ${stepKey} being validated:`, JSON.stringify(stepData, null, 2));
+
+      // Ensure specific step errors are logged if possible
       console.error(`Specific errors for ${stepKey}:`, methods.formState.errors[stepKey]);
+      
+      // Log detailed error messages for each field
+      const stepErrors = methods.formState.errors[stepKey];
+      if (stepErrors && typeof stepErrors === 'object') {
+        console.error(`\n=== DETAILED ERRORS FOR ${stepKey.toUpperCase()} ===`);
+        Object.entries(stepErrors).forEach(([fieldName, fieldError]) => {
+          if (fieldError && typeof fieldError === 'object') {
+            // If it's a nested object (like alternateGuardian), log each sub-field
+            console.error(`\n${fieldName}:`);
+            Object.entries(fieldError).forEach(([subField, subError]: [string, unknown]) => {
+              if (subError && typeof subError === 'object' && 'message' in subError) {
+                console.error(`  - ${subField}: ${subError.message}`);
+              } else {
+                console.error(`  - ${subField}:`, subError);
+              }
+            });
+          } else if (fieldError && typeof fieldError === 'object' && 'message' in fieldError) {
+            console.error(`${fieldName}: ${fieldError.message}`);
+          }
+        });
+        console.error(`=== END DETAILED ERRORS ===\n`);
+      }
       
       // For step 3, log detailed array errors
       if (currentStep === 3 && methods.formState.errors.step3) {
@@ -397,13 +425,8 @@ export function MultiStepWillForm({ initialData, willId }: MultiStepWillFormProp
                     <ArrowRight className="h-4 w-4" />
                   </Button>
                 ) : (
-                  <Button
-                    type="submit"
-                    disabled={isSaving}
-                    className="bg-green-600 hover:bg-green-700 text-white"
-                  >
-                    {isSaving ? "Submitting..." : "Submit Will"}
-                  </Button>
+                  /* Show Download PDF button on Step 7 */
+                  willId && <DownloadPDFButton willId={willId} onBeforeDownload={handleSaveDraft} />
                 )}
               </div>
             </div>

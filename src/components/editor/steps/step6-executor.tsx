@@ -173,7 +173,12 @@ function ExecutorForm({ prefix }: { prefix: "step6.primaryExecutor" | "step6.alt
                 age--;
             }
             
+            console.log(`[${prefix}] Calculating age from DOB: ${dob}`);
+            console.log(`[${prefix}] Calculated age: ${age}`);
             setValue(`${prefix}.age`, age, { shouldValidate: true });
+            console.log(`[${prefix}] Age set to: ${age}`);
+        } else {
+            console.log(`[${prefix}] No DOB provided, age not calculated`);
         }
     }, [dob, setValue, prefix]);
 
@@ -207,6 +212,19 @@ function ExecutorForm({ prefix }: { prefix: "step6.primaryExecutor" | "step6.alt
                     <Input type="date" {...register(`${prefix}.dateOfBirth`)} />
                     {getError(`${prefix}.dateOfBirth`) && (
                         <p className="text-sm text-destructive">{getError(`${prefix}.dateOfBirth`).message}</p>
+                    )}
+                </div>
+
+                <div className="space-y-2">
+                    <Label>Age (Auto-calculated)</Label>
+                    <Input 
+                        type="number" 
+                        {...register(`${prefix}.age`, { valueAsNumber: true })} 
+                        readOnly 
+                        className="bg-gray-50"
+                    />
+                    {getError(`${prefix}.age`) && (
+                        <p className="text-sm text-destructive">{getError(`${prefix}.age`).message}</p>
                     )}
                 </div>
 

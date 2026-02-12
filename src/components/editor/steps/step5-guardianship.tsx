@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useFormContext, useWatch, Controller } from "react-hook-form";
 import { CompleteWillFormData } from "@/lib/validations/will";
 import { Input } from "@/components/ui/input";
@@ -20,7 +20,10 @@ export function Step5Guardianship() {
     control,
     setValue,
     register,
+    getValues,
   } = useFormContext<CompleteWillFormData>();
+
+  const [alternateGuardianOpen, setAlternateGuardianOpen] = useState<string | undefined>(undefined);
 
   // Watch Step 2 children to auto-detect minors
   const children = useWatch({
@@ -42,6 +45,22 @@ export function Step5Guardianship() {
         }
     }
   }, [children, hasMinorChildren, setValue]);
+
+  // Clear alternate guardian data when accordion is closed
+  const handleAccordionChange = (value: string) => {
+    console.log("Accordion change - new value:", value);
+    console.log("Previous accordion state:", alternateGuardianOpen);
+    
+    setAlternateGuardianOpen(value);
+    
+    // If accordion is being closed (value is empty), clear the alternate guardian data
+    if (!value) {
+      const currentData = getValues("step5.alternateGuardian");
+      console.log("Clearing alternate guardian. Current data:", currentData);
+      setValue("step5.alternateGuardian", undefined, { shouldValidate: true });
+      console.log("Alternate guardian cleared. New value:", getValues("step5.alternateGuardian"));
+    }
+  };
 
   return (
     <div className="space-y-8">
@@ -96,7 +115,13 @@ export function Step5Guardianship() {
                     </div>
 
                     {/* Alternate Guardian */}
-                    <Accordion type="single" collapsible className="w-full">
+                    <Accordion 
+                      type="single" 
+                      collapsible 
+                      className="w-full"
+                      value={alternateGuardianOpen}
+                      onValueChange={handleAccordionChange}
+                    >
                         <AccordionItem value="alternate-guardian" className="border rounded-lg px-4 bg-slate-50">
                             <AccordionTrigger className="hover:no-underline">
                                 <span className="text-base font-semibold">Add Alternate Guardian (Optional)</span>

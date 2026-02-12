@@ -50,3 +50,20 @@ export async function saveWillDraft(
 
   return savedWill;
 }
+
+/**
+ * Update will status
+ * @param willId - The will ID to update
+ * @param status - The new status
+ */
+export async function updateWillStatus(
+  willId: string,
+  status: "DRAFT" | "PAID" | "COMPLETED"
+) {
+  const updatedWill = await prisma.will.update({
+    where: { id: willId },
+    data: { status },
+  });
+
+  return updatedWill;
+}
