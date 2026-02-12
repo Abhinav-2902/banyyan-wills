@@ -2,7 +2,9 @@ import { auth } from "@/auth";
 import { findWillById } from "@/server/data/will";
 import { MultiStepWillForm } from "@/components/editor/multi-step-will-form";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { CompleteWillFormData } from "@/lib/validations/will";
+import { DownloadPDFButton } from "@/components/editor/download-pdf-button";
 
 interface EditorPageProps {
   params: Promise<{
@@ -34,8 +36,35 @@ export default async function EditorPage({ params }: EditorPageProps) {
 
   // 4. Check if Will is editable (not PAID or COMPLETED)
   if (will.status === "PAID" || will.status === "COMPLETED") {
-    // Redirect to a read-only view or dashboard
-    redirect("/dashboard");
+    // Render completed will view
+    return (
+      <div className="max-w-3xl mx-auto py-16 px-4 sm:px-6 lg:px-8 text-center">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-green-100 mb-6">
+            <svg className="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <h1 className="text-3xl font-bold tracking-tight text-gray-900 mb-4">
+            Will Completed!
+          </h1>
+          <p className="text-lg text-gray-600 mb-8 max-w-lg mx-auto">
+            Your Last Will & Testament has been successfully generated and completed. You can download the PDF below.
+          </p>
+          
+          <div className="flex justify-center gap-4">
+            <DownloadPDFButton willId={will.id} />
+             <Link href="/dashboard" className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-11 px-8">
+              Back to Dashboard
+            </Link>
+          </div>
+          
+          <div className="mt-8 pt-8 border-t border-gray-100 text-sm text-gray-500">
+            <p>Note: Completed wills cannot be edited correctly. If you need to make changes, please create a new will.</p>
+          </div>
+        </div>
+      </div>
+    );
   }
 
 

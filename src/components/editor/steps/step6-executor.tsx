@@ -191,6 +191,59 @@ function ExecutorForm({ prefix }: { prefix: "step6.primaryExecutor" | "step6.alt
     return (
         <Card className="border-slate-200 shadow-sm bg-white">
             <CardContent className="p-4 sm:p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                
+                {/* Select from Family Helper */}
+                <div className="md:col-span-2 bg-blue-50/50 p-4 rounded-lg border border-blue-100 mb-2">
+                    <Label className="mb-2 block text-blue-900">Select from Family (Optional Auto-fill)</Label>
+                    <Select onValueChange={(value) => {
+                        const step2 = watch("step2");
+                        let selectedPerson = null;
+
+                        if (value === "spouse" && step2.spouse) {
+                            selectedPerson = {
+                                fullName: step2.spouse.fullName,
+                                relationship: "Spouse",
+                                dateOfBirth: step2.spouse.dateOfBirth
+                            };
+                        } else if (value.startsWith("child_")) {
+                            const index = parseInt(value.split("_")[1]);
+                            const child = step2.children?.[index];
+                            if (child) {
+                                selectedPerson = {
+                                    fullName: child.fullName,
+                                    relationship: child.relationship,
+                                    dateOfBirth: child.dateOfBirth
+                                };
+                            }
+                        }
+
+                        if (selectedPerson) {
+                            setValue(`${prefix}.fullName`, selectedPerson.fullName, { shouldValidate: true, shouldDirty: true });
+                            setValue(`${prefix}.relationship`, selectedPerson.relationship, { shouldValidate: true, shouldDirty: true });
+                            if (selectedPerson.dateOfBirth) {
+                                setValue(`${prefix}.dateOfBirth`, selectedPerson.dateOfBirth, { shouldValidate: true, shouldDirty: true });
+                            }
+                        }
+                    }}>
+                        <SelectTrigger className="bg-white">
+                            <SelectValue placeholder="Select a family member to auto-fill..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {watch("step2.isMarried") && watch("step2.spouse.fullName") && (
+                                <SelectItem value="spouse">
+                                    {watch("step2.spouse.fullName")} (Spouse)
+                                </SelectItem>
+                            )}
+                            {watch("step2.hasChildren") && watch("step2.children")?.map((child, index) => (
+                                child.fullName ? (
+                                    <SelectItem key={index} value={`child_${index}`}>
+                                        {child.fullName} ({child.relationship})
+                                    </SelectItem>
+                                ) : null
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
                  <div className="space-y-2">
                     <Label>Full Name <span className="text-red-500">*</span></Label>
                     <Input {...register(`${prefix}.fullName`)} placeholder="Executor's Name" />

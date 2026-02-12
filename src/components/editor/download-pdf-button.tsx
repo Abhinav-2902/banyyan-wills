@@ -10,13 +10,31 @@ interface DownloadPDFButtonProps {
   willId: string;
   disabled?: boolean;
   onBeforeDownload?: () => Promise<void>;
+  className?: string;
+  variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link";
+  size?: "default" | "sm" | "lg" | "icon";
+  children?: React.ReactNode;
 }
 
-export function DownloadPDFButton({ willId, disabled, onBeforeDownload }: DownloadPDFButtonProps) {
+export function DownloadPDFButton({ 
+  willId, 
+  disabled, 
+  onBeforeDownload, 
+  className, 
+  variant = "default", 
+  size = "default",
+  children 
+}: DownloadPDFButtonProps) {
   const [isDownloading, setIsDownloading] = useState(false);
   const { toast } = useToast();
 
-  const handleDownload = async () => {
+  const handleDownload = async (e?: React.MouseEvent) => {
+    // Stop propagation if passed an event (important for nested clicks)
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
     setIsDownloading(true);
     try {
       // Execute any pre-download logic (e.g., saving the form)
@@ -70,18 +88,19 @@ export function DownloadPDFButton({ willId, disabled, onBeforeDownload }: Downlo
     <Button
       onClick={handleDownload}
       disabled={disabled || isDownloading}
-      className="gap-2"
-      size="lg"
+      className={className}
+      variant={variant}
+      size={size}
     >
       {isDownloading ? (
         <>
-          <Loader2 className="h-4 w-4 animate-spin" />
-          Generating PDF...
+          <Loader2 className="h-4 w-4 animate-spin mr-2" />
+          {children || "Generating..."}
         </>
       ) : (
         <>
-          <Download className="h-4 w-4" />
-          Download Will PDF
+          <Download className="h-4 w-4 mr-2" />
+          {children || "Download PDF"}
         </>
       )}
     </Button>

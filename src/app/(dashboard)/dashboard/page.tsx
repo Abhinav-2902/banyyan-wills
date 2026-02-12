@@ -1,6 +1,7 @@
 import { auth } from "@/auth";
 import { getUserDashboard } from "@/server/services/will-service";
 import { CreateWillButton } from "@/components/dashboard/create-will-button";
+import { WillCard } from "@/components/dashboard/will-card";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { FileText, Clock, CheckCircle2, ArrowRight } from "lucide-react";
@@ -103,35 +104,7 @@ export default async function DashboardPage() {
           </div>
           <div className="space-y-4">
             {recentWills.map((will) => (
-              <Link
-                key={will.id}
-                href={`/editor/${will.id}`}
-                className="flex items-center justify-between p-4 rounded-lg border border-gray-200 hover:border-[#FF6B6B] hover:bg-[#FF6B6B]/5 transition-all group"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100 group-hover:bg-[#FF6B6B]/10">
-                    <FileText className="h-5 w-5 text-gray-600 group-hover:text-[#FF6B6B]" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900">{will.title}</h3>
-                    <p className="text-sm text-gray-600">
-                      Last edited {new Date(will.lastEdited).toLocaleDateString()}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                    will.status === "DRAFT" 
-                      ? "bg-orange-100 text-orange-700"
-                      : will.status === "COMPLETED" || will.status === "PAID"
-                      ? "bg-green-100 text-green-700"
-                      : "bg-blue-100 text-blue-700"
-                  }`}>
-                    {will.status === "DRAFT" ? "Draft" : will.status}
-                  </span>
-                  <ArrowRight className="h-5 w-5 text-gray-400 group-hover:text-[#FF6B6B]" />
-                </div>
-              </Link>
+              <WillCard key={will.id} will={will} />
             ))}
           </div>
         </div>
