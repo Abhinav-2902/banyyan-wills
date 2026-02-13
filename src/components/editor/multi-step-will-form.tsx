@@ -16,7 +16,7 @@ import { Step3WillExecutors } from "./steps/step3-will-executors";
 import { Step4DisputeResolver } from "./steps/step4-dispute-resolver";
 import { Step5WitnessDetails } from "./steps/step5-witness-details";
 import { Step6Beneficiaries } from "./steps/step6-beneficiaries";
-import { Step7AdditionalProvisions } from "./steps/step7-additional-provisions";
+import { Step7Charities } from "./steps/step7-charities";
 import { DownloadPDFButton } from "./download-pdf-button";
 
 interface MultiStepWillFormProps {
@@ -162,25 +162,7 @@ export function MultiStepWillForm({ initialData, willId }: MultiStepWillFormProp
       ],
     },
     step7: {
-        hasPreviousWill: false,
-        revokeAllPreviousWills: true,
-        placeOfExecution: "",
-        dateOfExecution: "",
-        soundMindDeclaration: false,
-        noUndueInfluenceDeclaration: false,
-        understandingDeclaration: false,
-        witness1: {
-            fullName: "",
-            address: "",
-            relationship: "",
-            age: 0,
-        },
-        witness2: {
-            fullName: "",
-            address: "",
-            relationship: "",
-            age: 0,
-        },
+      charities: [],
     },
   };
 
@@ -219,19 +201,10 @@ export function MultiStepWillForm({ initialData, willId }: MultiStepWillFormProp
         ...(initialData?.step5 || {}),
       },
       step6: {
-        beneficiaries: initialData?.step6?.beneficiaries || defaultFormValues.step6.beneficiaries,
+        beneficiaries: initialData?.step6?.beneficiaries || defaultFormValues.step6?.beneficiaries || [],
       },
       step7: {
-        ...defaultFormValues.step7,
-        ...(initialData?.step7 || {}),
-        witness1: {
-            ...defaultFormValues.step7?.witness1,
-            ...(initialData?.step7?.witness1 || {}),
-        },
-        witness2: {
-            ...defaultFormValues.step7?.witness2,
-            ...(initialData?.step7?.witness2 || {}),
-        },
+        charities: initialData?.step7?.charities || defaultFormValues.step7?.charities || [],
       },
     },
   });
@@ -407,7 +380,20 @@ export function MultiStepWillForm({ initialData, willId }: MultiStepWillFormProp
       case 6:
         return <Step6Beneficiaries />;
       case 7:
-        return <Step7AdditionalProvisions />;
+        return <Step7Charities />;
+      case 8:
+      case 9:
+      case 10:
+      case 11:
+      case 12:
+      case 13:
+        return (
+          <div className="p-12 text-center">
+            <h2 className="text-2xl font-semibold text-gray-900 mb-4">Step {currentStep}</h2>
+            <p className="text-gray-600 mb-6">This step is coming soon. Please continue to the next step.</p>
+            <p className="text-sm text-gray-500">Step {currentStep} will be implemented in a future update.</p>
+          </div>
+        );
       default:
         return null;
     }
@@ -453,7 +439,7 @@ export function MultiStepWillForm({ initialData, willId }: MultiStepWillFormProp
                 />
 
                 {/* Next/Submit Button */}
-                {currentStep < 7 ? (
+                {currentStep < 13 ? (
                   <Button
                     type="button"
                     onClick={handleNext}
@@ -463,7 +449,7 @@ export function MultiStepWillForm({ initialData, willId }: MultiStepWillFormProp
                     <ArrowRight className="h-4 w-4" />
                   </Button>
                 ) : (
-                  /* Show Download PDF button on Step 7 */
+                  /* Show Download PDF button on Step 13 */
                   willId && <DownloadPDFButton willId={willId} onBeforeDownload={handleSaveDraft} />
                 )}
               </div>

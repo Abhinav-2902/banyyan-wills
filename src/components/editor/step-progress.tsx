@@ -21,7 +21,13 @@ const STEPS: Step[] = [
   { number: 4, title: "Dispute Resolver", description: "Optional dispute resolution" },
   { number: 5, title: "Witness Details", description: "Will signing witnesses" },
   { number: 6, title: "Beneficiaries", description: "Asset recipients" },
-  { number: 7, title: "Final Provisions", description: "Declarations & signatures" },
+  { number: 7, title: "Charity Donations", description: "Support charitable causes" },
+  { number: 8, title: "Step 8", description: "To be implemented" },
+  { number: 9, title: "Step 9", description: "To be implemented" },
+  { number: 10, title: "Step 10", description: "To be implemented" },
+  { number: 11, title: "Step 11", description: "To be implemented" },
+  { number: 12, title: "Step 12", description: "To be implemented" },
+  { number: 13, title: "Final Review", description: "Review and submit" },
 ];
 
 export function StepProgress({ currentStep, completedSteps }: StepProgressProps) {

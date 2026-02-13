@@ -227,41 +227,22 @@ export const beneficiariesSchema = z.object({
 });
 
 // ============================================
-// STEP 7: ADDITIONAL PROVISIONS SCHEMA
+// STEP 7: CHARITY DONATIONS SCHEMA
 // ============================================
 
-const step7WitnessSchema = z.object({
-  fullName: z.string().min(2, "Witness name is required"),
-  address: z.string().min(5, "Address is required"),
-  occupation: z.string().optional(),
-  age: z.number().min(18, "Witness must be at least 18 years old"),
-  relationship: z.string().min(2, "Relationship is required"),
+const charitySchema = z.object({
+  name: z.string().min(2, "Charity name is required"),
+  identificationNumber: z.string().optional(),
+  phoneNumber: z.string().optional(),
+  address: z.string().optional(),
+  city: z.string().optional(),
+  state: z.string().optional(),
+  country: z.string().optional(),
+  zipCode: z.string().optional(),
 });
 
-export const additionalProvisionsSchema = z.object({
-  hasPreviousWill: z.boolean(),
-  previousWillDate: z.string().optional(),
-  revokeAllPreviousWills: z.boolean(),
-  funeralInstructions: z.string().optional(),
-  burialCremationPreference: z.string().optional(),
-  religiousCeremonyPreferences: z.string().optional(),
-  organDonationWishes: z.string().optional(),
-  assetDistributionInstructions: z.string().optional(),
-  businessContinuationInstructions: z.string().optional(),
-  petCareInstructions: z.string().optional(),
-  charitableDonations: z.string().optional(),
-  witness1: step7WitnessSchema,
-  witness2: step7WitnessSchema,
-  placeOfExecution: z.string().min(2, "Place of execution is required"),
-  dateOfExecution: z.string().min(1, "Date of execution is required"),
-  soundMindDeclaration: z.boolean().refine(val => val === true, "Sound mind declaration is required"),
-  noUndueInfluenceDeclaration: z.boolean().refine(val => val === true, "No undue influence declaration is required"),
-  understandingDeclaration: z.boolean().refine(val => val === true, "Understanding declaration is required"),
-  testatorSignature: z.string().optional(),
-  witness1Signature: z.string().optional(),
-  witness2Signature: z.string().optional(),
-  signingTimestamp: z.string().optional(),
-  ipAddress: z.string().optional(),
+export const charitiesSchema = z.object({
+  charities: z.array(charitySchema).optional().default([]),
 });
 
 // ============================================
@@ -275,7 +256,7 @@ export const completeWillSchema = z.object({
   step4: disputeResolverSchema,
   step5: witnessDetailsSchema,
   step6: beneficiariesSchema,
-  step7: additionalProvisionsSchema,
+  step7: charitiesSchema,
 });
 
 // ============================================
@@ -288,7 +269,7 @@ export type ExecutorDetails = z.infer<typeof executorDetailsSchema>;
 export type DisputeResolver = z.infer<typeof disputeResolverSchema>;
 export type WitnessDetails = z.infer<typeof witnessDetailsSchema>;
 export type Beneficiaries = z.infer<typeof beneficiariesSchema>;
-export type AdditionalProvisions = z.infer<typeof additionalProvisionsSchema>;
+export type Charities = z.infer<typeof charitiesSchema>;
 export type CompleteWillFormData = z.infer<typeof completeWillSchema>;
 
 // Legacy exports for backward compatibility
