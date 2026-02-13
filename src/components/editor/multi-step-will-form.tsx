@@ -12,7 +12,7 @@ import { completeWillSchema, type CompleteWillFormData } from "@/lib/validations
 import { saveWillAction } from "@/server/actions/will";
 import { Step2FamilyDetails } from "./steps/step2-family-details";
 import { Step1TestatorDetails } from "./steps/step1-testator-details";
-import { Step3AssetDetails } from "./steps/step3-asset-details";
+import { Step3WillExecutors } from "./steps/step3-will-executors";
 import { Step4Beneficiaries } from "./steps/step4-beneficiaries";
 import { Step5Guardianship } from "./steps/step5-guardianship";
 import { Step6Executor } from "./steps/step6-executor";
@@ -71,22 +71,36 @@ export function MultiStepWillForm({ initialData, willId }: MultiStepWillFormProp
       signingPlace: "",
     },
     step3: {
-      hasImmovableProperty: false,
-      immovableProperties: [],
-      hasBankAccounts: false,
-      bankAccounts: [],
-      hasInvestments: false,
-      investments: [],
-      hasVehicles: false,
-      vehicles: [],
-      hasJewelryValuables: false,
-      jewelryValuables: undefined,
-      hasBusinessInterests: false,
-      businessInterests: [],
-      hasDigitalAssets: false,
-      digitalAssets: undefined,
-      hasDebts: false,
-      debts: [],
+      useProfessionalExecutor: false,
+      executor: "",
+      executorRelationship: "",
+      executorFatherName: "",
+      executorDateOfBirth: "",
+      executorAadhaar: "",
+      executorPan: "",
+      executorCountryCode: "+91",
+      executorPhoneNumber: "",
+      executorEmail: "",
+      executorAddress: "",
+      executorCity: "",
+      executorState: "",
+      executorCountry: "",
+      executorPinCode: "",
+      backupExecutor: "",
+      backupExecutorRelationship: "",
+      backupExecutorFatherName: "",
+      backupExecutorDateOfBirth: "",
+      backupExecutorAadhaar: "",
+      backupExecutorPan: "",
+      backupExecutorCountryCode: "+91",
+      backupExecutorPhoneNumber: "",
+      backupExecutorEmail: "",
+      backupExecutorAddress: "",
+      backupExecutorCity: "",
+      backupExecutorState: "",
+      backupExecutorCountry: "",
+      backupExecutorPinCode: "",
+      banyyanFallbackExecutorOptIn: true,
     },
     step4: {
       beneficiaries: [],
@@ -294,7 +308,18 @@ export function MultiStepWillForm({ initialData, willId }: MultiStepWillFormProp
       const stepErrors = methods.formState.errors[stepKey];
       if (stepErrors && typeof stepErrors === 'object') {
         console.error(`\n=== DETAILED ERRORS FOR ${stepKey.toUpperCase()} ===`);
+        
+        // Find the first error field to scroll to
+        let firstErrorFieldId: string | null = null;
+        
         Object.entries(stepErrors).forEach(([fieldName, fieldError]) => {
+          if (!firstErrorFieldId) {
+             // For step 3, the ID usually matches the field name (e.g. "executor")
+             // But the error structure is errors.step3.executor
+             // So fieldName is "executor"
+             firstErrorFieldId = fieldName;
+          }
+
           if (fieldError && typeof fieldError === 'object') {
             // If it's a nested object (like alternateGuardian), log each sub-field
             console.error(`\n${fieldName}:`);
@@ -310,6 +335,26 @@ export function MultiStepWillForm({ initialData, willId }: MultiStepWillFormProp
           }
         });
         console.error(`=== END DETAILED ERRORS ===\n`);
+        
+        // Scroll to the first error
+        if (firstErrorFieldId) {
+          // IDs in Step 3 match the field names inside the step object (e.g. "executor", "backupExecutor")
+          // We try to find by ID
+          const element = document.getElementById(firstErrorFieldId);
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            element.focus();
+          } else {
+             // Fallback: try to find by name attribute if ID doesn't match
+             // The name attribute would be "step3.executor"
+             const nameCoded = `${stepKey}.${firstErrorFieldId}`;
+             const elementByName = document.getElementsByName(nameCoded)[0];
+             if (elementByName) {
+                elementByName.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                (elementByName as HTMLElement).focus();
+             }
+          }
+        }
       }
       
       // For step 3, log detailed array errors
@@ -369,7 +414,7 @@ export function MultiStepWillForm({ initialData, willId }: MultiStepWillFormProp
       case 2:
         return <Step2FamilyDetails />;
       case 3:
-        return <Step3AssetDetails />;
+        return <Step3WillExecutors />;
       case 4:
         return <Step4Beneficiaries />;
       case 5:

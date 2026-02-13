@@ -108,166 +108,48 @@ export const willDetailsSchema = z.object({
 });
 
 // ============================================
-// STEP 3: ASSET DETAILS SCHEMA
+// STEP 3: EXECUTOR DETAILS SCHEMA
 // ============================================
 
-const immovablePropertySchema = z.object({
-  propertyType: z.enum(["Residential House", "Apartment/Flat", "Commercial Property", "Agricultural Land", "Plot/Land", "Ancestral Property"]),
-  description: z.string().min(10, "Property description is required"),
-  address: z.object({
-    addressLine1: z.string().min(5, "Address is required"),
-    city: z.string().min(2, "City is required"),
-    state: z.string().min(2, "State is required"),
-    pinCode: pinCodeSchema,
-  }),
-  surveyPlotNumber: z.string().optional(),
-  areaSize: z.number().positive("Area size must be positive"),
-  areaUnit: z.enum(["Sq. Ft.", "Sq. Meters", "Acres", "Hectares", "Guntas"]),
-  ownershipType: z.enum(["Sole Owner", "Joint Owner", "Co-owner"]),
-  coOwnerNames: z.string().optional(),
-  sharePercentage: z.number().min(0).max(100).optional(),
-  propertyDocumentNumber: z.string().optional(),
-  registrationDate: z.string().optional(),
-  subRegistrarOffice: z.string().optional(),
-  approximateValue: z.number().optional(),
-  hasLoan: z.boolean(),
-  loanDetails: z.object({
-    bankName: z.string(),
-    loanAccountNumber: z.string().optional(),
-    outstandingAmount: z.number().nullish(),
-  }).optional(),
-}).refine((data) => {
-  // If hasLoan is false, loanDetails should not be validated
-  if (!data.hasLoan) {
-    return true;
-  }
-  // If hasLoan is true, loanDetails is optional but if present, must be valid
-  return true;
-}, {
-  message: "Loan details validation",
+export const executorDetailsSchema = z.object({
+  useProfessionalExecutor: z.boolean().default(false),
+  
+  // Primary Executor
+  executor: z.string().min(2, "Primary executor name is required"),
+  executorRelationship: z.string().optional(),
+  executorFatherName: z.string().optional(),
+  executorDateOfBirth: z.string().optional(),
+  executorAadhaar: aadhaarNumberSchema,
+  executorPan: panNumberSchema,
+  executorCountryCode: z.string().default("+91"),
+  executorPhoneNumber: mobileNumberSchema,
+  executorEmail: emailSchema.or(z.literal("")).optional(),
+  executorAddress: z.string().optional(),
+  executorCity: z.string().optional(),
+  executorState: z.string().optional(),
+  executorCountry: z.string().optional(),
+  executorPinCode: z.string().optional(),
+  
+  // Backup Executor
+  backupExecutor: z.string().min(2, "Backup executor name is required"),
+  backupExecutorRelationship: z.string().optional(),
+  backupExecutorFatherName: z.string().optional(),
+  backupExecutorDateOfBirth: z.string().optional(),
+  backupExecutorAadhaar: aadhaarNumberSchema,
+  backupExecutorPan: panNumberSchema,
+  backupExecutorCountryCode: z.string().default("+91"),
+  backupExecutorPhoneNumber: mobileNumberSchema,
+  backupExecutorEmail: emailSchema.or(z.literal("")).optional(),
+  backupExecutorAddress: z.string().optional(),
+  backupExecutorCity: z.string().optional(),
+  backupExecutorState: z.string().optional(),
+  backupExecutorCountry: z.string().optional(),
+  backupExecutorPinCode: z.string().optional(),
+  
+  // Banyyan fallback
+  banyyanFallbackExecutorOptIn: z.boolean().default(true),
 });
 
-const bankAccountSchema = z.object({
-  bankName: z.string().min(2, "Bank name is required"),
-  branchName: z.string().optional(),
-  accountType: z.enum(["Savings", "Current", "Fixed Deposit", "Recurring Deposit"]),
-  accountNumber: z.string().min(5, "Account number is required"),
-  accountHolderType: z.enum(["Single", "Joint"]),
-  jointHolderNames: z.string().optional(),
-  jointHolderRelationship: z.string().optional(),
-  approximateBalance: z.number().optional(),
-  nomineeRegistered: z.boolean().optional(),
-});
-
-const investmentSchema = z.object({
-  investmentType: z.enum(["Mutual Funds", "Stocks/Shares", "Bonds", "PPF", "NSC", "Post Office Schemes", "Insurance Policies", "EPF/PF", "Gratuity", "Other"]),
-  description: z.string().min(5, "Investment description is required"),
-  folioAccountPolicyNumber: z.string().optional(),
-  institutionCompanyName: z.string().min(2, "Institution/Company name is required"),
-  approximateValue: z.number().optional(),
-  nomineeRegistered: z.boolean().optional(),
-});
-
-const vehicleSchema = z.object({
-  vehicleType: z.enum(["Car", "Two-Wheeler", "Commercial Vehicle", "Other"]),
-  makeModel: z.string().min(2, "Make and model is required"),
-  registrationNumber: z.string().min(5, "Registration number is required"),
-  yearOfPurchase: z.number().optional(),
-  approximateValue: z.number().optional(),
-});
-
-const jewelryValuablesSchema = z.object({
-  description: z.string().min(5, "Description is required"),
-  approximateValue: z.number().optional(),
-  locationStorage: z.string().optional(),
-});
-
-const businessInterestSchema = z.object({
-  businessName: z.string().min(2, "Business name is required"),
-  businessType: z.enum(["Sole Proprietorship", "Partnership", "Private Limited", "LLP", "Other"]),
-  ownershipPercentage: z.number().min(0).max(100),
-  registrationNumber: z.string().optional(),
-  businessAddress: z.string().optional(),
-});
-
-const digitalAssetSchema = z.object({
-  assetTypes: z.array(z.string()),
-  accessInstructions: z.string().optional(),
-});
-
-const debtSchema = z.object({
-  debtType: z.enum(["Personal Loan", "Home Loan", "Vehicle Loan", "Credit Card", "Business Loan", "Other"]),
-  creditorName: z.string().min(2, "Creditor name is required"),
-  outstandingAmount: z.number().positive("Outstanding amount must be positive"),
-  accountLoanNumber: z.string().optional(),
-});
-
-export const assetDetailsSchema = z.object({
-  hasImmovableProperty: z.boolean().default(false),
-  immovableProperties: z.array(immovablePropertySchema).default([]),
-  hasBankAccounts: z.boolean().default(false),
-  bankAccounts: z.array(bankAccountSchema).default([]),
-  hasInvestments: z.boolean().default(false),
-  investments: z.array(investmentSchema).default([]),
-  hasVehicles: z.boolean().default(false),
-  vehicles: z.array(vehicleSchema).default([]),
-  hasJewelryValuables: z.boolean().default(false),
-  jewelryValuables: jewelryValuablesSchema.optional(),
-  hasBusinessInterests: z.boolean().default(false),
-  businessInterests: z.array(businessInterestSchema).default([]),
-  hasDigitalAssets: z.boolean().default(false),
-  digitalAssets: digitalAssetSchema.optional(),
-  hasDebts: z.boolean().default(false),
-  debts: z.array(debtSchema).default([]),
-}).refine((data) => {
-  if (data.hasImmovableProperty && data.immovableProperties.length === 0) {
-    return false;
-  }
-  return true;
-}, {
-  message: "Please add at least one property or uncheck 'Do you have immovable property'",
-  path: ["immovableProperties"],
-}).refine((data) => {
-  if (data.hasBankAccounts && data.bankAccounts.length === 0) {
-    return false;
-  }
-  return true;
-}, {
-  message: "Please add at least one bank account or uncheck 'Do you have bank accounts'",
-  path: ["bankAccounts"],
-}).refine((data) => {
-  if (data.hasInvestments && data.investments.length === 0) {
-    return false;
-  }
-  return true;
-}, {
-  message: "Please add at least one investment or uncheck 'Do you have investments'",
-  path: ["investments"],
-}).refine((data) => {
-  if (data.hasVehicles && data.vehicles.length === 0) {
-    return false;
-  }
-  return true;
-}, {
-  message: "Please add at least one vehicle or uncheck 'Do you have vehicles'",
-  path: ["vehicles"],
-}).refine((data) => {
-  if (data.hasBusinessInterests && data.businessInterests.length === 0) {
-    return false;
-  }
-  return true;
-}, {
-  message: "Please add at least one business interest or uncheck 'Do you have business interests'",
-  path: ["businessInterests"],
-}).refine((data) => {
-  if (data.hasDebts && data.debts.length === 0) {
-    return false;
-  }
-  return true;
-}, {
-  message: "Please add at least one debt or uncheck 'Do you have debts'",
-  path: ["debts"],
-});
 
 // ============================================
 // STEP 4: BENEFICIARIES & DISTRIBUTION SCHEMA
@@ -365,7 +247,7 @@ export const guardianshipSchema = z.object({
 // STEP 6: EXECUTOR DETAILS SCHEMA
 // ============================================
 
-const executorDetailsSchema = z.object({
+const executorPersonSchema = z.object({
   fullName: z.string().min(2, "Executor name is required"),
   relationship: z.string().min(2, "Relationship is required"),
   dateOfBirth: z.string().min(1, "Date of birth is required"),
@@ -384,9 +266,9 @@ const executorDetailsSchema = z.object({
 });
 
 export const executorInfoSchema = z.object({
-  primaryExecutor: executorDetailsSchema,
+  primaryExecutor: executorPersonSchema,
   hasAlternateExecutor: z.boolean(),
-  alternateExecutor: executorDetailsSchema.optional(),
+  alternateExecutor: executorPersonSchema.optional(),
   powers: z.object({
     canSellProperty: z.boolean(),
     canManageInvestments: z.boolean(),
@@ -442,7 +324,7 @@ export const additionalProvisionsSchema = z.object({
 export const completeWillSchema = z.object({
   step1: testatorDetailsSchema,
   step2: willDetailsSchema,
-  step3: assetDetailsSchema,
+  step3: executorDetailsSchema,
   step4: beneficiaryDistributionSchema,
   step5: guardianshipSchema,
   step6: executorInfoSchema,
@@ -455,7 +337,7 @@ export const completeWillSchema = z.object({
 
 export type TestatorDetails = z.infer<typeof testatorDetailsSchema>;
 export type WillDetails = z.infer<typeof willDetailsSchema>;
-export type AssetDetails = z.infer<typeof assetDetailsSchema>;
+export type ExecutorDetails = z.infer<typeof executorDetailsSchema>;
 export type BeneficiaryDistribution = z.infer<typeof beneficiaryDistributionSchema>;
 export type Guardianship = z.infer<typeof guardianshipSchema>;
 export type ExecutorInfo = z.infer<typeof executorInfoSchema>;

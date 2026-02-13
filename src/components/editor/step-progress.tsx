@@ -17,7 +17,7 @@ interface StepProgressProps {
 const STEPS: Step[] = [
   { number: 1, title: "Testator Details", description: "Personal information" },
   { number: 2, title: "Family Details", description: "Spouse, children, parents" },
-  { number: 3, title: "Asset Details", description: "Property, accounts, investments" },
+  { number: 3, title: "Will Executors", description: "Executor details" },
   { number: 4, title: "Beneficiaries", description: "Distribution of assets" },
   { number: 5, title: "Guardianship", description: "For minor children" },
   { number: 6, title: "Executor", description: "Will executor details" },
