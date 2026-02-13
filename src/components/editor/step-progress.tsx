@@ -19,7 +19,7 @@ const STEPS: Step[] = [
   { number: 2, title: "Will Declaration", description: "Declaration statements" },
   { number: 3, title: "Will Executors", description: "Executor details" },
   { number: 4, title: "Dispute Resolver", description: "Optional dispute resolution" },
-  { number: 5, title: "Guardianship", description: "For minor children" },
+  { number: 5, title: "Witness Details", description: "Will signing witnesses" },
   { number: 6, title: "Executor", description: "Will executor details" },
   { number: 7, title: "Final Provisions", description: "Declarations & signatures" },
 ];

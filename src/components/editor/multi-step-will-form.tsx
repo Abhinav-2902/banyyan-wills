@@ -14,7 +14,7 @@ import { Step2WillDeclaration } from "./steps/step2-will-declaration";
 import { Step1TestatorDetails } from "./steps/step1-testator-details";
 import { Step3WillExecutors } from "./steps/step3-will-executors";
 import { Step4DisputeResolver } from "./steps/step4-dispute-resolver";
-import { Step5Guardianship } from "./steps/step5-guardianship";
+import { Step5WitnessDetails } from "./steps/step5-witness-details";
 import { Step6Executor } from "./steps/step6-executor";
 import { Step7AdditionalProvisions } from "./steps/step7-additional-provisions";
 import { DownloadPDFButton } from "./download-pdf-button";
@@ -119,15 +119,32 @@ export function MultiStepWillForm({ initialData, willId }: MultiStepWillFormProp
       disputeResolverZipCode: "",
     },
     step5: {
-      hasMinorChildren: false,
-      primaryGuardian: undefined,
-      alternateGuardian: undefined,
-      separatePropertyGuardian: false,
-      propertyGuardian: undefined,
-      specialInstructions: {
-         childCare: "",
-         educationPreferences: "",
-         religiousCulturalUpbringing: "",
+      witnessesKnown: false,
+      witness1: {
+        name: "",
+        aadhaar: "",
+        phoneCountryCode: "+91",
+        phoneNumber: "",
+        email: "",
+        father: "",
+        address: "",
+        city: "",
+        state: "",
+        zipCode: "",
+        country: "",
+      },
+      witness2: {
+        name: "",
+        aadhaar: "",
+        phoneCountryCode: "+91",
+        phoneNumber: "",
+        email: "",
+        father: "",
+        address: "",
+        city: "",
+        state: "",
+        zipCode: "",
+        country: "",
       },
     },
     step6: {
@@ -214,11 +231,6 @@ export function MultiStepWillForm({ initialData, willId }: MultiStepWillFormProp
       step5: {
         ...defaultFormValues.step5,
         ...(initialData?.step5 || {}),
-        // Ensure specialInstructions is merged correctly
-        specialInstructions: {
-          ...defaultFormValues.step5?.specialInstructions,
-          ...(initialData?.step5?.specialInstructions || {}),
-        },
       },
       step6: {
         ...defaultFormValues.step6,
@@ -429,7 +441,7 @@ export function MultiStepWillForm({ initialData, willId }: MultiStepWillFormProp
       case 4:
         return <Step4DisputeResolver />;
       case 5:
-        return <Step5Guardianship />;
+        return <Step5WitnessDetails />;
       case 6:
         return <Step6Executor />;
       case 7:

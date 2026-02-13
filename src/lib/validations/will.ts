@@ -174,40 +174,27 @@ export const disputeResolverSchema = z.object({
 });
 
 // ============================================
-// STEP 5: GUARDIANSHIP SCHEMA
+// STEP 5: WITNESS DETAILS SCHEMA
 // ============================================
 
-const guardianDetailsSchema = z.object({
-  fullName: z.string().min(2, "Guardian name is required"),
-  relationship: z.string().min(2, "Relationship is required"),
-  dateOfBirth: z.string().min(1, "Date of birth is required"),
-  address: z.string().min(5, "Address is required"),
-  mobileNumber: mobileNumberSchema,
-  emailAddress: emailSchema.or(z.literal("")).optional(),
-  occupation: z.string().optional(),
-  consentObtained: z.boolean().refine(val => val === true, "Guardian consent is required"),
+const witnessSchema = z.object({
+  name: z.string().optional(),
+  aadhaar: aadhaarNumberSchema,
+  phoneCountryCode: z.string().default("+91"),
+  phoneNumber: z.string().optional(),
+  email: z.string().email("Invalid email address").optional().or(z.literal("")),
+  father: z.string().optional(),
+  address: z.string().optional(),
+  city: z.string().optional(),
+  state: z.string().optional(),
+  zipCode: z.string().optional(),
+  country: z.string().optional(),
 });
 
-export const guardianshipSchema = z.object({
-  hasMinorChildren: z.boolean(),
-  primaryGuardian: guardianDetailsSchema.optional(),
-  alternateGuardian: guardianDetailsSchema.optional(),
-  separatePropertyGuardian: z.boolean().optional(),
-  propertyGuardian: guardianDetailsSchema.optional(),
-  specialInstructions: z.object({
-    childCare: z.string().optional(),
-    educationPreferences: z.string().optional(),
-    religiousCulturalUpbringing: z.string().optional(),
-  }).optional(),
-}).refine((data) => {
-  // If has minor children, primary guardian is required
-  if (data.hasMinorChildren && !data.primaryGuardian) {
-    return false;
-  }
-  return true;
-}, {
-  message: "Primary guardian is required when there are minor children",
-  path: ["primaryGuardian"],
+export const witnessDetailsSchema = z.object({
+  witnessesKnown: z.boolean().default(false),
+  witness1: witnessSchema.optional(),
+  witness2: witnessSchema.optional(),
 });
 
 // ============================================
@@ -250,7 +237,7 @@ export const executorInfoSchema = z.object({
 // STEP 7: ADDITIONAL PROVISIONS SCHEMA
 // ============================================
 
-const witnessDetailsSchema = z.object({
+const step7WitnessSchema = z.object({
   fullName: z.string().min(2, "Witness name is required"),
   address: z.string().min(5, "Address is required"),
   occupation: z.string().optional(),
@@ -270,8 +257,8 @@ export const additionalProvisionsSchema = z.object({
   businessContinuationInstructions: z.string().optional(),
   petCareInstructions: z.string().optional(),
   charitableDonations: z.string().optional(),
-  witness1: witnessDetailsSchema,
-  witness2: witnessDetailsSchema,
+  witness1: step7WitnessSchema,
+  witness2: step7WitnessSchema,
   placeOfExecution: z.string().min(2, "Place of execution is required"),
   dateOfExecution: z.string().min(1, "Date of execution is required"),
   soundMindDeclaration: z.boolean().refine(val => val === true, "Sound mind declaration is required"),
@@ -293,7 +280,7 @@ export const completeWillSchema = z.object({
   step2: willDetailsSchema,
   step3: executorDetailsSchema,
   step4: disputeResolverSchema,
-  step5: guardianshipSchema,
+  step5: witnessDetailsSchema,
   step6: executorInfoSchema,
   step7: additionalProvisionsSchema,
 });
@@ -306,7 +293,7 @@ export type TestatorDetails = z.infer<typeof testatorDetailsSchema>;
 export type WillDetails = z.infer<typeof willDetailsSchema>;
 export type ExecutorDetails = z.infer<typeof executorDetailsSchema>;
 export type DisputeResolver = z.infer<typeof disputeResolverSchema>;
-export type Guardianship = z.infer<typeof guardianshipSchema>;
+export type WitnessDetails = z.infer<typeof witnessDetailsSchema>;
 export type ExecutorInfo = z.infer<typeof executorInfoSchema>;
 export type AdditionalProvisions = z.infer<typeof additionalProvisionsSchema>;
 export type CompleteWillFormData = z.infer<typeof completeWillSchema>;
