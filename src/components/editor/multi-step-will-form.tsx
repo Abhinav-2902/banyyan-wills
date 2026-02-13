@@ -10,10 +10,10 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { completeWillSchema, type CompleteWillFormData } from "@/lib/validations/will";
 import { saveWillAction } from "@/server/actions/will";
-import { Step2FamilyDetails } from "./steps/step2-family-details";
+import { Step2WillDeclaration } from "./steps/step2-will-declaration";
 import { Step1TestatorDetails } from "./steps/step1-testator-details";
 import { Step3WillExecutors } from "./steps/step3-will-executors";
-import { Step4Beneficiaries } from "./steps/step4-beneficiaries";
+import { Step4DisputeResolver } from "./steps/step4-dispute-resolver";
 import { Step5Guardianship } from "./steps/step5-guardianship";
 import { Step6Executor } from "./steps/step6-executor";
 import { Step7AdditionalProvisions } from "./steps/step7-additional-provisions";
@@ -103,9 +103,20 @@ export function MultiStepWillForm({ initialData, willId }: MultiStepWillFormProp
       banyyanFallbackExecutorOptIn: true,
     },
     step4: {
-      beneficiaries: [],
-      distributionType: "Equal distribution",
-      totalPercentage: 0,
+      disputeResolver: "",
+      disputeResolverRelation: "",
+      disputeResolverFather: "",
+      disputeResolverNationality: "",
+      disputeResolverAadhaar: "",
+      disputeResolverPan: "",
+      disputeResolverPhoneCountryCode: "+91",
+      disputeResolverPhoneNumber: "",
+      disputeResolverEmail: "",
+      disputeResolverAddress: "",
+      disputeResolverCity: "",
+      disputeResolverState: "",
+      disputeResolverCountry: "",
+      disputeResolverZipCode: "",
     },
     step5: {
       hasMinorChildren: false,
@@ -412,11 +423,11 @@ export function MultiStepWillForm({ initialData, willId }: MultiStepWillFormProp
       case 1:
         return <Step1TestatorDetails />;
       case 2:
-        return <Step2FamilyDetails />;
+        return <Step2WillDeclaration />;
       case 3:
         return <Step3WillExecutors />;
       case 4:
-        return <Step4Beneficiaries />;
+        return <Step4DisputeResolver />;
       case 5:
         return <Step5Guardianship />;
       case 6:

@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Calendar, FileText } from "lucide-react";
 
-export function Step2FamilyDetails() {
+export function Step2WillDeclaration() {
   const {
     register,
     control,
@@ -25,7 +25,7 @@ export function Step2FamilyDetails() {
       {/* Declaration Section */}
       <section className="bg-white p-8 rounded-lg shadow-md border border-[#F8D4B8]">
         <div className="flex items-center gap-3 mb-6">
-          <div className="p-2 bg-gradient-to-r from-[#8B7BB8] to-[#432371] rounded-lg">
+          <div className="p-2 bg-linear-to-r from-[#8B7BB8] to-[#432371] rounded-lg">
             <FileText className="h-6 w-6 text-white" />
           </div>
           <h2 className="text-2xl font-semibold text-[#5E4B8C]">Declaration</h2>
@@ -91,7 +91,7 @@ export function Step2FamilyDetails() {
       {/* Signing Details Section */}
       <section className="bg-white p-8 rounded-lg shadow-md border border-[#F8D4B8]">
         <div className="flex items-center gap-3 mb-6">
-          <div className="p-2 bg-gradient-to-r from-[#8B7BB8] to-[#432371] rounded-lg">
+          <div className="p-2 bg-linear-to-r from-[#8B7BB8] to-[#432371] rounded-lg">
             <Calendar className="h-6 w-6 text-white" />
           </div>
           <h2 className="text-2xl font-semibold text-[#5E4B8C]">Signing Details</h2>

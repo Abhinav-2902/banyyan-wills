@@ -152,58 +152,25 @@ export const executorDetailsSchema = z.object({
 
 
 // ============================================
-// STEP 4: BENEFICIARIES & DISTRIBUTION SCHEMA
+// STEP 4: DISPUTE RESOLVER SCHEMA
 // ============================================
 
-const beneficiarySchema = z.object({
-  fullName: z.string().min(2, "Beneficiary name is required"),
-  relationship: z.enum(["Spouse", "Son", "Daughter", "Father", "Mother", "Brother", "Sister", "Grandson", "Granddaughter", "Friend", "Charity/Trust", "Other"]),
-  dateOfBirth: z.string().optional(),
-  isMinor: z.boolean().optional(),
-  gender: z.enum(["Male", "Female", "Other"]),
-  panNumber: panNumberSchema,
-  aadhaarNumber: aadhaarNumberSchema,
-  address: z.object({
-    addressLine1: z.string().min(5, "Address is required"),
-    city: z.string().min(2, "City is required"),
-    state: z.string().min(2, "State is required"),
-    pinCode: pinCodeSchema,
-  }),
-  mobileNumber: mobileNumberSchema.optional(),
-  emailAddress: emailSchema.optional(),
-  sharePercentage: z.number().min(0, "Must be positive").max(100, "Cannot exceed 100%"),
-  specificAssets: z.string().optional(),
-});
-
-const conditionalBequestSchema = z.object({
-  beneficiaryName: z.string().min(2, "Beneficiary name is required"),
-  conditionDescription: z.string().min(10, "Condition description is required"),
-  alternativeBeneficiary: z.string().optional(),
-});
-
-export const beneficiaryDistributionSchema = z.object({
-  beneficiaries: z.array(beneficiarySchema).min(1, "At least one beneficiary is required"),
-  distributionType: z.enum(["Equal distribution", "Percentage-based", "Specific asset allocation", "Combination"]),
-  totalPercentage: z.number(),
-  conditionalBequests: z.array(conditionalBequestSchema).optional(),
-  residuaryBeneficiary: z.object({
-    name: z.string(),
-    relationship: z.string(),
-  }).optional(),
-}).refine((data) => {
-  const total = data.beneficiaries.reduce((sum, b) => {
-    // Handle potential NaN or undefined values
-    const share = typeof b.sharePercentage === 'number' && !isNaN(b.sharePercentage) 
-      ? b.sharePercentage 
-      : 0;
-    return sum + share;
-  }, 0);
-  
-  // Allow small floating point error (e.g. 99.99 or 100.01)
-  return Math.abs(total - 100) < 0.1;
-}, {
-  message: "Total beneficiary allocation must equal exactly 100%",
-  path: ["totalPercentage"],
+export const disputeResolverSchema = z.object({
+  // All fields are optional but recommended
+  disputeResolver: z.string().optional(),
+  disputeResolverRelation: z.string().optional(),
+  disputeResolverFather: z.string().optional(),
+  disputeResolverNationality: z.string().optional(),
+  disputeResolverAadhaar: aadhaarNumberSchema,
+  disputeResolverPan: panNumberSchema,
+  disputeResolverPhoneCountryCode: z.string().default("+91"),
+  disputeResolverPhoneNumber: z.string().optional(),
+  disputeResolverEmail: z.string().email("Invalid email address").optional().or(z.literal("")),
+  disputeResolverAddress: z.string().optional(),
+  disputeResolverCity: z.string().optional(),
+  disputeResolverState: z.string().optional(),
+  disputeResolverCountry: z.string().optional(),
+  disputeResolverZipCode: z.string().optional(),
 });
 
 // ============================================
@@ -325,7 +292,7 @@ export const completeWillSchema = z.object({
   step1: testatorDetailsSchema,
   step2: willDetailsSchema,
   step3: executorDetailsSchema,
-  step4: beneficiaryDistributionSchema,
+  step4: disputeResolverSchema,
   step5: guardianshipSchema,
   step6: executorInfoSchema,
   step7: additionalProvisionsSchema,
@@ -338,7 +305,7 @@ export const completeWillSchema = z.object({
 export type TestatorDetails = z.infer<typeof testatorDetailsSchema>;
 export type WillDetails = z.infer<typeof willDetailsSchema>;
 export type ExecutorDetails = z.infer<typeof executorDetailsSchema>;
-export type BeneficiaryDistribution = z.infer<typeof beneficiaryDistributionSchema>;
+export type DisputeResolver = z.infer<typeof disputeResolverSchema>;
 export type Guardianship = z.infer<typeof guardianshipSchema>;
 export type ExecutorInfo = z.infer<typeof executorInfoSchema>;
 export type AdditionalProvisions = z.infer<typeof additionalProvisionsSchema>;
