@@ -44,6 +44,25 @@ export const testatorDetailsSchema = z.object({
   occupation: z.string().optional(),
   panNumber: panNumberSchema,
   aadhaarNumber: aadhaarNumberSchema,
+  nationality: z.string().optional(),
+
+  // Parents Information
+  fatherName: z.string().min(2, "Father's name is required"),
+  fatherDateOfBirth: z.string().optional(),
+  fatherAadhaar: aadhaarNumberSchema,
+  fatherPan: panNumberSchema,
+  motherName: z.string().min(2, "Mother's name is required"),
+  motherDateOfBirth: z.string().optional(),
+  motherAadhaar: aadhaarNumberSchema,
+  motherPan: panNumberSchema,
+
+  // Spouse Information (conditional)
+  spouseDetails: z.object({
+    fullName: z.string().min(2, "Spouse name is required"),
+    dateOfBirth: z.string().min(1, "Date of birth is required"),
+    aadhaarNumber: aadhaarNumberSchema,
+    panNumber: panNumberSchema,
+  }).optional(),
 
   // Residential Address
   residentialAddress: z.object({
@@ -63,6 +82,15 @@ export const testatorDetailsSchema = z.object({
     emailAddress: emailSchema,
     alternateEmailAddress: emailSchema.or(z.literal("")).optional(),
   }),
+}).refine((data) => {
+  // If married, spouse details are required
+  if (data.maritalStatus === "Married" && !data.spouseDetails) {
+    return false;
+  }
+  return true;
+}, {
+  message: "Spouse details are required when marital status is Married",
+  path: ["spouseDetails"],
 });
 
 // ============================================

@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
 import { useFormContext, useWatch, Controller } from "react-hook-form";
 import { CompleteWillFormData } from "@/lib/validations/will";
 import { Input } from "@/components/ui/input";
@@ -158,29 +157,24 @@ export function Step6Executor() {
 function ExecutorForm({ prefix }: { prefix: "step6.primaryExecutor" | "step6.alternateExecutor" }) {
     const { register, control, formState: { errors }, setValue, watch } = useFormContext<CompleteWillFormData>();
 
-    // Watch the date of birth to auto-calculate age
-    const dob = watch(`${prefix}.dateOfBirth`);
+    // Watch the date of birth to auto-calculate age (used for manual entry handler now)
+    // const dob = watch(`${prefix}.dateOfBirth`); // Unused now
 
-    // Auto-calculate age when DOB changes
-    useEffect(() => {
-        if (dob) {
-            const birthDate = new Date(dob);
-            const today = new Date();
-            let age = today.getFullYear() - birthDate.getFullYear();
-            const monthDiff = today.getMonth() - birthDate.getMonth();
-            
-            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-                age--;
-            }
-            
-            console.log(`[${prefix}] Calculating age from DOB: ${dob}`);
-            console.log(`[${prefix}] Calculated age: ${age}`);
-            setValue(`${prefix}.age`, age, { shouldValidate: true });
-            console.log(`[${prefix}] Age set to: ${age}`);
-        } else {
-            console.log(`[${prefix}] No DOB provided, age not calculated`);
+    // Helper to calculate age
+    const calculateAge = (dateString: string | Date | undefined) => {
+        if (!dateString) return 0;
+        const birthDate = new Date(dateString);
+        const today = new Date();
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+        
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
         }
-    }, [dob, setValue, prefix]);
+        return age;
+    };
+
+    // useEffect for auto-calculation removed in favor of direct onChange handler to prevent race conditions
 
     // Helper to get nested error safely
     const getError = (path: string) => {
@@ -220,8 +214,13 @@ function ExecutorForm({ prefix }: { prefix: "step6.primaryExecutor" | "step6.alt
                         if (selectedPerson) {
                             setValue(`${prefix}.fullName`, selectedPerson.fullName, { shouldValidate: true, shouldDirty: true });
                             setValue(`${prefix}.relationship`, selectedPerson.relationship, { shouldValidate: true, shouldDirty: true });
+                            
                             if (selectedPerson.dateOfBirth) {
                                 setValue(`${prefix}.dateOfBirth`, selectedPerson.dateOfBirth, { shouldValidate: true, shouldDirty: true });
+                                
+                                // Explicitly calculate and set age immediately
+                                const age = calculateAge(selectedPerson.dateOfBirth);
+                                setValue(`${prefix}.age`, age, { shouldValidate: true, shouldDirty: true });
                             }
                         }
                     }}>
@@ -262,7 +261,20 @@ function ExecutorForm({ prefix }: { prefix: "step6.primaryExecutor" | "step6.alt
 
                 <div className="space-y-2">
                     <Label>Date of Birth <span className="text-red-500">*</span></Label>
-                    <Input type="date" {...register(`${prefix}.dateOfBirth`)} />
+                    <Input 
+                        type="date" 
+                        {...(() => {
+                            const { onChange, ...rest } = register(`${prefix}.dateOfBirth`);
+                            return {
+                                ...rest,
+                                onChange: (e) => {
+                                    onChange(e); // Call original react-hook-form handler
+                                    const age = calculateAge(e.target.value);
+                                    setValue(`${prefix}.age`, age, { shouldValidate: true });
+                                }
+                            };
+                        })()}
+                    />
                     {getError(`${prefix}.dateOfBirth`) && (
                         <p className="text-sm text-destructive">{getError(`${prefix}.dateOfBirth`).message}</p>
                     )}

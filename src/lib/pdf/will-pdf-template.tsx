@@ -8,16 +8,16 @@ const styles = StyleSheet.create({
     padding: 30, // Reduced padding for better space utilization
     paddingTop: 40,
     paddingBottom: 40,
-    fontSize: 10, // Slightly smaller font for professional density
+    fontSize: 12, // Increased font size
     fontFamily: 'Times-Roman',
-    lineHeight: 1.5, // Tighter line height
+    lineHeight: 1.5,
   },
   header: {
     marginBottom: 15,
     textAlign: 'center',
   },
   title: {
-    fontSize: 14, // Prominent title
+    fontSize: 16, // Prominent title
     fontFamily: 'Times-Bold',
     textDecoration: 'underline',
     textTransform: 'uppercase',
@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
     marginTop: 0,
   },
   subtitle: {
-    fontSize: 10,
+    fontSize: 12,
     fontFamily: 'Times-Italic',
     marginTop: 2,
   },
@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
   },
   sectionLabel: {
     fontFamily: 'Times-Bold',
-    fontSize: 11,
+    fontSize: 13,
     marginBottom: 3,
     textDecoration: 'underline',
     backgroundColor: '#f8f9fa', // Subtle background for headers
@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
   paragraph: {
     textAlign: 'justify',
     marginBottom: 5, // Tighter paragraph spacing
-    fontSize: 10,
+    fontSize: 12,
   },
   listItem: {
     marginBottom: 3,
@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
     paddingTop: 5,
   },
   signatureText: {
-    fontSize: 10,
+    fontSize: 12,
     marginTop: 2,
   },
   footer: {
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
     zIndex: -1,
   },
   sectionHeader: {
-    fontSize: 14,
+    fontSize: 16,
     fontFamily: 'Times-Bold',
     marginBottom: 10,
     marginTop: 10, // Add space before header
@@ -243,41 +243,41 @@ export const WillPDFDocument: React.FC<WillPDFTemplateProps> = ({ data }) => {
         <Text style={styles.title}>Last Will and Testament</Text>
         <Text style={[styles.title, { marginBottom: 20 }]}>Will of Mr {step1.fullName}</Text>
 
-        {/* Section A: Personal Details */}
+        {/* Section A: Personal and Family Details */}
         <View style={styles.section} wrap={false}>
-          <Text style={styles.sectionHeader}>Section A: Personal Details</Text>
+          <Text style={styles.sectionHeader}>Section A: Personal and Family Details</Text>
           <Text style={styles.paragraph}>
-            I, <Text style={styles.highlight}>{step1.fullName}</Text>, son/daughter of <Text style={styles.highlight}>{step2.father.name}</Text> and <Text style={styles.highlight}>{step2.mother.name}</Text>, a resident of <Text style={styles.highlight}>{step1.residentialAddress.addressLine1}
+            I, <Text style={styles.highlight}>{step1.fullName}</Text>, son/daughter of <Text style={styles.highlight}>{step2.father.status === 'Deceased' ? 'Late ' : 'Mr. '}{step2.father.name}</Text> and <Text style={styles.highlight}>{step2.mother.status === 'Deceased' ? 'Late ' : 'Mrs. '}{step2.mother.name}</Text>, a resident of <Text style={styles.highlight}>{step1.residentialAddress.addressLine1}
               {step1.residentialAddress.addressLine2 && `, ${step1.residentialAddress.addressLine2}`},{' '}
               {step1.residentialAddress.city}, {step1.residentialAddress.state},{' '}
               {step1.residentialAddress.pinCode}, {step1.residentialAddress.country}
             </Text>, contact number{' '}
             <Text style={styles.highlight}>{step1.contactInfo.mobileNumber}</Text>, email{' '}
-            <Text style={styles.highlight}>{step1.contactInfo.emailAddress}</Text>, and my mother&apos;s name being Smt.{' '}
-            <Text style={styles.highlight}>{step2.mother.name}</Text> do hereby make my following Will and Testament which I make and execute at{' '}
+            <Text style={styles.highlight}>{step1.contactInfo.emailAddress}</Text>, do hereby make my following Will and Testament which I make and execute at{' '}
             <Text style={styles.highlight}>{step7.placeOfExecution}</Text> on{' '}
             <Text style={styles.highlight}>{step7.dateOfExecution || new Date().toISOString().split('T')[0]}</Text>.
           </Text>
-        </View>
 
-        {/* Section B: Sound Mind Declaration */}
-        <View style={styles.section} wrap={false}>
-          <Text style={styles.sectionLabel}>B. DECLARATION OF SOUND MIND</Text>
-          <Text style={styles.paragraph}>
-            I the above named declare that I am in good health and possess a sound mind. I am writing this will out of my free volition and without any coercion, persuasion or undue influence whatsoever and out of my own independent decision only.
-          </Text>
-        </View>
 
-        {/* Section C: Family Details */}
-        <View style={styles.section}>
-          <Text style={styles.sectionHeader}>Section C: Family Details</Text>
-          <Text style={styles.paragraph}>
-            My father, Shri. <Text style={styles.highlight}>{step2.father.name}</Text>, is{' '}
-            <Text style={styles.highlight}>{step2.father.status}</Text>
-            {step2.father.dateOfBirth && <>, born on <Text style={styles.highlight}>{step2.father.dateOfBirth}</Text></>}
-            {step2.father.address && <>, residing at <Text style={styles.highlight}>{step2.father.address}</Text></>}.
-          </Text>
-          
+
+          {/* Parents - Additional Details if available */}
+          {step2.father.address && (
+            <Text style={styles.paragraph}>
+              My father, <Text style={styles.highlight}>{step2.father.status === 'Deceased' ? 'Late ' : 'Mr. '}{step2.father.name}</Text>
+              {step2.father.dateOfBirth && <>, born on <Text style={styles.highlight}>{step2.father.dateOfBirth}</Text></>}
+              {step2.father.address && <>, resides at <Text style={styles.highlight}>{step2.father.address}</Text></>}.
+            </Text>
+          )}
+
+           {step2.mother.address && (
+            <Text style={styles.paragraph}>
+              My mother, <Text style={styles.highlight}>{step2.mother.status === 'Deceased' ? 'Late ' : 'Mrs. '}{step2.mother.name}</Text>
+              {step2.mother.dateOfBirth && <>, born on <Text style={styles.highlight}>{step2.mother.dateOfBirth}</Text></>}
+              {step2.mother.address && <>, resides at <Text style={styles.highlight}>{step2.mother.address}</Text></>}.
+            </Text>
+          )}
+
+          {/* Spouse */}
           {step2.isMarried && step2.spouse && (
             <Text style={styles.paragraph}>
               I am married to <Text style={styles.highlight}>{step2.spouse.fullName}</Text>, born on{' '}
@@ -290,6 +290,7 @@ export const WillPDFDocument: React.FC<WillPDFTemplateProps> = ({ data }) => {
             </Text>
           )}
 
+          {/* Children */}
           {step2.hasChildren && step2.children && step2.children.length > 0 && (
             <View>
               <Text style={styles.paragraph}>
@@ -308,6 +309,7 @@ export const WillPDFDocument: React.FC<WillPDFTemplateProps> = ({ data }) => {
             </View>
           )}
 
+          {/* Siblings */}
           {step2.hasSiblings && step2.siblings && step2.siblings.length > 0 && (
             <View>
               <Text style={styles.paragraph}>I have the following siblings:</Text>
@@ -321,11 +323,22 @@ export const WillPDFDocument: React.FC<WillPDFTemplateProps> = ({ data }) => {
               ))}
             </View>
           )}
+
         </View>
 
-        {/* Section D: Executor Details */}
+        {/* Section B: Sound Mind Declaration */}
         <View style={styles.section} wrap={false}>
-          <Text style={styles.sectionHeader}>Section D: Executor Appointment</Text>
+          <Text style={styles.sectionLabel}>B. DECLARATION OF SOUND MIND</Text>
+          <Text style={styles.paragraph}>
+            I the above named declare that I am in good health and possess a sound mind. I am writing this will out of my free volition and without any coercion, persuasion or undue influence whatsoever and out of my own independent decision only.
+          </Text>
+        </View>
+
+
+
+        {/* Section C: Executor Details */}
+        <View style={styles.section} wrap={false}>
+          <Text style={styles.sectionHeader}>Section C: Executor Appointment</Text>
           <Text style={styles.paragraph}>
             I appoint <Text style={styles.highlight}>{step6.primaryExecutor.fullName}</Text>, {step6.primaryExecutor.relationship},{' '}
             born on <Text style={styles.highlight}>{step6.primaryExecutor.dateOfBirth}</Text>, aged{' '}
@@ -367,10 +380,10 @@ export const WillPDFDocument: React.FC<WillPDFTemplateProps> = ({ data }) => {
           )}
         </View>
 
-        {/* Section E: Guardianship (if minor children) */}
+        {/* Section D: Guardianship (if minor children) */}
         {step5.hasMinorChildren && step5.primaryGuardian && (
           <View style={styles.section} wrap={false}>
-            <Text style={styles.sectionHeader}>Section E: Appointment of Guardians</Text>
+            <Text style={styles.sectionHeader}>Section D: Appointment of Guardians</Text>
             <Text style={styles.paragraph}>
               I appoint <Text style={styles.highlight}>{step5.primaryGuardian.fullName}</Text>, {step5.primaryGuardian.relationship},{' '}
               born on <Text style={styles.highlight}>{step5.primaryGuardian.dateOfBirth}</Text>, occupation{' '}
@@ -407,9 +420,9 @@ export const WillPDFDocument: React.FC<WillPDFTemplateProps> = ({ data }) => {
           </View>
         )}
 
-        {/* Section F/G: Immovable Property */}
+        {/* Section E/D: Immovable Property */}
         <View style={styles.section}>
-          <Text style={styles.sectionHeader}>{step5.hasMinorChildren ? 'Section F' : 'Section E'}: Immovable Property</Text>
+          <Text style={styles.sectionHeader}>{step5.hasMinorChildren ? 'Section E' : 'Section D'}: Immovable Property</Text>
           <Text style={styles.paragraph}>
             I bequeath the following immovable properties:
           </Text>
@@ -466,9 +479,9 @@ export const WillPDFDocument: React.FC<WillPDFTemplateProps> = ({ data }) => {
           )}
         </View>
 
-        {/* Section F/G: Movable Assets */}
+        {/* Section F/E: Movable Assets */}
         <View style={styles.section}>
-          <Text style={styles.sectionHeader}>{step5.hasMinorChildren ? 'Section G' : 'Section F'}: Movable Assets</Text>
+          <Text style={styles.sectionHeader}>{step5.hasMinorChildren ? 'Section F' : 'Section E'}: Movable Assets</Text>
           
           {/* Bank Accounts */}
           {step3.hasBankAccounts && step3.bankAccounts && step3.bankAccounts.length > 0 && (
@@ -582,9 +595,9 @@ export const WillPDFDocument: React.FC<WillPDFTemplateProps> = ({ data }) => {
           )}
         </View>
 
-        {/* Section G/H: Beneficiaries and Distribution */}
+        {/* Section G/F: Beneficiaries and Distribution */}
         <View style={styles.section}>
-          <Text style={styles.sectionHeader}>{step5.hasMinorChildren ? 'Section H' : 'Section G'}: Bequest and Distribution</Text>
+          <Text style={styles.sectionHeader}>{step5.hasMinorChildren ? 'Section G' : 'Section F'}: Bequest and Distribution</Text>
           <Text style={styles.paragraph}>
             I bequeath all my assets, properties, rights, and interests as mentioned above to the following beneficiaries in the manner specified:
           </Text>
@@ -651,9 +664,9 @@ export const WillPDFDocument: React.FC<WillPDFTemplateProps> = ({ data }) => {
           )}
         </View>
 
-        {/* Debts and Liabilities */}
+        {/* Section H/G: Debts and Liabilities */}
         <View style={styles.section}>
-          <Text style={styles.sectionHeader}>{step5.hasMinorChildren ? 'Section I' : 'Section H'}: Debts and Liabilities</Text>
+          <Text style={styles.sectionHeader}>{step5.hasMinorChildren ? 'Section H' : 'Section G'}: Debts and Liabilities</Text>
           {step3.hasDebts && step3.debts && step3.debts.length > 0 ? (
             <View>
               <Text style={styles.paragraph}>
@@ -684,9 +697,9 @@ export const WillPDFDocument: React.FC<WillPDFTemplateProps> = ({ data }) => {
           )}
         </View>
 
-        {/* Additional Provisions */}
+        {/* Section I/H: Additional Provisions */}
         <View style={styles.section}>
-          <Text style={styles.sectionHeader}>{step5.hasMinorChildren ? 'Section J' : 'Section I'}: Additional Provisions</Text>
+          <Text style={styles.sectionHeader}>{step5.hasMinorChildren ? 'Section I' : 'Section H'}: Additional Provisions</Text>
           
           {step7.hasPreviousWill && (
             <Text style={styles.paragraph}>
