@@ -94,81 +94,17 @@ export const testatorDetailsSchema = z.object({
 });
 
 // ============================================
-// STEP 2: FAMILY DETAILS SCHEMA
+// STEP 2: WILL DETAILS (DECLARATION & SIGNING) SCHEMA
 // ============================================
-
-const spouseDetailsSchema = z.object({
-  fullName: z.string().min(2, "Spouse name is required"),
-  dateOfBirth: z.string().min(1, "Date of birth is required"),
-  panNumber: panNumberSchema,
-  marriageDate: z.string().min(1, "Marriage date is required"),
-  marriageRegistrationNumber: z.string().optional(),
-  isSecondMarriage: z.boolean(),
-  previousSpouseDetails: z.string().optional(),
-});
-
-const childDetailsSchema = z.object({
-  fullName: z.string().min(2, "Child name is required"),
-  dateOfBirth: z.string().min(1, "Date of birth is required"),
-  gender: z.enum(["Male", "Female", "Other"]),
-  isMinor: z.boolean(),
-  relationship: z.enum(["Biological Son", "Biological Daughter", "Adopted Son", "Adopted Daughter", "Stepson", "Stepdaughter"]),
-  panNumber: panNumberSchema,
-  aadhaarNumber: aadhaarNumberSchema,
-  currentAddress: z.string().optional(),
-});
-
-const parentDetailsSchema = z.object({
-  name: z.string().min(2, "Parent name is required"),
-  status: z.enum(["Alive", "Deceased"]),
-  dateOfBirth: z.string().optional(),
-  address: z.string().optional(),
-});
-
-const siblingDetailsSchema = z.object({
-  fullName: z.string().min(2, "Sibling name is required"),
-  relationship: z.enum(["Brother", "Sister"]),
-  contactDetails: z.string().optional(),
-});
-
-export const familyDetailsSchema = z.object({
-  isMarried: z.boolean(),
-  spouse: spouseDetailsSchema.optional(),
-  hasChildren: z.boolean(),
-  numberOfChildren: z.number().optional(),
-  children: z.array(childDetailsSchema).optional(),
-  father: parentDetailsSchema,
-  mother: parentDetailsSchema,
-  hasSiblings: z.boolean(),
-  numberOfSiblings: z.number().optional(),
-  siblings: z.array(siblingDetailsSchema).optional(),
-}).refine((data) => {
-  // If married, spouse details are required
-  if (data.isMarried && !data.spouse) {
-    return false;
-  }
-  return true;
-}, {
-  message: "Spouse details are required when married",
-  path: ["spouse"],
-}).refine((data) => {
-  // If has children, at least one child is required
-  if (data.hasChildren && (!data.children || data.children.length === 0)) {
-    return false;
-  }
-  return true;
-}, {
-  message: "At least one child is required when you have children",
-  path: ["children"],
-}).refine((data) => {
-  // If has siblings, at least one sibling is required
-  if (data.hasSiblings && (!data.siblings || data.siblings.length === 0)) {
-    return false;
-  }
-  return true;
-}, {
-  message: "At least one sibling is required when you have siblings",
-  path: ["siblings"],
+export const willDetailsSchema = z.object({
+  soundMind: z.boolean().refine((val) => val === true, {
+    message: "You must declare that you are of sound mind",
+  }),
+  revokePriorWills: z.boolean().refine((val) => val === true, {
+    message: "You must revoke all prior wills",
+  }),
+  signingDate: z.string().min(1, "Date of signing is required"),
+  signingPlace: z.string().min(2, "Place of signing is required"),
 });
 
 // ============================================
@@ -505,7 +441,7 @@ export const additionalProvisionsSchema = z.object({
 
 export const completeWillSchema = z.object({
   step1: testatorDetailsSchema,
-  step2: familyDetailsSchema,
+  step2: willDetailsSchema,
   step3: assetDetailsSchema,
   step4: beneficiaryDistributionSchema,
   step5: guardianshipSchema,
@@ -518,7 +454,7 @@ export const completeWillSchema = z.object({
 // ============================================
 
 export type TestatorDetails = z.infer<typeof testatorDetailsSchema>;
-export type FamilyDetails = z.infer<typeof familyDetailsSchema>;
+export type WillDetails = z.infer<typeof willDetailsSchema>;
 export type AssetDetails = z.infer<typeof assetDetailsSchema>;
 export type BeneficiaryDistribution = z.infer<typeof beneficiaryDistributionSchema>;
 export type Guardianship = z.infer<typeof guardianshipSchema>;

@@ -38,61 +38,14 @@ export interface TestatorDetails {
 }
 
 // ============================================
-// STEP 2: FAMILY DETAILS
+// STEP 2: WILL DETAILS (DECLARATION & SIGNING)
 // ============================================
 
-export interface SpouseDetails {
-  fullName: string;
-  dateOfBirth: string;
-  panNumber?: string;
-  marriageDate: string;
-  marriageRegistrationNumber?: string;
-  isSecondMarriage: boolean;
-  previousSpouseDetails?: string;
-}
-
-export interface ChildDetails {
-  fullName: string;
-  dateOfBirth: string;
-  gender: "Male" | "Female" | "Other";
-  isMinor: boolean; // Auto-calculated
-  relationship: "Biological Son" | "Biological Daughter" | "Adopted Son" | "Adopted Daughter" | "Stepson" | "Stepdaughter";
-  panNumber?: string;
-  aadhaarNumber?: string;
-  currentAddress?: string;
-}
-
-export interface ParentDetails {
-  name: string;
-  status: "Alive" | "Deceased";
-  dateOfBirth?: string;
-  address?: string;
-}
-
-export interface SiblingDetails {
-  fullName: string;
-  relationship: "Brother" | "Sister";
-  contactDetails?: string;
-}
-
-export interface FamilyDetails {
-  // Spouse
-  isMarried: boolean;
-  spouse?: SpouseDetails;
-
-  // Children
-  hasChildren: boolean;
-  numberOfChildren?: number;
-  children?: ChildDetails[];
-
-  // Parents
-  father: ParentDetails;
-  mother: ParentDetails;
-
-  // Siblings
-  hasSiblings: boolean;
-  numberOfSiblings?: number;
-  siblings?: SiblingDetails[];
+export interface WillDetails {
+  soundMind: boolean;
+  revokePriorWills: boolean;
+  signingDate: string;
+  signingPlace: string;
 }
 
 // ============================================
@@ -375,7 +328,7 @@ export interface AdditionalProvisions {
 
 export interface WillFormData {
   step1: TestatorDetails;
-  step2: FamilyDetails;
+  step2: WillDetails;
   step3: AssetDetails;
   step4: BeneficiaryDistribution;
   step5: Guardianship;
