@@ -15,7 +15,7 @@ import { Step1TestatorDetails } from "./steps/step1-testator-details";
 import { Step3WillExecutors } from "./steps/step3-will-executors";
 import { Step4DisputeResolver } from "./steps/step4-dispute-resolver";
 import { Step5WitnessDetails } from "./steps/step5-witness-details";
-import { Step6Executor } from "./steps/step6-executor";
+import { Step6Beneficiaries } from "./steps/step6-beneficiaries";
 import { Step7AdditionalProvisions } from "./steps/step7-additional-provisions";
 import { DownloadPDFButton } from "./download-pdf-button";
 
@@ -148,32 +148,18 @@ export function MultiStepWillForm({ initialData, willId }: MultiStepWillFormProp
       },
     },
     step6: {
-      primaryExecutor: {
-         fullName: "",
-         relationship: "",
-         dateOfBirth: "",
-         age: 0,
-         mobileNumber: "",
-         emailAddress: "",
-         occupation: "",
-         panNumber: "",
-         address: {
-             addressLine1: "",
-             city: "",
-             state: "",
-             pinCode: "",
-         },
-         consentObtained: false,
-      },
-      hasAlternateExecutor: false,
-      alternateExecutor: undefined,
-      powers: {
-        canSellProperty: false,
-        canManageInvestments: false,
-        canSettleDebts: false,
-        canDistributeAssets: false,
-      },
-      remuneration: "No remuneration",
+      beneficiaries: [
+        {
+          name: "",
+          relation: "",
+          dateOfBirth: "",
+          age: "",
+          pan: "",
+          aadhaar: "",
+          guardianName: "",
+          guardianRelation: "",
+        },
+      ],
     },
     step7: {
         hasPreviousWill: false,
@@ -233,31 +219,7 @@ export function MultiStepWillForm({ initialData, willId }: MultiStepWillFormProp
         ...(initialData?.step5 || {}),
       },
       step6: {
-        ...defaultFormValues.step6,
-        ...(initialData?.step6 || {}),
-        // Deep merge primaryExecutor to ensure address objects exist
-        primaryExecutor: {
-          ...defaultFormValues.step6?.primaryExecutor,
-          ...(initialData?.step6?.primaryExecutor || {}),
-          address: {
-            ...defaultFormValues.step6?.primaryExecutor?.address,
-            ...(initialData?.step6?.primaryExecutor?.address || {}),
-          },
-        },
-        // Deep merge alternateExecutor if it exists in initialData, otherwise keep it undefined/default
-        alternateExecutor: initialData?.step6?.alternateExecutor ? {
-            ...defaultFormValues.step6?.alternateExecutor,
-            ...initialData.step6.alternateExecutor,
-            address: {
-                ...defaultFormValues.step6?.alternateExecutor?.address,
-                ...(initialData.step6.alternateExecutor.address || {}),
-            }
-        } : defaultFormValues.step6?.alternateExecutor,
-
-        powers: {
-            ...defaultFormValues.step6?.powers,
-            ...(initialData?.step6?.powers || {}),
-        }
+        beneficiaries: initialData?.step6?.beneficiaries || defaultFormValues.step6.beneficiaries,
       },
       step7: {
         ...defaultFormValues.step7,
@@ -443,7 +405,7 @@ export function MultiStepWillForm({ initialData, willId }: MultiStepWillFormProp
       case 5:
         return <Step5WitnessDetails />;
       case 6:
-        return <Step6Executor />;
+        return <Step6Beneficiaries />;
       case 7:
         return <Step7AdditionalProvisions />;
       default:

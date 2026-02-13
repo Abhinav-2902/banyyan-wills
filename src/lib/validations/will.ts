@@ -198,39 +198,32 @@ export const witnessDetailsSchema = z.object({
 });
 
 // ============================================
-// STEP 6: EXECUTOR DETAILS SCHEMA
+// STEP 6: BENEFICIARIES SCHEMA
 // ============================================
 
-const executorPersonSchema = z.object({
-  fullName: z.string().min(2, "Executor name is required"),
-  relationship: z.string().min(2, "Relationship is required"),
+const beneficiarySchema = z.object({
+  name: z.string().min(2, "Beneficiary name is required"),
+  relation: z.string().min(2, "Relation is required"),
   dateOfBirth: z.string().min(1, "Date of birth is required"),
-  age: z.number().min(18, "Executor must be at least 18 years old"),
-  occupation: z.string().optional(),
-  panNumber: panNumberSchema,
-  address: z.object({
-    addressLine1: z.string().min(5, "Address is required"),
-    city: z.string().min(2, "City is required"),
-    state: z.string().min(2, "State is required"),
-    pinCode: pinCodeSchema,
-  }),
-  mobileNumber: mobileNumberSchema,
-  emailAddress: emailSchema.or(z.literal("")).optional(),
-  consentObtained: z.boolean().refine(val => val === true, "Executor consent is required"),
+  age: z.string().optional(), // Auto-calculated, stored as string
+  pan: panNumberSchema,
+  aadhaar: aadhaarNumberSchema,
+  guardianName: z.string().optional(),
+  guardianRelation: z.string().optional(),
+}).refine((data) => {
+  // If age is less than 18, guardian fields are required
+  const age = parseInt(data.age || "0");
+  if (age < 18 && age > 0) {
+    return !!data.guardianName && !!data.guardianRelation;
+  }
+  return true;
+}, {
+  message: "Guardian information is required for beneficiaries under 18",
+  path: ["guardianName"],
 });
 
-export const executorInfoSchema = z.object({
-  primaryExecutor: executorPersonSchema,
-  hasAlternateExecutor: z.boolean(),
-  alternateExecutor: executorPersonSchema.optional(),
-  powers: z.object({
-    canSellProperty: z.boolean(),
-    canManageInvestments: z.boolean(),
-    canSettleDebts: z.boolean(),
-    canDistributeAssets: z.boolean(),
-  }),
-  remuneration: z.enum(["No remuneration", "Fixed amount", "Percentage of estate", "As per legal provisions"]).optional(),
-  remunerationAmount: z.number().optional(),
+export const beneficiariesSchema = z.object({
+  beneficiaries: z.array(beneficiarySchema).min(1, "At least one beneficiary is required"),
 });
 
 // ============================================
@@ -281,7 +274,7 @@ export const completeWillSchema = z.object({
   step3: executorDetailsSchema,
   step4: disputeResolverSchema,
   step5: witnessDetailsSchema,
-  step6: executorInfoSchema,
+  step6: beneficiariesSchema,
   step7: additionalProvisionsSchema,
 });
 
@@ -294,7 +287,7 @@ export type WillDetails = z.infer<typeof willDetailsSchema>;
 export type ExecutorDetails = z.infer<typeof executorDetailsSchema>;
 export type DisputeResolver = z.infer<typeof disputeResolverSchema>;
 export type WitnessDetails = z.infer<typeof witnessDetailsSchema>;
-export type ExecutorInfo = z.infer<typeof executorInfoSchema>;
+export type Beneficiaries = z.infer<typeof beneficiariesSchema>;
 export type AdditionalProvisions = z.infer<typeof additionalProvisionsSchema>;
 export type CompleteWillFormData = z.infer<typeof completeWillSchema>;
 
