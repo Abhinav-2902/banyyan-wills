@@ -310,6 +310,26 @@ export const assetsSchema = z.object({
 
 
 // ============================================
+// STEP 9: RESIDUARY CLAUSE SCHEMA
+// ============================================
+
+export const residuaryClauseSchema = z.object({
+  selectedRecipients: z.array(z.string()).optional().default([]),
+  distribution: z.record(z.string(), z.number()).optional().default({}),
+}).refine((data) => {
+  // Validate that distribution adds up to 100% if recipients are selected
+  if (data.selectedRecipients && data.selectedRecipients.length > 0) {
+    const total = Object.values(data.distribution || {}).reduce((sum: number, val: number) => sum + val, 0);
+    return Math.abs(total - 100) < 0.01;
+  }
+  return true;
+}, {
+  message: "Distribution must add up to 100%",
+  path: ["distribution"],
+});
+
+
+// ============================================
 // COMPLETE WILL FORM SCHEMA
 // ============================================
 
@@ -322,6 +342,7 @@ export const completeWillSchema = z.object({
   step6: beneficiariesSchema,
   step7: charitiesSchema,
   step8: assetsSchema,
+  step9: residuaryClauseSchema,
 });
 
 // ============================================
@@ -336,6 +357,7 @@ export type WitnessDetails = z.infer<typeof witnessDetailsSchema>;
 export type Beneficiaries = z.infer<typeof beneficiariesSchema>;
 export type Charities = z.infer<typeof charitiesSchema>;
 export type Assets = z.infer<typeof assetsSchema>;
+export type ResiduaryClause = z.infer<typeof residuaryClauseSchema>;
 export type CompleteWillFormData = z.infer<typeof completeWillSchema>;
 
 // Legacy exports for backward compatibility

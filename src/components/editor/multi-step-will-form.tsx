@@ -18,6 +18,7 @@ import { Step5WitnessDetails } from "./steps/step5-witness-details";
 import { Step6Beneficiaries } from "./steps/step6-beneficiaries";
 import { Step7Charities } from "./steps/step7-charities";
 import { Step8Assets } from "./steps/step8-assets";
+import { Step9ResiduaryClause } from "./steps/step9-residuary-clause";
 import { DownloadPDFButton } from "./download-pdf-button";
 
 interface MultiStepWillFormProps {
@@ -168,6 +169,10 @@ export function MultiStepWillForm({ initialData, willId }: MultiStepWillFormProp
     step8: {
       assets: [],
     },
+    step9: {
+      selectedRecipients: [],
+      distribution: {},
+    },
   };
 
   const methods = useForm<CompleteWillFormData>({
@@ -212,6 +217,10 @@ export function MultiStepWillForm({ initialData, willId }: MultiStepWillFormProp
       },
       step8: {
         assets: initialData?.step8?.assets || defaultFormValues.step8?.assets || [],
+      },
+      step9: {
+        selectedRecipients: initialData?.step9?.selectedRecipients || defaultFormValues.step9?.selectedRecipients || [],
+        distribution: initialData?.step9?.distribution || defaultFormValues.step9?.distribution || {},
       },
     },
   });
@@ -391,6 +400,7 @@ export function MultiStepWillForm({ initialData, willId }: MultiStepWillFormProp
       case 8:
         return <Step8Assets />;
       case 9:
+        return <Step9ResiduaryClause />;
       case 10:
       case 11:
       case 12:
