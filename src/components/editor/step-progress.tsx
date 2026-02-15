@@ -22,7 +22,7 @@ const STEPS: Step[] = [
   { number: 5, title: "Witness Details", description: "Will signing witnesses" },
   { number: 6, title: "Beneficiaries", description: "Asset recipients" },
   { number: 7, title: "Charity Donations", description: "Support charitable causes" },
-  { number: 8, title: "Step 8", description: "To be implemented" },
+  { number: 8, title: "Assets", description: "Property & belongings" },
   { number: 9, title: "Step 9", description: "To be implemented" },
   { number: 10, title: "Step 10", description: "To be implemented" },
   { number: 11, title: "Step 11", description: "To be implemented" },

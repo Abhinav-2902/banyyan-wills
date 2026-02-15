@@ -246,6 +246,70 @@ export const charitiesSchema = z.object({
 });
 
 // ============================================
+// STEP 8: ASSETS SCHEMA
+// ============================================
+
+// Asset image schema (used for type inference in components)
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const assetImageSchema = z.object({
+  id: z.number(),
+  data: z.string(), // base64 data URL
+  name: z.string(),
+});
+
+
+// Complete asset schema with distribution validation
+const assetSchema = z.object({
+  type: z.string().min(1, "Asset type is required"),
+  details: z.record(z.string(), z.any()).optional().default({}),
+  distribution: z.record(z.string(), z.number()).optional().default({}),
+  selectedRecipients: z.array(z.string()).optional().default([]),
+}).refine((data) => {
+  // Validate that distribution adds up to 100% if recipients are selected
+  if (data.selectedRecipients && data.selectedRecipients.length > 0) {
+    const total = Object.values(data.distribution || {}).reduce((sum: number, val: number) => sum + val, 0);
+    return Math.abs(total - 100) < 0.01;
+  }
+  return true;
+}, {
+  message: "Distribution must add up to 100%",
+  path: ["distribution"],
+}).refine((data) => {
+  // Type-specific validation for required fields
+  const type = data.type;
+  const details = data.details || {};
+
+  switch (type) {
+    case "Property":
+      return !!(details.address && details.city && details.state && details.country && details.zipCode);
+    case "Investment":
+      if (!details.investmentType || !details.accountNumber) return false;
+      if (details.investmentType === "Other" && !details.otherInvestmentType) return false;
+      return true;
+    case "Bank":
+      return !!details.bankName;
+    case "Jewellery":
+      return !!(details.description && details.value);
+    case "Vehicles":
+    case "Loans":
+    case "Income":
+    case "Life Insurance Policy":
+    case "Other":
+      return !!(details.description && details.value);
+    default:
+      return true;
+  }
+}, {
+  message: "Please fill in all required fields for this asset type",
+  path: ["details"],
+});
+
+export const assetsSchema = z.object({
+  assets: z.array(assetSchema).optional().default([]),
+});
+
+
+// ============================================
 // COMPLETE WILL FORM SCHEMA
 // ============================================
 
@@ -257,6 +321,7 @@ export const completeWillSchema = z.object({
   step5: witnessDetailsSchema,
   step6: beneficiariesSchema,
   step7: charitiesSchema,
+  step8: assetsSchema,
 });
 
 // ============================================
@@ -270,6 +335,7 @@ export type DisputeResolver = z.infer<typeof disputeResolverSchema>;
 export type WitnessDetails = z.infer<typeof witnessDetailsSchema>;
 export type Beneficiaries = z.infer<typeof beneficiariesSchema>;
 export type Charities = z.infer<typeof charitiesSchema>;
+export type Assets = z.infer<typeof assetsSchema>;
 export type CompleteWillFormData = z.infer<typeof completeWillSchema>;
 
 // Legacy exports for backward compatibility

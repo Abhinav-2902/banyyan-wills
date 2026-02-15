@@ -17,6 +17,7 @@ import { Step4DisputeResolver } from "./steps/step4-dispute-resolver";
 import { Step5WitnessDetails } from "./steps/step5-witness-details";
 import { Step6Beneficiaries } from "./steps/step6-beneficiaries";
 import { Step7Charities } from "./steps/step7-charities";
+import { Step8Assets } from "./steps/step8-assets";
 import { DownloadPDFButton } from "./download-pdf-button";
 
 interface MultiStepWillFormProps {
@@ -164,6 +165,9 @@ export function MultiStepWillForm({ initialData, willId }: MultiStepWillFormProp
     step7: {
       charities: [],
     },
+    step8: {
+      assets: [],
+    },
   };
 
   const methods = useForm<CompleteWillFormData>({
@@ -205,6 +209,9 @@ export function MultiStepWillForm({ initialData, willId }: MultiStepWillFormProp
       },
       step7: {
         charities: initialData?.step7?.charities || defaultFormValues.step7?.charities || [],
+      },
+      step8: {
+        assets: initialData?.step8?.assets || defaultFormValues.step8?.assets || [],
       },
     },
   });
@@ -331,7 +338,7 @@ export function MultiStepWillForm({ initialData, willId }: MultiStepWillFormProp
       await handleSaveDraft();
       
       // Move to next step
-      if (currentStep < 7) {
+      if (currentStep < 13) {
         setCurrentStep(currentStep + 1);
         window.scrollTo({ top: 0, behavior: "smooth" });
       }
@@ -382,6 +389,7 @@ export function MultiStepWillForm({ initialData, willId }: MultiStepWillFormProp
       case 7:
         return <Step7Charities />;
       case 8:
+        return <Step8Assets />;
       case 9:
       case 10:
       case 11:
