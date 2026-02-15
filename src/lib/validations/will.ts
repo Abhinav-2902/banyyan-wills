@@ -328,6 +328,20 @@ export const residuaryClauseSchema = z.object({
   path: ["distribution"],
 });
 
+// ============================================
+// Step 10: Special Wishes Schema
+// ============================================
+
+export const specialWishesSchema = z.object({
+  funeralWish: z.string().optional().default(''),
+  messages: z.array(z.object({
+    name: z.string().optional().default(''),
+    relation: z.string().optional().default(''),
+    message: z.string().optional().default(''),
+  })).optional().default([]),
+  otherArrangements: z.string().optional().default(''),
+});
+
 
 // ============================================
 // COMPLETE WILL FORM SCHEMA
@@ -343,6 +357,7 @@ export const completeWillSchema = z.object({
   step7: charitiesSchema,
   step8: assetsSchema,
   step9: residuaryClauseSchema,
+  step10: specialWishesSchema,
 });
 
 // ============================================
@@ -358,6 +373,7 @@ export type Beneficiaries = z.infer<typeof beneficiariesSchema>;
 export type Charities = z.infer<typeof charitiesSchema>;
 export type Assets = z.infer<typeof assetsSchema>;
 export type ResiduaryClause = z.infer<typeof residuaryClauseSchema>;
+export type SpecialWishes = z.infer<typeof specialWishesSchema>;
 export type CompleteWillFormData = z.infer<typeof completeWillSchema>;
 
 // Legacy exports for backward compatibility
