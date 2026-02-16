@@ -261,7 +261,9 @@ const assetImageSchema = z.object({
 // Complete asset schema with distribution validation
 const assetSchema = z.object({
   type: z.string().min(1, "Asset type is required"),
-  details: z.record(z.string(), z.any()).optional().default({}),
+  details: z.object({
+    images: z.array(z.any()).optional(),
+  }).catchall(z.any()).optional().default({}),
   distribution: z.record(z.string(), z.number()).optional().default({}),
   selectedRecipients: z.array(z.string()).optional().default([]),
 }).refine((data) => {

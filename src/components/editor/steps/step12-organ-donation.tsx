@@ -2,7 +2,6 @@
 
 import { useFormContext, useWatch } from "react-hook-form";
 import { CompleteWillFormData } from "@/lib/validations/will";
-import { Label } from "@/components/ui/label";
 import { Heart } from "lucide-react";
 
 const ORGANS = [
@@ -70,7 +69,7 @@ export function Step12OrganDonation() {
     <div className="p-8 space-y-8">
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
-        <div className="p-2 bg-gradient-to-r from-[#8B7BB8] to-[#432371] rounded-lg">
+        <div className="p-2 bg-linear-to-r from-[#8B7BB8] to-[#432371] rounded-lg">
           <Heart className="h-6 w-6 text-white" />
         </div>
         <div>

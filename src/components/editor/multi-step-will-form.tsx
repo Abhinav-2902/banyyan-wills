@@ -22,6 +22,7 @@ import { Step9ResiduaryClause } from "./steps/step9-residuary-clause";
 import { Step10SpecialWishes } from "./steps/step10-special-wishes";
 import { Step11LoanRepayment } from "./steps/step11-loan-repayment";
 import { Step12OrganDonation } from "./steps/step12-organ-donation";
+import { Step13Review } from "./steps/step13-review";
 import { DownloadPDFButton } from "./download-pdf-button";
 
 interface MultiStepWillFormProps {
@@ -437,13 +438,7 @@ export function MultiStepWillForm({ initialData, willId }: MultiStepWillFormProp
       case 12:
         return <Step12OrganDonation />;
       case 13:
-        return (
-          <div className="p-12 text-center">
-            <h2 className="text-2xl font-semibold text-gray-900 mb-4">Step {currentStep}</h2>
-            <p className="text-gray-600 mb-6">This step is coming soon. Please continue to the next step.</p>
-            <p className="text-sm text-gray-500">Step {currentStep} will be implemented in a future update.</p>
-          </div>
-        );
+        return <Step13Review willId={willId} />;
       default:
         return null;
     }
