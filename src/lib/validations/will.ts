@@ -357,6 +357,26 @@ export const loanRepaymentSchema = z.object({
 
 
 // ============================================
+// Step 12: Organ Donation Schema
+// ============================================
+
+export const organDonationSchema = z.object({
+  donationChoice: z.enum(["all", "specific", "none"]).default("all"),
+  selectedOrgans: z.array(z.string()).optional().default([]),
+  selectedTissues: z.array(z.string()).optional().default([]),
+}).refine((data) => {
+  // If specific donation is chosen, at least one organ or tissue must be selected
+  if (data.donationChoice === "specific") {
+    return (data.selectedOrgans && data.selectedOrgans.length > 0) || 
+           (data.selectedTissues && data.selectedTissues.length > 0);
+  }
+  return true;
+}, {
+  message: "Please select at least one organ or tissue when choosing specific donation",
+  path: ["selectedOrgans"],
+});
+
+// ============================================
 // COMPLETE WILL FORM SCHEMA
 // ============================================
 
@@ -372,6 +392,7 @@ export const completeWillSchema = z.object({
   step9: residuaryClauseSchema,
   step10: specialWishesSchema,
   step11: loanRepaymentSchema,
+  step12: organDonationSchema,
 });
 
 // ============================================
@@ -389,6 +410,7 @@ export type Assets = z.infer<typeof assetsSchema>;
 export type ResiduaryClause = z.infer<typeof residuaryClauseSchema>;
 export type SpecialWishes = z.infer<typeof specialWishesSchema>;
 export type LoanRepayment = z.infer<typeof loanRepaymentSchema>;
+export type OrganDonation = z.infer<typeof organDonationSchema>;
 export type CompleteWillFormData = z.infer<typeof completeWillSchema>;
 
 // Legacy exports for backward compatibility

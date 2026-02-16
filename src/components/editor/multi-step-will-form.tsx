@@ -21,6 +21,7 @@ import { Step8Assets } from "./steps/step8-assets";
 import { Step9ResiduaryClause } from "./steps/step9-residuary-clause";
 import { Step10SpecialWishes } from "./steps/step10-special-wishes";
 import { Step11LoanRepayment } from "./steps/step11-loan-repayment";
+import { Step12OrganDonation } from "./steps/step12-organ-donation";
 import { DownloadPDFButton } from "./download-pdf-button";
 
 interface MultiStepWillFormProps {
@@ -183,6 +184,11 @@ export function MultiStepWillForm({ initialData, willId }: MultiStepWillFormProp
     step11: {
       accounts: [],
     },
+    step12: {
+      donationChoice: "all" as const,
+      selectedOrgans: [],
+      selectedTissues: [],
+    },
   };
 
   const methods = useForm<CompleteWillFormData>({
@@ -239,6 +245,11 @@ export function MultiStepWillForm({ initialData, willId }: MultiStepWillFormProp
       },
       step11: {
         accounts: initialData?.step11?.accounts || defaultFormValues.step11?.accounts || [],
+      },
+      step12: {
+        donationChoice: initialData?.step12?.donationChoice || defaultFormValues.step12?.donationChoice || "all",
+        selectedOrgans: initialData?.step12?.selectedOrgans || defaultFormValues.step12?.selectedOrgans || [],
+        selectedTissues: initialData?.step12?.selectedTissues || defaultFormValues.step12?.selectedTissues || [],
       },
     },
   });
@@ -424,6 +435,7 @@ export function MultiStepWillForm({ initialData, willId }: MultiStepWillFormProp
       case 11:
         return <Step11LoanRepayment />;
       case 12:
+        return <Step12OrganDonation />;
       case 13:
         return (
           <div className="p-12 text-center">
