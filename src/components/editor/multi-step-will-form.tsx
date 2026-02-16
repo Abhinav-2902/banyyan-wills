@@ -20,6 +20,7 @@ import { Step7Charities } from "./steps/step7-charities";
 import { Step8Assets } from "./steps/step8-assets";
 import { Step9ResiduaryClause } from "./steps/step9-residuary-clause";
 import { Step10SpecialWishes } from "./steps/step10-special-wishes";
+import { Step11LoanRepayment } from "./steps/step11-loan-repayment";
 import { DownloadPDFButton } from "./download-pdf-button";
 
 interface MultiStepWillFormProps {
@@ -179,6 +180,9 @@ export function MultiStepWillForm({ initialData, willId }: MultiStepWillFormProp
       messages: [],
       otherArrangements: '',
     },
+    step11: {
+      accounts: [],
+    },
   };
 
   const methods = useForm<CompleteWillFormData>({
@@ -232,6 +236,9 @@ export function MultiStepWillForm({ initialData, willId }: MultiStepWillFormProp
         funeralWish: initialData?.step10?.funeralWish || defaultFormValues.step10?.funeralWish || '',
         messages: initialData?.step10?.messages || defaultFormValues.step10?.messages || [],
         otherArrangements: initialData?.step10?.otherArrangements || defaultFormValues.step10?.otherArrangements || '',
+      },
+      step11: {
+        accounts: initialData?.step11?.accounts || defaultFormValues.step11?.accounts || [],
       },
     },
   });
@@ -415,6 +422,7 @@ export function MultiStepWillForm({ initialData, willId }: MultiStepWillFormProp
       case 10:
         return <Step10SpecialWishes />;
       case 11:
+        return <Step11LoanRepayment />;
       case 12:
       case 13:
         return (

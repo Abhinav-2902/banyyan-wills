@@ -342,6 +342,19 @@ export const specialWishesSchema = z.object({
   otherArrangements: z.string().optional().default(''),
 });
 
+// ============================================
+// Step 11: Loan Repayment Schema
+// ============================================
+
+export const loanRepaymentSchema = z.object({
+  accounts: z.array(z.object({
+    bankName: z.string().min(1, "Bank name is required"),
+    accountNumber: z.string().optional().default(''),
+    accountType: z.string().optional().default(''),
+    fromAssets: z.boolean().optional().default(false),
+  })).optional().default([]),
+});
+
 
 // ============================================
 // COMPLETE WILL FORM SCHEMA
@@ -358,6 +371,7 @@ export const completeWillSchema = z.object({
   step8: assetsSchema,
   step9: residuaryClauseSchema,
   step10: specialWishesSchema,
+  step11: loanRepaymentSchema,
 });
 
 // ============================================
@@ -374,6 +388,7 @@ export type Charities = z.infer<typeof charitiesSchema>;
 export type Assets = z.infer<typeof assetsSchema>;
 export type ResiduaryClause = z.infer<typeof residuaryClauseSchema>;
 export type SpecialWishes = z.infer<typeof specialWishesSchema>;
+export type LoanRepayment = z.infer<typeof loanRepaymentSchema>;
 export type CompleteWillFormData = z.infer<typeof completeWillSchema>;
 
 // Legacy exports for backward compatibility

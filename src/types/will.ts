@@ -347,3 +347,22 @@ export interface WillFormState {
   lastSaved?: string;
   isDraft: boolean;
 }
+
+// ============================================
+// ASSET-RELATED TYPES FOR STEP 8 & 11
+// ============================================
+
+export interface BankAccountDetails {
+  bankName: string;
+  accountNumber: string;
+  accountType: string;
+}
+
+export interface Asset {
+  type: string;
+  details: BankAccountDetails;
+}
+
+export interface LoanAccount extends BankAccountDetails {
+  fromAssets?: boolean;
+}
