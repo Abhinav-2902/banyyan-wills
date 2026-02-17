@@ -4,7 +4,8 @@ import { useState, useEffect, useCallback } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { StepProgress } from "./step-progress";
+import { Sidebar } from "./sidebar";
+import { STEPS } from "./constants";
 import { SaveButton } from "./save-button";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight } from "lucide-react";
@@ -446,62 +447,114 @@ export function MultiStepWillForm({ initialData, willId }: MultiStepWillFormProp
 
   return (
     <FormProvider {...methods}>
-      <div className="flex flex-col flex-1 w-full relative">
-        {/* Progress Indicator */}
-        <StepProgress currentStep={currentStep} completedSteps={completedSteps} />
+      <div className="flex min-h-screen w-full bg-[#F8F9FA]">
+        {/* Fixed Sidebar - 20% Width */}
+        <div className="hidden lg:block w-[20%] fixed inset-y-0 left-0 z-50 bg-white border-r border-gray-100 shadow-sm">
+          <Sidebar 
+            currentStep={currentStep} 
+            completedSteps={completedSteps} 
+            onStepClick={(step) => {
+               if (step < currentStep || completedSteps.includes(step)) {
+                 setCurrentStep(step);
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+               }
+            }}
+          />
+        </div>
 
-        {/* Form Content */}
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-          <form onSubmit={handleSubmit(onSubmit as any)}>
-            {/* Step Content */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 mb-6">
-              {renderStepContent()}
-            </div>
-
-            {/* Navigation Buttons */}
-            <div className="flex items-center justify-between bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+        {/* Main Content Area - 80% Width */}
+        <div className="lg:ml-[20%] w-full lg:w-[80%] flex flex-col min-h-screen">
+           {/* Professional Header Bar */}
+           <header className="h-16 border-b border-gray-200 flex items-center justify-between px-8 sticky top-0 z-40 bg-white/80 backdrop-blur-md">
               <div className="flex items-center gap-4">
-                {currentStep > 1 && (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={handlePrevious}
-                    className="flex items-center gap-2"
-                  >
-                    <ArrowLeft className="h-4 w-4" />
-                    Previous
-                  </Button>
-                )}
+                <h1 className="text-xl font-semibold text-gray-900">
+                  {currentStep === 13 ? "Final Review" : `Step ${currentStep}: ${STEPS[currentStep-1]?.title}`}
+                </h1>
               </div>
-
               <div className="flex items-center gap-4">
-                {/* Save Draft Button */}
-                <SaveButton
-                  onSave={handleSaveDraft}
-                  isPending={isSaving}
-                  isDirty={formState.isDirty}
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => router.push("/dashboard")}
+                  className="text-gray-500 hover:text-gray-900"
+                >
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Exit to Dashboard
+                </Button>
+                <div className="h-6 w-px bg-gray-200 mx-2" />
+                <div className="flex items-center gap-2 text-sm text-gray-500 font-medium">
+                   <div className="w-2 h-2 rounded-full bg-green-500" />
+                   Changes Saved
+                </div>
+              </div>
+           </header>
+
+           {/* Mobile Progress Bar (Hidden on Desktop) */}
+           <div className="lg:hidden bg-white px-4 py-3 border-b border-gray-200 sticky top-16 z-30">
+              <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2">
+                 <span>Step {currentStep} of 13</span>
+                 <span>{Math.round((completedSteps.length / 13) * 100)}%</span>
+              </div>
+              <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-[#FF6B6B] transition-all duration-500"
+                  style={{ width: `${Math.round((completedSteps.length / 13) * 100)}%` }}
                 />
-
-                {/* Next/Submit Button */}
-                {currentStep < 13 ? (
-                  <Button
-                    type="button"
-                    onClick={handleNext}
-                    className="flex items-center gap-2 bg-[#FF6B6B] hover:bg-[#FF5555] text-white"
-                  >
-                    Next
-                    <ArrowRight className="h-4 w-4" />
-                  </Button>
-                ) : (
-                  /* Show Download PDF button on Step 13 */
-                  willId && <DownloadPDFButton willId={willId} onBeforeDownload={handleSaveDraft} />
-                )}
               </div>
-            </div>
-          </form>
+           </div>
+
+           {/* Form Container */}
+           <main className="flex-1 p-2 lg:p-4">
+              <div className="max-w-6xl mx-auto">
+                <form onSubmit={handleSubmit(onSubmit)}>
+                  {/* Form Step Wrapper */}
+                  <div className="bg-white rounded-[2rem] shadow-[0_8px_40px_rgba(0,0,0,0.03)] border border-gray-100 mb-6 overflow-hidden min-h-[500px] transition-all hover:shadow-[0_8px_40px_rgba(0,0,0,0.05)]">
+                    {renderStepContent()}
+                  </div>
+
+                  {/* Dynamic Navigation Footer (At the end of content) */}
+                  <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-6 flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      {currentStep > 1 && (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={handlePrevious}
+                          className="h-10 px-5 rounded-lg font-semibold transition-all hover:bg-gray-50"
+                        >
+                          <ArrowLeft className="h-4 w-4 mr-2" />
+                          Previous
+                        </Button>
+                      )}
+                    </div>
+
+                    <div className="flex items-center gap-4">
+                      <SaveButton
+                        onSave={handleSaveDraft}
+                        isPending={isSaving}
+                        isDirty={formState.isDirty}
+                      />
+
+                      {currentStep < 13 ? (
+                        <Button
+                          type="button"
+                          onClick={handleNext}
+                          className="h-10 px-6 rounded-lg bg-[#FF6B6B] hover:bg-[#FF5555] text-white font-bold shadow-md shadow-rose-100 transition-all hover:shadow-lg active:scale-[0.98]"
+                        >
+                          Next Step
+                          <ArrowRight className="h-4 w-4 ml-2" />
+                        </Button>
+                      ) : (
+                        willId && <DownloadPDFButton willId={willId} onBeforeDownload={handleSaveDraft} />
+                      )}
+                    </div>
+                  </div>
+                </form>
+              </div>
+           </main>
         </div>
       </div>
     </FormProvider>
   );
 }
+

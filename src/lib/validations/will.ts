@@ -249,20 +249,19 @@ export const charitiesSchema = z.object({
 // STEP 8: ASSETS SCHEMA
 // ============================================
 
-// Asset image schema (used for type inference in components)
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const assetImageSchema = z.object({
+export const assetImageSchema = z.object({
   id: z.number(),
   data: z.string(), // base64 data URL
   name: z.string(),
 });
 
+export type AssetImage = z.infer<typeof assetImageSchema>;
 
 // Complete asset schema with distribution validation
 const assetSchema = z.object({
   type: z.string().min(1, "Asset type is required"),
   details: z.object({
-    images: z.array(z.any()).optional(),
+    images: z.array(assetImageSchema).optional(),
   }).catchall(z.any()).optional().default({}),
   distribution: z.record(z.string(), z.number()).optional().default({}),
   selectedRecipients: z.array(z.string()).optional().default([]),

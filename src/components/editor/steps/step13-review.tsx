@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useFormContext } from "react-hook-form";
-import { CompleteWillFormData } from "@/lib/validations/will";
+import { CompleteWillFormData, AssetImage } from "@/lib/validations/will";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { 
@@ -12,16 +12,9 @@ import {
   Eye,
   CheckCircle2,
   AlertCircle,
-  Loader2,
-  X
+  Loader2
 } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { previewWillPDFAction } from "@/server/actions/preview-will-pdf";
 import { useToast } from "@/hooks/use-toast";
 import { autoSaveWillAction } from "@/server/actions/will";
@@ -39,20 +32,30 @@ function Section({
   onToggle: () => void;
 }) {
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+    <div className={`bg-white rounded-2xl transition-all border-2 ${
+      isOpen ? 'border-[#FF6B6B] shadow-xl shadow-rose-100/50' : 'border-gray-100 hover:border-rose-100 hover:shadow-lg'
+    } overflow-hidden`}>
       <button
         onClick={onToggle}
-        className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors"
+        className={`w-full flex items-center justify-between p-6 transition-colors ${
+          isOpen ? 'bg-rose-50/30' : 'hover:bg-rose-50/10'
+        }`}
       >
-        <h3 className="text-lg font-semibold text-[#5E4B8C]">{title}</h3>
+        <div className="flex items-center gap-3">
+          <div className={`p-2 rounded-lg transition-colors ${isOpen ? 'bg-[#FF6B6B] text-white' : 'bg-gray-100 text-gray-500'}`}>
+            <FileText className="h-4 w-4" />
+          </div>
+          <h3 className={`text-lg font-bold transition-colors ${isOpen ? 'text-gray-900' : 'text-gray-700'}`}>{title}</h3>
+        </div>
         {isOpen ? (
-          <ChevronUp className="h-5 w-5 text-gray-500" />
+          <ChevronUp className="h-5 w-5 text-[#FF6B6B]" />
         ) : (
-          <ChevronDown className="h-5 w-5 text-gray-500" />
+          <ChevronDown className="h-5 w-5 text-gray-400" />
         )}
       </button>
       {isOpen && (
-        <div className="p-4 pt-0 border-t border-gray-100">
+        <div className="p-8 pt-0 animate-in fade-in slide-in-from-top-2 duration-300">
+          <div className="h-px bg-gray-100 mb-6" />
           {children}
         </div>
       )}
@@ -178,44 +181,46 @@ export function Step13Review({ willId }: { willId?: string }) {
   };
 
   return (
-    <div className="p-8 space-y-6">
+    <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center gap-3 mb-6">
-        <div className="p-2 bg-linear-to-r from-[#8B7BB8] to-[#432371] rounded-lg">
-          <FileText className="h-6 w-6 text-white" />
-        </div>
-        <div>
-          <h2 className="text-2xl font-semibold text-[#5E4B8C]">Review Your Will</h2>
-          <p className="text-sm text-gray-600">Please review all information before downloading</p>
+      <div className="bg-white rounded-2xl shadow-xl shadow-gray-200/50 border border-gray-100 overflow-hidden">
+        <div className="bg-linear-to-r from-[#FF6B6B] to-[#FF8787] px-8 py-6">
+          <div className="flex items-center space-x-4">
+            <div className="p-3 bg-white/20 backdrop-blur-md rounded-xl">
+              <FileText className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold text-white tracking-tight">Review Your Will</h2>
+              <p className="text-rose-100 text-sm font-medium mt-1">Review all information before finalizing</p>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Info Banner */}
-      <div className="bg-blue-50 rounded-lg p-4 border border-blue-200 flex items-start gap-3">
-        <AlertCircle className="h-5 w-5 text-blue-600 shrink-0 mt-0.5" />
-        <div className="text-sm text-blue-800">
-          <p className="font-medium mb-1">Important: Review Carefully</p>
-          <p>Please review all the information below carefully. You can expand each section to verify the details. Once you&apos;re satisfied, you can preview the PDF or download your will directly.</p>
+      <div className="p-6 border border-rose-100 bg-rose-50/50 backdrop-blur-sm rounded-2xl flex items-start gap-4">
+        <AlertCircle className="h-6 w-6 text-rose-500 shrink-0" />
+        <div className="text-sm text-gray-700">
+          <p className="font-bold text-gray-900 mb-1 leading-none">Important: Review Carefully</p>
+          <p className="font-medium leading-relaxed">Please review all the information below carefully. You can expand each section to verify the details. Once you&apos;re satisfied, you can preview the PDF or download your will directly.</p>
         </div>
       </div>
 
       {/* Expand/Collapse Controls */}
-      <div className="flex gap-3">
+      <div className="flex gap-4">
         <Button
           type="button"
           variant="outline"
-          size="sm"
           onClick={expandAll}
-          className="text-sm"
+          className="rounded-xl border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-bold px-6"
         >
           Expand All
         </Button>
         <Button
           type="button"
           variant="outline"
-          size="sm"
           onClick={collapseAll}
-          className="text-sm"
+          className="rounded-xl border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-bold px-6"
         >
           Collapse All
         </Button>
@@ -526,14 +531,14 @@ export function Step13Review({ willId }: { willId?: string }) {
               <div className="space-y-8">
                 {assetsWithImages.map((asset, index) => (
                   <div key={index} className="border-b border-gray-100 last:border-0 pb-6 last:pb-0">
-                    <h4 className="font-medium text-gray-900 mb-4 flex items-center gap-2">
-                       <span className="bg-purple-100 text-purple-700 px-2 py-0.5 rounded text-xs border border-purple-200">
+                    <h4 className="font-bold text-gray-900 mb-4 flex items-center gap-3">
+                       <span className="bg-rose-100 text-rose-600 px-3 py-1 rounded-lg text-xs font-bold border border-rose-200 uppercase tracking-wider">
                          {asset.type}
                        </span>
                        {asset.details?.description || `Asset ${index + 1}`}
                     </h4>
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                      {asset.details.images.map((img: any, i: number) => (
+                      {asset.details?.images?.map((img: AssetImage, i: number) => (
                         <div key={i} className="group relative aspect-square bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
                           <Image
                             src={img.data}
@@ -554,13 +559,12 @@ export function Step13Review({ willId }: { willId?: string }) {
       </div>
 
       {/* Action Buttons */}
-      <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-200">
+      <div className="flex flex-col sm:flex-row gap-6 pt-10 border-t-2 border-dashed border-gray-100">
         <Button
           type="button"
-          variant="outline"
           onClick={handlePreviewPDF}
           disabled={isGeneratingPreview}
-          className="flex items-center gap-2"
+          className="h-14 px-10 bg-linear-to-r from-[#FF6B6B] to-[#FF8787] text-white rounded-xl shadow-lg shadow-rose-100 hover:from-[#FF5555] hover:to-[#FF7676] transition-all font-bold tracking-tight active:scale-[0.98] flex items-center gap-3"
         >
           {isGeneratingPreview ? (
             <>
@@ -570,7 +574,7 @@ export function Step13Review({ willId }: { willId?: string }) {
           ) : (
             <>
               <Eye className="h-5 w-5" />
-              Preview PDF
+              Preview Document
             </>
           )}
         </Button>
@@ -578,31 +582,11 @@ export function Step13Review({ willId }: { willId?: string }) {
 
       {/* PDF Preview Modal */}
       <Dialog open={showPreview} onOpenChange={handleClosePreview}>
-        <DialogContent className="max-w-6xl max-h-[90vh] p-0">
-          <DialogHeader className="p-6 pb-4">
-            <DialogTitle className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2">
-                <FileText className="h-5 w-5" />
-                Will Document Preview
-              </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={handleClosePreview}
-                className="h-8 w-8"
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </DialogTitle>
-            <DialogDescription>
-              This is the exact PDF that will be downloaded. Scroll to view all pages.
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="flex-1 overflow-hidden" style={{ height: 'calc(90vh - 120px)' }}>
+        <DialogContent className="w-[70vw] sm:max-w-[70vw] min-w-[70vw] h-[90vh] p-0 border-none overflow-hidden rounded-2xl shadow-2xl bg-gray-900">
+          <div className="w-full h-full">
             {pdfUrl ? (
               <iframe
-                src={pdfUrl}
+                src={`${pdfUrl}#toolbar=0&navpanes=0&scrollbar=0`}
                 className="w-full h-full border-0"
                 title="Will PDF Preview"
               />
@@ -619,11 +603,13 @@ export function Step13Review({ willId }: { willId?: string }) {
       </Dialog>
 
       {/* Completion Message */}
-      <div className="bg-green-50 rounded-lg p-4 border border-green-200 flex items-start gap-3">
-        <CheckCircle2 className="h-5 w-5 text-green-600 shrink-0 mt-0.5" />
-        <div className="text-sm text-green-800">
-          <p className="font-medium">You&apos;re almost done!</p>
-          <p className="mt-1">Review the information above, preview the PDF if needed, and then click the &quot;Download PDF&quot; button below to get your will document.</p>
+      <div className="p-6 bg-emerald-50 rounded-2xl border-2 border-emerald-100/50 flex items-start gap-4">
+        <div className="p-2 bg-emerald-500 rounded-xl">
+          <CheckCircle2 className="h-5 w-5 text-white shrink-0" />
+        </div>
+        <div className="text-sm text-gray-700">
+          <p className="font-bold text-emerald-900 mb-1">You&apos;re almost done!</p>
+          <p className="font-medium leading-relaxed">Review the information above, preview the document if needed, and then click the &quot;Download PDF&quot; button below to get your legal will document.</p>
         </div>
       </div>
     </div>

@@ -254,66 +254,71 @@ export function Step8Assets() {
     switch (assetType) {
       case 'Property':
         return (
-          <div className="space-y-4">
-            <div>
-              <Label>Address *</Label>
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <Label className="text-sm font-bold text-gray-700">Address *</Label>
               <Input
                 {...register(`step8.assets.${assetIndex}.details.address`)}
-                placeholder="Enter address"
+                placeholder="Enter full property address"
+                className="w-full focus:ring-[#FF6B6B] focus:border-[#FF6B6B]"
               />
               {errors?.step8?.assets?.[assetIndex]?.details?.address && (
-                <p className="text-sm text-red-600 mt-1">
+                <p className="text-sm text-red-500 mt-1 font-medium">
                   {(errors.step8.assets[assetIndex].details as any).address.message}
                 </p>
               )}
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label>City *</Label>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label className="text-sm font-bold text-gray-700">City *</Label>
                 <Input
                   {...register(`step8.assets.${assetIndex}.details.city`)}
                   placeholder="City"
+                  className="w-full focus:ring-[#FF6B6B] focus:border-[#FF6B6B]"
                 />
                 {errors?.step8?.assets?.[assetIndex]?.details?.city && (
-                  <p className="text-sm text-red-600 mt-1">
+                  <p className="text-sm text-red-500 mt-1 font-medium">
                     {(errors.step8.assets[assetIndex].details as any).city.message}
                   </p>
                 )}
               </div>
-              <div>
-                <Label>State *</Label>
+              <div className="space-y-2">
+                <Label className="text-sm font-bold text-gray-700">State *</Label>
                 <Input
                   {...register(`step8.assets.${assetIndex}.details.state`)}
                   placeholder="State"
+                  className="w-full focus:ring-[#FF6B6B] focus:border-[#FF6B6B]"
                 />
                 {errors?.step8?.assets?.[assetIndex]?.details?.state && (
-                  <p className="text-sm text-red-600 mt-1">
+                  <p className="text-sm text-red-500 mt-1 font-medium">
                     {(errors.step8.assets[assetIndex].details as any).state.message}
                   </p>
                 )}
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label>Country *</Label>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label className="text-sm font-bold text-gray-700">Country *</Label>
                 <Input
                   {...register(`step8.assets.${assetIndex}.details.country`)}
                   placeholder="Country"
+                  className="w-full focus:ring-[#FF6B6B] focus:border-[#FF6B6B]"
                 />
                 {errors?.step8?.assets?.[assetIndex]?.details?.country && (
-                  <p className="text-sm text-red-600 mt-1">
+                  <p className="text-sm text-red-500 mt-1 font-medium">
                     {(errors.step8.assets[assetIndex].details as any).country.message}
                   </p>
                 )}
               </div>
-              <div>
-                <Label>Zip Code *</Label>
+              <div className="space-y-2">
+                <Label className="text-sm font-bold text-gray-700">Zip Code *</Label>
                 <Input
                   {...register(`step8.assets.${assetIndex}.details.zipCode`)}
                   placeholder="Zip Code"
+                  className="w-full focus:ring-[#FF6B6B] focus:border-[#FF6B6B]"
                 />
                 {errors?.step8?.assets?.[assetIndex]?.details?.zipCode && (
-                  <p className="text-sm text-red-600 mt-1">
+                  <p className="text-sm text-red-500 mt-1 font-medium">
                     {(errors.step8.assets[assetIndex].details as any).zipCode.message}
                   </p>
                 )}
@@ -324,48 +329,57 @@ export function Step8Assets() {
 
       case 'Investment':
         return (
-          <div className="space-y-4">
-            <div>
-              <Label>Investment Type *</Label>
-              <select
-                {...register(`step8.assets.${assetIndex}.details.investmentType`)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-              >
-                <option value="">Select investment type</option>
-                {investmentTypes.map((type) => (
-                  <option key={type} value={type}>
-                    {type === 'Demat' ? 'Demat Account' : type}
-                  </option>
-                ))}
-              </select>
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <Label className="text-sm font-bold text-gray-700">Investment Type *</Label>
+              <div className="relative">
+                <select
+                  {...register(`step8.assets.${assetIndex}.details.investmentType`)}
+                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF6B6B] focus:border-[#FF6B6B] appearance-none transition-all cursor-pointer font-medium text-gray-700"
+                >
+                  <option value="">Select investment type</option>
+                  {investmentTypes.map((type) => (
+                    <option key={type} value={type}>
+                      {type === 'Demat' ? 'Demat Account' : type}
+                    </option>
+                  ))}
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-400">
+                  <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                    <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+                  </svg>
+                </div>
+              </div>
               {errors?.step8?.assets?.[assetIndex]?.details?.investmentType && (
-                <p className="text-sm text-red-600 mt-1">
+                <p className="text-sm text-red-500 mt-1 font-medium">
                   {(errors.step8.assets[assetIndex].details as any).investmentType.message}
                 </p>
               )}
             </div>
             {asset?.details?.investmentType === 'Other' && (
-              <div>
-                <Label>Specify Other Type *</Label>
+              <div className="space-y-2">
+                <Label className="text-sm font-bold text-gray-700">Specify Other Type *</Label>
                 <Input
                   {...register(`step8.assets.${assetIndex}.details.otherInvestmentType`)}
                   placeholder="Specify the investment type"
+                  className="w-full focus:ring-[#FF6B6B] focus:border-[#FF6B6B]"
                 />
                 {errors?.step8?.assets?.[assetIndex]?.details?.otherInvestmentType && (
-                  <p className="text-sm text-red-600 mt-1">
+                  <p className="text-sm text-red-500 mt-1 font-medium">
                     {(errors.step8.assets[assetIndex].details as any).otherInvestmentType.message}
                   </p>
                 )}
               </div>
             )}
-            <div>
-              <Label>Account Number or Bond Number *</Label>
+            <div className="space-y-2">
+              <Label className="text-sm font-bold text-gray-700">Account Number or Bond Number *</Label>
               <Input
                 {...register(`step8.assets.${assetIndex}.details.accountNumber`)}
                 placeholder="Enter account/bond number"
+                className="w-full focus:ring-[#FF6B6B] focus:border-[#FF6B6B]"
               />
               {errors?.step8?.assets?.[assetIndex]?.details?.accountNumber && (
-                <p className="text-sm text-red-600 mt-1">
+                <p className="text-sm text-red-500 mt-1 font-medium">
                   {(errors.step8.assets[assetIndex].details as any).accountNumber.message}
                 </p>
               )}
@@ -375,83 +389,96 @@ export function Step8Assets() {
 
       case 'Bank':
         return (
-          <div className="space-y-4">
-            <div>
-              <Label>Bank Name *</Label>
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <Label className="text-sm font-bold text-gray-700">Bank Name *</Label>
               <Input
                 {...register(`step8.assets.${assetIndex}.details.bankName`)}
                 placeholder="Enter bank name"
+                className="w-full focus:ring-[#FF6B6B] focus:border-[#FF6B6B]"
               />
               {errors?.step8?.assets?.[assetIndex]?.details?.bankName && (
-                <p className="text-sm text-red-600 mt-1">
+                <p className="text-sm text-red-500 mt-1 font-medium">
                   {(errors.step8.assets[assetIndex].details as any).bankName.message}
                 </p>
               )}
             </div>
-            <div>
-              <Label>Account Number (Optional)</Label>
-              <Input
-                {...register(`step8.assets.${assetIndex}.details.accountNumber`)}
-                placeholder="Last 4 digits (optional)"
-                type="text"
-                inputMode="numeric"
-              />
-            </div>
-            <div>
-              <Label>Account Type (Optional)</Label>
-              <Input
-                {...register(`step8.assets.${assetIndex}.details.accountType`)}
-                placeholder="e.g., Savings, Current"
-              />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label className="text-sm font-bold text-gray-700">Account Number (Optional)</Label>
+                <Input
+                  {...register(`step8.assets.${assetIndex}.details.accountNumber`)}
+                  placeholder="Last 4 digits"
+                  type="text"
+                  inputMode="numeric"
+                  className="w-full focus:ring-[#FF6B6B] focus:border-[#FF6B6B]"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-sm font-bold text-gray-700">Account Type (Optional)</Label>
+                <Input
+                  {...register(`step8.assets.${assetIndex}.details.accountType`)}
+                  placeholder="e.g., Savings, Current"
+                  className="w-full focus:ring-[#FF6B6B] focus:border-[#FF6B6B]"
+                />
+              </div>
             </div>
           </div>
         );
 
       case 'Jewellery':
         return (
-          <div className="space-y-4">
-            <div>
-              <Label>Description *</Label>
-              <Input
-                {...register(`step8.assets.${assetIndex}.details.description`)}
-                placeholder="e.g., Gold Ring, Diamond Necklace"
-              />
-              {errors?.step8?.assets?.[assetIndex]?.details?.description && (
-                <p className="text-sm text-red-600 mt-1">
-                  {(errors.step8.assets[assetIndex].details as any).description.message}
-                </p>
-              )}
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label className="text-sm font-bold text-gray-700">Description *</Label>
+                <Input
+                  {...register(`step8.assets.${assetIndex}.details.description`)}
+                  placeholder="e.g., Gold Ring, Diamond Necklace"
+                  className="w-full focus:ring-[#FF6B6B] focus:border-[#FF6B6B]"
+                />
+                {errors?.step8?.assets?.[assetIndex]?.details?.description && (
+                  <p className="text-sm text-red-500 mt-1 font-medium">
+                    {(errors.step8.assets[assetIndex].details as any).description.message}
+                  </p>
+                )}
+              </div>
+              <div className="space-y-2">
+                <Label className="text-sm font-bold text-gray-700">Estimated Value *</Label>
+                <Input
+                  {...register(`step8.assets.${assetIndex}.details.value`)}
+                  placeholder="Enter estimated value"
+                  className="w-full focus:ring-[#FF6B6B] focus:border-[#FF6B6B]"
+                />
+                {errors?.step8?.assets?.[assetIndex]?.details?.value && (
+                  <p className="text-sm text-red-500 mt-1 font-medium">
+                    {(errors.step8.assets[assetIndex].details as any).value.message}
+                  </p>
+                )}
+              </div>
             </div>
-            <div>
-              <Label>Estimated Value *</Label>
-              <Input
-                {...register(`step8.assets.${assetIndex}.details.value`)}
-                placeholder="Enter estimated value"
-              />
-              {errors?.step8?.assets?.[assetIndex]?.details?.value && (
-                <p className="text-sm text-red-600 mt-1">
-                  {(errors.step8.assets[assetIndex].details as any).value.message}
-                </p>
-              )}
-            </div>
-            <div>
-              <Label>Weight (Optional)</Label>
-              <Input
-                {...register(`step8.assets.${assetIndex}.details.weight`)}
-                placeholder="e.g., 10g"
-              />
-            </div>
-            <div>
-              <Label>Hallmark/Quality (Optional)</Label>
-              <Input
-                {...register(`step8.assets.${assetIndex}.details.hallmark`)}
-                placeholder="e.g., 22K, 18K"
-              />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label className="text-sm font-bold text-gray-700">Weight (Optional)</Label>
+                <Input
+                  {...register(`step8.assets.${assetIndex}.details.weight`)}
+                  placeholder="e.g., 10g"
+                  className="w-full focus:ring-[#FF6B6B] focus:border-[#FF6B6B]"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-sm font-bold text-gray-700">Hallmark (Optional)</Label>
+                <Input
+                  {...register(`step8.assets.${assetIndex}.details.hallmark`)}
+                  placeholder="e.g., 22K, 18K"
+                  className="w-full focus:ring-[#FF6B6B] focus:border-[#FF6B6B]"
+                />
+              </div>
             </div>
             {/* Image Upload */}
-            <div className="space-y-3">
-              <Label>Upload Photos (Optional)</Label>
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
+            <div className="space-y-4">
+              <Label className="text-sm font-bold text-gray-700">Upload Photos (Optional)</Label>
+              <div className="border-2 border-dashed border-rose-100 bg-rose-50/10 rounded-2xl p-8 hover:border-rose-200 hover:bg-rose-50/20 transition-all group">
                 <input
                   type="file"
                   accept="image/*"
@@ -464,39 +491,34 @@ export function Step8Assets() {
                   className="hidden"
                   id={`image-upload-${assetIndex}`}
                 />
-                <label htmlFor={`image-upload-${assetIndex}`} className="cursor-pointer">
+                <label htmlFor={`image-upload-${assetIndex}`} className="cursor-pointer flex flex-col items-center justify-center gap-3">
+                  <div className="p-3 bg-white rounded-xl shadow-sm group-hover:scale-110 transition-transform">
+                    <svg className="w-8 h-8 text-rose-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                  </div>
                   <div className="text-center">
-                    <div className="mx-auto h-12 w-12 text-gray-400">
-                      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                      </svg>
-                    </div>
-                    <p className="mt-2 text-sm text-gray-600">Click to upload images</p>
-                    <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB each</p>
+                    <p className="text-sm font-bold text-gray-700">Click to upload images</p>
+                    <p className="text-xs text-gray-400">PNG, JPG up to 2MB each</p>
                   </div>
                 </label>
               </div>
               {/* Display uploaded images */}
               {asset?.details?.images && asset.details.images.length > 0 && (
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
                   {asset.details.images.map((image: any, imgIdx: number) => (
-                    <div key={image.id} className="relative group">
+                    <div key={image.id} className="relative group aspect-square">
                       <Image
                         src={image.data}
                         alt={`Jewellery ${imgIdx + 1}`}
-                        width={200}
-                        height={96}
-                        className="w-full h-24 object-cover rounded-lg border"
-                        loading="lazy"
+                        fill
+                        className="object-cover rounded-xl border border-gray-100"
                         unoptimized
                       />
-                      <div className="mt-1 text-xs text-gray-700 text-center">
-                        Jewellery {imgIdx + 1}
-                      </div>
                       <button
                         type="button"
                         onClick={() => removeImage(assetIndex, image.id)}
-                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="absolute -top-2 -right-2 bg-white text-rose-500 rounded-full w-8 h-8 flex items-center justify-center shadow-lg hover:bg-rose-50 opacity-0 group-hover:opacity-100 transition-all font-bold"
                       >
                         ×
                       </button>
@@ -509,119 +531,93 @@ export function Step8Assets() {
         );
 
       case 'Other':
+      case 'Vehicles':
+      case 'Loans':
+      case 'Income':
+      case 'Life Insurance Policy':
         return (
-          <div className="space-y-4">
-            <div>
-              <Label>Description *</Label>
-              <Input
-                {...register(`step8.assets.${assetIndex}.details.description`)}
-                placeholder="Describe the asset"
-              />
-              {errors?.step8?.assets?.[assetIndex]?.details?.description && (
-                <p className="text-sm text-red-600 mt-1">
-                  {(errors.step8.assets[assetIndex].details as any).description.message}
-                </p>
-              )}
-            </div>
-            <div>
-              <Label>Value *</Label>
-              <Input
-                {...register(`step8.assets.${assetIndex}.details.value`)}
-                placeholder="Enter value"
-              />
-              {errors?.step8?.assets?.[assetIndex]?.details?.value && (
-                <p className="text-sm text-red-600 mt-1">
-                  {(errors.step8.assets[assetIndex].details as any).value.message}
-                </p>
-              )}
-            </div>
-            {/* Image Upload for Other */}
-            <div className="space-y-3">
-              <Label>Upload Photos (Optional)</Label>
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
-                <input
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  onChange={(e) => {
-                    Array.from(e.target.files || []).forEach(file => {
-                      handleImageUpload(assetIndex, file);
-                    });
-                  }}
-                  className="hidden"
-                  id={`image-upload-other-${assetIndex}`}
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label className="text-sm font-bold text-gray-700">Description *</Label>
+                <Input
+                  {...register(`step8.assets.${assetIndex}.details.description`)}
+                  placeholder="Describe the asset"
+                  className="w-full focus:ring-[#FF6B6B] focus:border-[#FF6B6B]"
                 />
-                <label htmlFor={`image-upload-other-${assetIndex}`} className="cursor-pointer">
-                  <div className="text-center">
-                    <div className="mx-auto h-12 w-12 text-gray-400">
-                      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                {errors?.step8?.assets?.[assetIndex]?.details?.description && (
+                  <p className="text-sm text-red-500 mt-1 font-medium">
+                    {(errors.step8.assets[assetIndex].details as any).description.message}
+                  </p>
+                )}
+              </div>
+              <div className="space-y-2">
+                <Label className="text-sm font-bold text-gray-700">Value *</Label>
+                <Input
+                  {...register(`step8.assets.${assetIndex}.details.value`)}
+                  placeholder="Enter value"
+                  className="w-full focus:ring-[#FF6B6B] focus:border-[#FF6B6B]"
+                />
+                {errors?.step8?.assets?.[assetIndex]?.details?.value && (
+                  <p className="text-sm text-red-500 mt-1 font-medium">
+                    {(errors.step8.assets[assetIndex].details as any).value.message}
+                  </p>
+                )}
+              </div>
+            </div>
+            {/* Image Upload for These types */}
+            {(assetType === 'Other' || assetType === 'Vehicles') && (
+              <div className="space-y-4">
+                <Label className="text-sm font-bold text-gray-700">Upload Photos (Optional)</Label>
+                <div className="border-2 border-dashed border-rose-100 bg-rose-50/10 rounded-2xl p-8 hover:border-rose-200 hover:bg-rose-50/20 transition-all group">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={(e) => {
+                      Array.from(e.target.files || []).forEach(file => {
+                        handleImageUpload(assetIndex, file);
+                      });
+                    }}
+                    className="hidden"
+                    id={`image-upload-generic-${assetIndex}`}
+                  />
+                  <label htmlFor={`image-upload-generic-${assetIndex}`} className="cursor-pointer flex flex-col items-center justify-center gap-3">
+                    <div className="p-3 bg-white rounded-xl shadow-sm group-hover:scale-110 transition-transform">
+                      <svg className="w-8 h-8 text-rose-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
                     </div>
-                    <p className="mt-2 text-sm text-gray-600">Click to upload images</p>
-                    <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB each</p>
-                  </div>
-                </label>
-              </div>
-              {asset?.details?.images && asset.details.images.length > 0 && (
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                  {asset.details.images.map((image: any, imgIdx: number) => (
-                    <div key={image.id} className="relative group">
-                      <Image
-                        src={image.data}
-                        alt={`Others ${imgIdx + 1}`}
-                        width={200}
-                        height={96}
-                        className="w-full h-24 object-cover rounded-lg border"
-                        loading="lazy"
-                        unoptimized
-                      />
-                      <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-75 text-white text-xs p-1 text-center rounded-b-lg">
-                        Others {imgIdx + 1}
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => removeImage(assetIndex, image.id)}
-                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        ×
-                      </button>
+                    <div className="text-center">
+                      <p className="text-sm font-bold text-gray-700">Click to upload images</p>
+                      <p className="text-xs text-gray-400">PNG, JPG up to 2MB each</p>
                     </div>
-                  ))}
+                  </label>
                 </div>
-              )}
-            </div>
-          </div>
-        );
-
-      default:
-        // Default fields for Vehicles, Loans, Income, Life Insurance Policy
-        return (
-          <div className="space-y-4">
-            <div>
-              <Label>Description *</Label>
-              <Input
-                {...register(`step8.assets.${assetIndex}.details.description`)}
-                placeholder="Describe the asset"
-              />
-              {errors?.step8?.assets?.[assetIndex]?.details?.description && (
-                <p className="text-sm text-red-600 mt-1">
-                  {(errors.step8.assets[assetIndex].details as any).description.message}
-                </p>
-              )}
-            </div>
-            <div>
-              <Label>Value *</Label>
-              <Input
-                {...register(`step8.assets.${assetIndex}.details.value`)}
-                placeholder="Enter value"
-              />
-              {errors?.step8?.assets?.[assetIndex]?.details?.value && (
-                <p className="text-sm text-red-600 mt-1">
-                  {(errors.step8.assets[assetIndex].details as any).value.message}
-                </p>
-              )}
-            </div>
+                {asset?.details?.images && asset.details.images.length > 0 && (
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+                    {asset.details.images.map((image: any, imgIdx: number) => (
+                      <div key={image.id} className="relative group aspect-square">
+                        <Image
+                          src={image.data}
+                          alt={`Asset image ${imgIdx + 1}`}
+                          fill
+                          className="object-cover rounded-xl border border-gray-100"
+                          unoptimized
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeImage(assetIndex, image.id)}
+                          className="absolute -top-2 -right-2 bg-white text-rose-500 rounded-full w-8 h-8 flex items-center justify-center shadow-lg hover:bg-rose-50 opacity-0 group-hover:opacity-100 transition-all font-bold"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         );
     }
@@ -630,20 +626,20 @@ export function Step8Assets() {
   return (
     <div className="space-y-6">
       {/* Info Banner */}
-      <div className="mb-6 p-4 border border-purple-200 bg-purple-50/80 backdrop-blur-sm rounded-lg">
-        <p className="text-sm text-gray-800">
+      <div className="mb-6 p-4 border border-rose-100 bg-rose-50/50 backdrop-blur-sm rounded-xl">
+        <p className="text-sm text-gray-700 font-medium leading-relaxed">
           List your assets and allocate them to beneficiaries or charities. Ensure details are accurate; allocations should total 100% for each asset.
         </p>
       </div>
 
       {fields.length === 0 ? (
-        <div className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
+        <div className="text-center py-12 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
           <Home className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <p className="text-gray-600 mb-4">No assets added yet</p>
+          <p className="text-gray-600 mb-6 font-medium">No assets added yet</p>
           <button
             type="button"
             onClick={addAsset}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#8B7BB8] to-[#432371] text-white rounded-lg hover:from-[#7A6BA7] hover:to-[#3A1F61] transition-all"
+            className="inline-flex items-center gap-2 px-8 py-4 bg-linear-to-r from-[#FF6B6B] to-[#FF8787] text-white rounded-xl shadow-lg shadow-rose-100 hover:from-[#FF5555] hover:to-[#FF7676] transition-all font-bold tracking-tight active:scale-[0.98]"
           >
             <Plus className="h-5 w-5" />
             Add Your First Asset
@@ -656,13 +652,18 @@ export function Step8Assets() {
             const distributionError = getDistributionError(index);
 
             return (
-              <div key={field.id} className="bg-gray-50 border border-gray-200 rounded-lg p-6">
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-lg font-semibold text-gray-900">Asset {index + 1}</h3>
+              <div key={field.id} className="bg-white border border-gray-100 rounded-2xl p-8 shadow-sm">
+                <div className="flex justify-between items-center mb-8 pb-4 border-b border-gray-50">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2.5 bg-linear-to-r from-[#FF6B6B] to-[#FF8787] rounded-xl shadow-lg shadow-rose-100">
+                      <Home className="h-6 w-6 text-white" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-gray-900 tracking-tight">Asset {index + 1}</h3>
+                  </div>
                   <button
                     type="button"
                     onClick={() => remove(index)}
-                    className="flex items-center gap-2 px-4 py-2 text-red-600 border border-red-300 rounded-lg hover:bg-red-50 transition-colors"
+                    className="flex items-center gap-2 px-4 py-2 text-rose-500 border border-rose-200 rounded-lg hover:bg-rose-50 transition-colors font-semibold text-sm"
                   >
                     <Trash2 className="h-4 w-4" />
                     Remove
@@ -671,20 +672,27 @@ export function Step8Assets() {
 
                 <div className="space-y-4">
                   {/* Asset Type Selector */}
-                  <div>
-                    <Label>Asset Type *</Label>
-                    <select
-                      value={asset?.type || ""}
-                      onChange={(e) => handleAssetTypeChange(index, e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
-                    >
-                      <option value="">Select asset type</option>
-                      {assetTypes.map((type) => (
-                        <option key={type} value={type}>{type}</option>
-                      ))}
-                    </select>
+                  <div className="space-y-2">
+                    <Label className="text-sm font-bold text-gray-700">Asset Type *</Label>
+                    <div className="relative">
+                      <select
+                        value={asset?.type || ""}
+                        onChange={(e) => handleAssetTypeChange(index, e.target.value)}
+                        className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF6B6B] focus:border-[#FF6B6B] appearance-none transition-all cursor-pointer font-medium text-gray-700"
+                      >
+                        <option value="">Select asset type</option>
+                        {assetTypes.map((type) => (
+                          <option key={type} value={type}>{type}</option>
+                        ))}
+                      </select>
+                      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-400">
+                        <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                          <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+                        </svg>
+                      </div>
+                    </div>
                     {errors?.step8?.assets?.[index]?.type && (
-                      <p className="text-sm text-red-600 mt-1">
+                      <p className="text-sm text-red-600 mt-1 font-medium">
                         {(errors.step8.assets[index] as any).type.message}
                       </p>
                     )}
@@ -693,17 +701,20 @@ export function Step8Assets() {
                   {/* Asset-specific fields */}
                   {renderAssetFields(index, asset)}
 
-                  {/* Distribution Section */}
                   {asset?.type && recipients.length > 0 && (
-                    <div className="mt-6 pt-6 border-t border-gray-300">
-                      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-3">
-                        <Label className="text-sm font-medium text-gray-700">Distribution</Label>
+                    <div className="mt-8 pt-8 border-t border-gray-100">
+                      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
+                        <div className="space-y-1">
+                          <Label className="text-lg font-bold text-gray-900">Distribute Asset</Label>
+                          <p className="text-sm text-gray-500">Select recipients and assign percentage shares</p>
+                        </div>
                         <div className="flex flex-wrap items-center gap-2">
                           <Button
                             type="button"
                             onClick={() => divideEqually(index)}
                             variant="outline"
                             size="sm"
+                            className="rounded-full border-rose-200 text-rose-600 hover:bg-rose-50 hover:text-rose-700 font-bold"
                           >
                             Divide Equally
                           </Button>
@@ -712,6 +723,7 @@ export function Step8Assets() {
                             onClick={() => toggleSelectAllBeneficiaries(index)}
                             variant="outline"
                             size="sm"
+                            className="rounded-full border-rose-200 text-rose-600 hover:bg-rose-50 hover:text-rose-700 font-bold"
                           >
                             {recipients.filter(r => r.__type === 'beneficiary').every((r: any) => 
                               asset?.selectedRecipients?.includes(r.id)
@@ -722,6 +734,7 @@ export function Step8Assets() {
                             onClick={() => toggleSelectAllCharities(index)}
                             variant="outline"
                             size="sm"
+                            className="rounded-full border-rose-200 text-rose-600 hover:bg-rose-50 hover:text-rose-700 font-bold"
                           >
                             {recipients.filter(r => r.__type === 'charity').every((r: any) => 
                               asset?.selectedRecipients?.includes(r.id)
@@ -736,20 +749,20 @@ export function Step8Assets() {
                           const value = asset?.distribution?.[recipient.id] || 0;
 
                           return (
-                            <div key={recipient.id} className="flex flex-col items-start">
-                              <div className="flex items-center space-x-2">
+                            <div key={recipient.id} className={`flex flex-col p-4 rounded-xl border transition-all ${isSelected ? 'border-rose-200 bg-rose-50/20' : 'border-gray-100 bg-gray-50/30'}`}>
+                              <div className="flex items-center space-x-3">
                                 <input
                                   type="checkbox"
                                   checked={isSelected}
                                   onChange={() => handleRecipientSelection(index, recipient.id)}
-                                  className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                                  className="h-5 w-5 text-[#FF6B6B] focus:ring-[#FF6B6B] border-gray-300 rounded-lg cursor-pointer"
                                 />
-                                <label className="text-sm font-medium text-gray-700">
+                                <label className="text-sm font-bold text-gray-700 cursor-pointer">
                                   {recipient.name}
                                 </label>
                               </div>
                               {isSelected && (
-                                <div className="flex items-center space-x-2 mt-1 w-full">
+                                <div className="flex items-center space-x-2 mt-3 w-full animate-in fade-in slide-in-from-top-1 duration-200">
                                   <input
                                     type="number"
                                     min="0"
@@ -765,9 +778,9 @@ export function Step8Assets() {
                                         setValue(`step8.assets.${index}.distribution.${recipient.id}`, roundedValue);
                                       }
                                     }}
-                                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                    className="flex-1 px-3 py-2 bg-white border border-rose-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B6B] font-bold text-rose-600"
                                   />
-                                  <span className="text-sm text-gray-500 w-8">%</span>
+                                  <span className="text-sm font-bold text-rose-500 w-6">%</span>
                                 </div>
                               )}
                             </div>
@@ -776,15 +789,18 @@ export function Step8Assets() {
                       </div>
 
                       {(distributionError || errors?.step8?.assets?.[index]?.distribution) && (
-                        <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-                          {distributionError && (
-                            <p className="text-red-600 font-medium">{distributionError}</p>
-                          )}
-                          {errors?.step8?.assets?.[index]?.distribution && (
-                            <p className="text-red-600 font-medium">
-                              {(errors.step8.assets[index] as any).distribution.message}
-                            </p>
-                          )}
+                        <div className="mt-6 p-4 bg-rose-50 border border-rose-100 rounded-xl flex items-center gap-3">
+                          <div className="w-2 h-10 bg-rose-500 rounded-full" />
+                          <div>
+                            {distributionError && (
+                              <p className="text-rose-600 font-bold text-sm">{distributionError}</p>
+                            )}
+                            {errors?.step8?.assets?.[index]?.distribution && (
+                              <p className="text-rose-600 font-bold text-sm">
+                                {(errors.step8.assets[index] as any).distribution.message}
+                              </p>
+                            )}
+                          </div>
                         </div>
                       )}
                     </div>
@@ -798,7 +814,7 @@ export function Step8Assets() {
           <button
             type="button"
             onClick={addAsset}
-            className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors border border-gray-300"
+            className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-linear-to-r from-[#FF6B6B] to-[#FF8787] text-white rounded-xl shadow-lg shadow-rose-100 hover:from-[#FF5555] hover:to-[#FF7676] transition-all font-bold tracking-tight active:scale-[0.98] mt-8"
           >
             <Plus className="h-5 w-5" />
             Add Another Asset

@@ -150,11 +150,16 @@ export function Step9ResiduaryClause() {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
-        <div className="bg-gradient-to-r from-[#8B7BB8] to-[#432371] px-6 py-4">
-          <div className="flex items-center space-x-3">
-            <Gavel className="w-6 h-6 text-white" />
-            <h2 className="text-xl font-semibold text-white">Residuary Clause</h2>
+      <div className="bg-white rounded-2xl shadow-xl shadow-gray-200/50 border border-gray-100 overflow-hidden">
+        <div className="bg-linear-to-r from-[#FF6B6B] to-[#FF8787] px-8 py-6">
+          <div className="flex items-center space-x-4">
+            <div className="p-3 bg-white/20 backdrop-blur-md rounded-xl">
+              <Gavel className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold text-white tracking-tight">Residuary Clause</h2>
+              <p className="text-rose-100 text-sm font-medium mt-1">Distribute remaining assets</p>
+            </div>
           </div>
         </div>
 
@@ -173,12 +178,13 @@ export function Step9ResiduaryClause() {
           ) : (
             <>
               {/* Toolbar with Select/Deselect All and Distribute Evenly */}
-              <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
-                <div className="flex flex-wrap gap-3">
+              <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
+                <div className="flex flex-wrap gap-2">
                   <Button
                     type="button"
                     variant="outline"
                     onClick={() => toggleSelectAllOfType('beneficiary')}
+                    className="rounded-full border-gray-200 text-gray-600 hover:bg-gray-50 font-bold text-xs uppercase tracking-wider"
                   >
                     {areAllOfTypeSelected('beneficiary') ? 'Deselect All Beneficiaries' : 'Select All Beneficiaries'}
                   </Button>
@@ -186,6 +192,7 @@ export function Step9ResiduaryClause() {
                     type="button"
                     variant="outline"
                     onClick={() => toggleSelectAllOfType('charity')}
+                    className="rounded-full border-gray-200 text-gray-600 hover:bg-gray-50 font-bold text-xs uppercase tracking-wider"
                   >
                     {areAllOfTypeSelected('charity') ? 'Deselect All Charities' : 'Select All Charities'}
                   </Button>
@@ -194,63 +201,105 @@ export function Step9ResiduaryClause() {
                 <Button
                   type="button"
                   onClick={handleDistributeEvenly}
-                  className="bg-gradient-to-r from-[#8B7BB8] to-[#432371] hover:from-[#7A6BAD] hover:to-[#381F64]"
+                  className="bg-linear-to-r from-[#FF6B6B] to-[#FF8787] text-white rounded-xl shadow-lg shadow-rose-100 hover:from-[#FF5555] hover:to-[#FF7676] transition-all font-bold tracking-tight active:scale-[0.98] px-6"
                 >
                   Distribute Evenly
                 </Button>
               </div>
 
               {/* Recipients Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {recipients.map((recipient: any) => (
-                  <div key={recipient.id} className="bg-gray-50 border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-                    <div className="flex items-center gap-3 mb-3">
-                      <input
-                        type="checkbox"
-                        checked={selectedRecipients.includes(recipient.id)}
-                        onChange={(e) => handleToggleRecipient(recipient.id, e.target.checked)}
-                        className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
-                      />
-                      <span className="flex-1 font-medium text-gray-900">
-                        {recipient.name}
-                      </span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {recipients.map((recipient: any) => {
+                  const isSelected = selectedRecipients.includes(recipient.id);
+                  return (
+                    <div 
+                      key={recipient.id} 
+                      className={`relative group rounded-2xl p-6 transition-all border-2 ${
+                        isSelected 
+                          ? 'bg-rose-50/30 border-rose-200 shadow-md shadow-rose-100' 
+                          : 'bg-white border-gray-100 hover:border-rose-100 hover:shadow-lg hover:shadow-gray-100'
+                      }`}
+                    >
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex items-center gap-3">
+                          <div className={`p-2 rounded-xl transition-colors ${
+                            isSelected ? 'bg-rose-500 text-white' : 'bg-gray-100 text-gray-400'
+                          }`}>
+                            <input
+                              type="checkbox"
+                              checked={isSelected}
+                              onChange={(e) => handleToggleRecipient(recipient.id, e.target.checked)}
+                              className="w-5 h-5 cursor-pointer opacity-0 absolute"
+                              id={`check-${recipient.id}`}
+                            />
+                            <svg className="w-5 h-5 fill-current" viewBox="0 0 20 20">
+                              {isSelected ? (
+                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                              ) : (
+                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clipRule="evenodd" />
+                              )}
+                            </svg>
+                          </div>
+                          <div>
+                            <label htmlFor={`check-${recipient.id}`} className="font-bold text-gray-900 cursor-pointer block">
+                              {recipient.name}
+                            </label>
+                            <span className="text-xs font-bold text-rose-400 uppercase tracking-wider">
+                              {recipient.relation || 'Charity'}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {isSelected && (
+                        <div className="flex items-center gap-2 mt-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                          <div className="relative flex-1">
+                            <Input
+                              type="number"
+                              min="0"
+                              max="100"
+                              step="0.01"
+                              value={distribution[recipient.id] ?? ''}
+                              onChange={(e) => {
+                                const rawValue = e.target.value;
+                                if (rawValue === "") {
+                                  setValue(`step9.distribution.${recipient.id}`, 0);
+                                } else {
+                                  const numValue = parseFloat(rawValue);
+                                  const limitedValue = Math.max(0, Math.min(100, numValue));
+                                  // Round to 2 decimal places
+                                  const roundedValue = Math.round(limitedValue * 100) / 100;
+                                  setValue(`step9.distribution.${recipient.id}`, roundedValue);
+                                }
+                              }}
+                              className="w-full pl-3 pr-8 py-2 bg-white border border-rose-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B6B] font-bold text-rose-600"
+                              placeholder="0"
+                            />
+                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm font-bold text-rose-500">%</span>
+                          </div>
+                        </div>
+                      )}
                     </div>
-                    <p className="text-sm text-gray-600 mb-3">{recipient.relation || 'Charity'}</p>
-                    <div className="flex items-center gap-2">
-                      <Input
-                        type="number"
-                        min="0"
-                        max="100"
-                        step="0.01"
-                        value={distribution[recipient.id] ?? ''}
-                        onChange={(e) => {
-                          const value = Math.max(0, Math.min(100, parseFloat(e.target.value) || 0));
-                          setValue(`step9.distribution.${recipient.id}`, value);
-                        }}
-                        className="flex-1"
-                        placeholder="% share"
-                      />
-                      <span className="text-gray-600 font-medium">%</span>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
               {/* Error Display */}
-              {hasError && (
-                <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-                  <p className="text-red-600 font-medium">
-                    Total must add up to 100%. Current total: {total.toFixed(2)}%
-                  </p>
-                </div>
-              )}
-
-              {/* Zod Validation Error */}
-              {errors?.step9?.distribution && (
-                <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-                  <p className="text-red-600 font-medium">
-                    {(errors.step9 as any).distribution.message}
-                  </p>
+              {(hasError || errors?.step9?.distribution) && (
+                <div className="mt-8 p-6 bg-rose-50 border border-rose-100 rounded-2xl flex items-center gap-4">
+                  <div className="w-1.5 h-12 bg-rose-500 rounded-full" />
+                  <div>
+                    {hasError && (
+                      <p className="text-rose-600 font-bold">
+                        Total must add up to 100%. Current total: {total.toFixed(2)}%
+                      </p>
+                    )}
+                    {errors?.step9?.distribution && (
+                      <p className="text-rose-600 font-bold">
+                        {(errors.step9 as any).distribution.message}
+                      </p>
+                    )}
+                  </div>
                 </div>
               )}
             </>

@@ -42,11 +42,16 @@ export function Step10SpecialWishes() {
   return (
     <div className="space-y-6">
       {/* Funeral Options */}
-      <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
-        <div className="bg-gradient-to-r from-[#8B7BB8] to-[#432371] px-6 py-4">
-          <div className="flex items-center space-x-3">
-            <Heart className="w-6 h-6 text-white" />
-            <h2 className="text-xl font-semibold text-white">Funeral Options</h2>
+      <div className="bg-white rounded-2xl shadow-xl shadow-gray-200/50 border border-gray-100 overflow-hidden">
+        <div className="bg-linear-to-r from-[#FF6B6B] to-[#FF8787] px-8 py-6">
+          <div className="flex items-center space-x-4">
+            <div className="p-3 bg-white/20 backdrop-blur-md rounded-xl">
+              <Heart className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold text-white tracking-tight">Funeral Options</h2>
+              <p className="text-rose-100 text-sm font-medium mt-1">Specify your final wishes</p>
+            </div>
           </div>
         </div>
 
@@ -56,28 +61,40 @@ export function Step10SpecialWishes() {
           </p>
 
           <div>
-            <Label htmlFor="funeral-wish" className="block text-sm font-medium text-gray-700 mb-2">
+            <Label htmlFor="funeral-wish" className="block text-sm font-bold text-gray-700 mb-2">
               Funeral Preference
             </Label>
-            <select
-              id="funeral-wish"
-              {...register("step10.funeralWish")}
-              className="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-700 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-            >
-              {funeralOptions.map(opt => (
-                <option key={opt.value} value={opt.value}>{opt.label}</option>
-              ))}
-            </select>
+            <div className="relative">
+              <select
+                id="funeral-wish"
+                {...register("step10.funeralWish")}
+                className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF6B6B] focus:border-[#FF6B6B] appearance-none transition-all cursor-pointer font-medium text-gray-700"
+              >
+                {funeralOptions.map(opt => (
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
+              </select>
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-400">
+                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                  <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+                </svg>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Messages to Family */}
-      <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
-        <div className="bg-gradient-to-r from-[#8B7BB8] to-[#432371] px-6 py-4">
-          <div className="flex items-center space-x-3">
-            <MessageSquare className="w-6 h-6 text-white" />
-            <h2 className="text-xl font-semibold text-white">Messages to Family</h2>
+    <div className="bg-white rounded-2xl shadow-xl shadow-gray-200/50 border border-gray-100 overflow-hidden">
+        <div className="bg-linear-to-r from-[#FF6B6B] to-[#FF8787] px-8 py-6">
+          <div className="flex items-center space-x-4">
+            <div className="p-3 bg-white/20 backdrop-blur-md rounded-xl">
+              <MessageSquare className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold text-white tracking-tight">Messages to Family</h2>
+              <p className="text-rose-100 text-sm font-medium mt-1">Leave heartfelt words for loved ones</p>
+            </div>
           </div>
         </div>
 
@@ -87,13 +104,15 @@ export function Step10SpecialWishes() {
           </p>
 
           {fields.length === 0 ? (
-            <div className="text-center py-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
-              <MessageSquare className="h-12 w-12 text-gray-400 mx-auto mb-3" />
-              <p className="text-gray-500 mb-4">No messages added yet</p>
+            <div className="text-center py-12 bg-rose-50/10 rounded-2xl border-2 border-dashed border-rose-100">
+              <div className="p-4 bg-white rounded-2xl shadow-sm w-fit mx-auto mb-4">
+                <MessageSquare className="h-8 w-8 text-rose-400" />
+              </div>
+              <p className="text-gray-500 font-medium mb-6">No messages added yet</p>
               <Button
                 type="button"
                 onClick={addMessage}
-                className="bg-gradient-to-r from-[#8B7BB8] to-[#432371] hover:from-[#7A6BAD] hover:to-[#381F64]"
+                className="bg-linear-to-r from-[#FF6B6B] to-[#FF8787] text-white rounded-xl shadow-md shadow-rose-100 hover:from-[#FF5555] hover:to-[#FF7676] transition-all font-bold tracking-tight active:scale-[0.98]"
               >
                 <Plus className="h-4 w-4 mr-2" />
                 Add Your First Message
@@ -102,55 +121,60 @@ export function Step10SpecialWishes() {
           ) : (
             <>
               {fields.map((field, index) => (
-                <div key={field.id} className="mb-6 p-6 border border-gray-200 rounded-lg bg-gray-50">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-medium text-gray-900">Message {index + 1}</h3>
+                <div key={field.id} className="relative group p-8 rounded-2xl transition-all border-2 border-gray-100 hover:border-rose-100 hover:shadow-xl hover:shadow-gray-100 mb-8 last:mb-0">
+                  <div className="flex items-center justify-between mb-8">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2.5 bg-rose-500 rounded-xl">
+                        <MessageSquare className="h-5 w-5 text-white" />
+                      </div>
+                      <h3 className="text-xl font-bold text-gray-900 tracking-tight">Message {index + 1}</h3>
+                    </div>
                     <Button
                       type="button"
                       variant="outline"
                       onClick={() => removeMessage(index)}
-                      className="text-red-600 border-red-300 hover:bg-red-50"
+                      className="rounded-xl border-rose-100 text-rose-500 hover:bg-rose-50 hover:text-rose-600 transition-colors font-bold text-xs uppercase tracking-wider"
                     >
                       <Trash2 className="h-4 w-4 mr-2" />
                       Remove
                     </Button>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                    <div>
-                      <Label htmlFor={`message-${index}-name`} className="block text-sm font-medium text-gray-700 mb-1">
-                        Name
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mb-6">
+                    <div className="space-y-2">
+                      <Label htmlFor={`message-${index}-name`} className="block text-sm font-bold text-gray-700">
+                        Recipient Name *
                       </Label>
                       <Input
                         id={`message-${index}-name`}
                         {...register(`step10.messages.${index}.name`)}
-                        placeholder="Recipient's name"
-                        className="w-full"
+                        placeholder="Enter recipient's name"
+                        className="w-full focus:ring-[#FF6B6B] focus:border-[#FF6B6B]"
                       />
                     </div>
-                    <div>
-                      <Label htmlFor={`message-${index}-relation`} className="block text-sm font-medium text-gray-700 mb-1">
-                        Relation
+                    <div className="space-y-2">
+                      <Label htmlFor={`message-${index}-relation`} className="block text-sm font-bold text-gray-700">
+                        Relation *
                       </Label>
                       <Input
                         id={`message-${index}-relation`}
                         {...register(`step10.messages.${index}.relation`)}
                         placeholder="e.g., Son, Daughter, Friend"
-                        className="w-full"
+                        className="w-full focus:ring-[#FF6B6B] focus:border-[#FF6B6B]"
                       />
                     </div>
                   </div>
 
-                  <div>
-                    <Label htmlFor={`message-${index}-message`} className="block text-sm font-medium text-gray-700 mb-1">
-                      Message
+                  <div className="space-y-2">
+                    <Label htmlFor={`message-${index}-message`} className="block text-sm font-bold text-gray-700">
+                      Deeply Personal Message *
                     </Label>
                     <textarea
                       id={`message-${index}-message`}
                       {...register(`step10.messages.${index}.message`)}
-                      placeholder="Write your heartfelt message here..."
-                      rows={4}
-                      className="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-700 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all resize-none"
+                      placeholder="Share your heartfelt thoughts, advice, or wishes..."
+                      rows={6}
+                      className="w-full border border-gray-300 rounded-xl px-4 py-4 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#FF6B6B] focus:border-[#FF6B6B] transition-all resize-none font-medium leading-relaxed"
                     />
                   </div>
                 </div>
@@ -160,9 +184,9 @@ export function Step10SpecialWishes() {
                 type="button"
                 onClick={addMessage}
                 variant="outline"
-                className="w-full"
+                className="w-full py-6 mt-8 border-2 border-dashed border-gray-200 rounded-2xl text-gray-500 hover:border-rose-300 hover:bg-rose-50 hover:text-rose-600 transition-all font-bold uppercase tracking-widest text-xs"
               >
-                <Plus className="h-5 w-5 mr-2" />
+                <Plus className="h-5 w-5 mr-3" />
                 Add Another Message
               </Button>
             </>
@@ -171,11 +195,16 @@ export function Step10SpecialWishes() {
       </div>
 
       {/* Other Arrangements */}
-      <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
-        <div className="bg-gradient-to-r from-[#8B7BB8] to-[#432371] px-6 py-4">
-          <div className="flex items-center space-x-3">
-            <Heart className="w-6 h-6 text-white" />
-            <h2 className="text-xl font-semibold text-white">Other Arrangements</h2>
+      <div className="bg-white rounded-2xl shadow-xl shadow-gray-200/50 border border-gray-100 overflow-hidden">
+        <div className="bg-linear-to-r from-[#FF6B6B] to-[#FF8787] px-8 py-6">
+          <div className="flex items-center space-x-4">
+            <div className="p-3 bg-white/20 backdrop-blur-md rounded-xl">
+              <Heart className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold text-white tracking-tight">Other Arrangements</h2>
+              <p className="text-rose-100 text-sm font-medium mt-1">Specify additional wishes</p>
+            </div>
           </div>
         </div>
 
@@ -184,16 +213,16 @@ export function Step10SpecialWishes() {
             Include any other special arrangements, wishes, or instructions you&apos;d like to specify.
           </p>
 
-          <div>
-            <Label htmlFor="other-arrangements" className="block text-sm font-medium text-gray-700 mb-2">
-              Special Arrangements
+          <div className="space-y-4">
+            <Label htmlFor="other-arrangements" className="block text-sm font-bold text-gray-700">
+              Special Instructions or Arrangements
             </Label>
             <textarea
               id="other-arrangements"
               {...register("step10.otherArrangements")}
-              placeholder="Enter any other special arrangements or wishes here..."
-              rows={6}
-              className="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-700 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all resize-none"
+              placeholder="Enter any other special arrangements or wishes you'd like to include..."
+              rows={8}
+              className="w-full border border-gray-300 rounded-xl px-4 py-4 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#FF6B6B] focus:border-[#FF6B6B] transition-all resize-none font-medium leading-relaxed"
             />
           </div>
         </div>

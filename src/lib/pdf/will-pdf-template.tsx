@@ -92,6 +92,17 @@ const styles = StyleSheet.create({
     borderTop: '0.5 solid #ccc',
     paddingTop: 5,
   },
+  footerContainer: {
+    position: 'absolute',
+    bottom: 20, // Adjusted to sit within page border
+    left: 30,
+    right: 30,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
+    fontSize: 10,
+    fontFamily: 'Times-Bold',
+  },
   pageBorder: {
     position: 'absolute',
     top: 20,
@@ -173,6 +184,11 @@ const styles = StyleSheet.create({
 
 interface WillPDFTemplateProps {
   data: CompleteWillFormData;
+}
+
+interface AssetImage {
+  data: string;
+  [key: string]: unknown;
 }
 
 export const WillPDFDocument: React.FC<WillPDFTemplateProps> = ({ data }) => {
@@ -385,18 +401,43 @@ export const WillPDFDocument: React.FC<WillPDFTemplateProps> = ({ data }) => {
         </View>
 
         {/* Section E: Dispute Resolver */}
-        {step4.disputeResolver && (
-          <View style={styles.section} wrap={false}>
-            <Text style={styles.sectionHeader}>Section E: Dispute Resolver</Text>
+        <View style={styles.section} wrap={false}>
+          <Text style={styles.sectionHeader}>Section E: Dispute Resolver</Text>
+          {step4.disputeResolver ? (
             <Text style={styles.paragraph}>
               In the event of any disputes regarding the interpretation or implementation of this Will, I appoint <Text style={styles.highlight}>{step4.disputeResolver}</Text>
-              {step4.disputeResolverRelation && <>, my <Text style={styles.highlight}>{step4.disputeResolverRelation}</Text></>}
-              {step4.disputeResolverAadhaar && <>, Aadhaar: <Text style={styles.highlight}>{step4.disputeResolverAadhaar}</Text></>}
-              {step4.disputeResolverPan && <>, PAN: <Text style={styles.highlight}>{step4.disputeResolverPan}</Text></>}
+              {step4.disputeResolverRelation ? <Text>, my <Text style={styles.highlight}>{step4.disputeResolverRelation}</Text></Text> : null}
+              {step4.disputeResolverFather ? <Text>, son/daughter of <Text style={styles.highlight}>{step4.disputeResolverFather}</Text></Text> : null}
+              {step4.disputeResolverNationality ? <Text>, a national of <Text style={styles.highlight}>{step4.disputeResolverNationality}</Text></Text> : null}
+              {step4.disputeResolverAadhaar ? <Text>, holding Aadhaar no. <Text style={styles.highlight}>{step4.disputeResolverAadhaar}</Text></Text> : null}
+              {step4.disputeResolverPan ? <Text>, PAN <Text style={styles.highlight}>{step4.disputeResolverPan}</Text></Text> : null}
+              {(step4.disputeResolverAddress || step4.disputeResolverCity) ? (
+                <Text>, resident of <Text style={styles.highlight}>
+                  {[
+                    step4.disputeResolverAddress,
+                    step4.disputeResolverCity,
+                    step4.disputeResolverState,
+                    step4.disputeResolverZipCode,
+                    step4.disputeResolverCountry
+                  ].filter(Boolean).join(', ')}
+                </Text></Text>
+              ) : null}
+              {(step4.disputeResolverPhoneNumber || step4.disputeResolverEmail) ? (
+                <Text>, contacted at <Text style={styles.highlight}>
+                  {[
+                    step4.disputeResolverPhoneNumber ? `${step4.disputeResolverPhoneCountryCode} ${step4.disputeResolverPhoneNumber}` : null,
+                    step4.disputeResolverEmail
+                  ].filter(Boolean).join(', ')}
+                </Text></Text>
+              ) : null}
               , as the Dispute Resolver. The decision of the Dispute Resolver shall be final and binding on all parties.
             </Text>
-          </View>
-        )}
+          ) : (
+            <Text style={styles.paragraph}>
+              In the event of any dispute or difference of opinion regarding the interpretation of this Will or the administration of my estate, I direct that such dispute shall be resolved amicably among the beneficiaries. If an amicable resolution is not reached, the decision of my Executor(s) shall be final and binding.
+            </Text>
+          )}
+        </View>
 
         {/* Section F: Beneficiaries and Distribution */}
         <View style={styles.section} wrap={false}>
@@ -508,18 +549,24 @@ export const WillPDFDocument: React.FC<WillPDFTemplateProps> = ({ data }) => {
           )}
 
           {/* Organ Donation */}
-          {(step12.donateOrgans || step12.donateTissues || step12.donateBody) && (
+          {step12.donationChoice !== 'none' && (
             <View style={{ marginBottom: 10 }}>
               <Text style={styles.subSectionHeader}>Organ Donation Wishes</Text>
               <Text style={[styles.paragraph, styles.subSectionContent]}>
                   I hereby express my wish to donate the following for therapeutic, medical, or research purposes:
               </Text>
               <View style={{ marginLeft: 30, marginTop: 5 }}>
-                 {step12.donateOrgans && <Text style={styles.paragraph}>• Any needed organs</Text>}
-                 {step12.donateTissues && <Text style={styles.paragraph}>• Any needed tissues</Text>}
-                 {step12.donateBody && <Text style={styles.paragraph}>• My body for medical research/education</Text>}
-                 {step12.specificOrgans && <Text style={styles.paragraph}>• Specific Organs: {step12.specificOrgans}</Text>}
-                 {step12.additionalInstructions && <Text style={styles.paragraph}>• Note: {step12.additionalInstructions}</Text>}
+                 {step12.donationChoice === 'all' && <Text style={styles.paragraph}>• Any needed organs and tissues.</Text>}
+                 {step12.donationChoice === 'specific' && (
+                  <>
+                    {step12.selectedOrgans && step12.selectedOrgans.length > 0 && (
+                      <Text style={styles.paragraph}>• Specific Organs: {step12.selectedOrgans.join(', ')}</Text>
+                    )}
+                    {step12.selectedTissues && step12.selectedTissues.length > 0 && (
+                      <Text style={styles.paragraph}>• Specific Tissues: {step12.selectedTissues.join(', ')}</Text>
+                    )}
+                  </>
+                 )}
               </View>
             </View>
           )}
@@ -573,30 +620,34 @@ export const WillPDFDocument: React.FC<WillPDFTemplateProps> = ({ data }) => {
         </View>
 
         {/* Page Number Footer */}
-        <Text 
-          style={styles.footer} 
-          render={({ pageNumber, totalPages }) => (
-            `Page ${pageNumber} of ${totalPages}  |  Will of ${step1.fullName}`
-          )} 
-          fixed 
-        />
+        <View style={styles.footerContainer} fixed>
+          <Text style={{ textAlign: 'left', minWidth: 100 }}>{step1.fullName}</Text>
+          <Text style={{ textAlign: 'center' }}>Initials: _______</Text>
+          <Text 
+            style={{ textAlign: 'right', minWidth: 100 }} 
+            render={({ pageNumber, totalPages }) => (
+              `Page ${pageNumber} of ${totalPages}`
+            )} 
+          />
+        </View>
       </Page>
       {/* Appendix Page for Images */}
       {step8.assets && step8.assets.some(a => a.details?.images && a.details.images.length > 0) && (
         <Page size="A4" style={styles.page}>
           <View style={styles.pageBorder} fixed />
-          <Text style={styles.header}>Annexures: Asset Images</Text>
+          
           {step8.assets.map((asset, index) => {
-            if (asset.details?.images && asset.details.images.length > 0) {
+            const details = asset.details as { description?: string; images?: AssetImage[] };
+            if (details?.images && Array.isArray(details.images) && details.images.length > 0) {
               return (
                 <View key={index} style={{ marginBottom: 20 }} wrap={false}>
-                  <Text style={styles.sectionLabel}>{asset.type} - {asset.details.description}</Text>
-                  <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 10 }}>
-                    {asset.details.images.map((img: any, i: number) => (
+                  <Text style={styles.sectionLabel}>{asset.type} - {details.description || ''}</Text>
+                  <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 10 }}>
+                    {details.images.map((img: AssetImage, i: number) => (
                       <Image 
                         key={i} 
                         src={img.data} 
-                        style={{ width: 150, height: 150, objectFit: 'cover', marginBottom: 10 }} 
+                        style={{ width: 150, height: 150, objectFit: 'cover' as any, marginBottom: 10, marginRight: 10 }} 
                       />
                     ))}
                   </View>
@@ -607,13 +658,16 @@ export const WillPDFDocument: React.FC<WillPDFTemplateProps> = ({ data }) => {
           })}
           
           {/* Footer */}
-          <Text 
-            style={styles.footer} 
-            render={({ pageNumber, totalPages }) => (
-              `Page ${pageNumber} of ${totalPages}  |  Will of ${step1.fullName}`
-            )} 
-            fixed 
-          />
+          <View style={styles.footerContainer} fixed>
+            <Text style={{ textAlign: 'left', minWidth: 100 }}>{step1.fullName}</Text>
+            <Text style={{ textAlign: 'center' }}>Initials: _______</Text>
+            <Text 
+              style={{ textAlign: 'right', minWidth: 100 }} 
+              render={({ pageNumber, totalPages }) => (
+                `Page ${pageNumber} of ${totalPages}`
+              )} 
+            />
+          </View>
         </Page>
       )}
     </Document>
