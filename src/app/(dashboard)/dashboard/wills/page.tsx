@@ -3,6 +3,7 @@ import { getUserDashboard } from "@/server/services/will-service";
 import { WillCardStub } from "@/components/dashboard/will-card-stub";
 import { CreateWillButton } from "@/components/dashboard/create-will-button";
 import { redirect } from "next/navigation";
+import { prisma } from "@/lib/prisma";
 
 export default async function MyWillsPage() {
   const session = await auth();
@@ -12,6 +13,15 @@ export default async function MyWillsPage() {
   }
 
   const wills = await getUserDashboard(session.user.id);
+
+  // Check for subscription or dev bypass
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { subscriptionTier: true }
+  });
+
+  const isDevBypass = process.env.DEV_TEST_BYPASS_KEY && process.env.DEV_TEST_BYPASS_KEY === "banyyan-dev-test-2024";
+  const canEdit = user?.subscriptionTier === "PREMIUM" || !!isDevBypass;
 
   return (
     <>
@@ -32,12 +42,12 @@ export default async function MyWillsPage() {
         {wills.length > 0 ? (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {wills.map((will) => (
-              <WillCardStub key={will.id} will={will} />
+              <WillCardStub key={will.id} will={will} canEdit={canEdit} />
             ))}
           </div>
         ) : (
           <div className="flex min-h-[500px] flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-300 bg-white/50 backdrop-blur-sm p-12 text-center">
-            <div className="flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-[#FF6B6B]/10 to-[#FF6B6B]/5 mb-6">
+            <div className="flex h-24 w-24 items-center justify-center rounded-full bg-linear-to-br from-[#FF6B6B]/10 to-[#FF6B6B]/5 mb-6">
               <svg
                 className="h-12 w-12 text-[#FF6B6B]"
                 fill="none"

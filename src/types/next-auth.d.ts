@@ -12,11 +12,13 @@ declare module "next-auth" {
       role: UserRole;
       /** The user's unique identifier */
       id: string;
+      subscriptionTier: "FREE" | "PREMIUM";
     } & DefaultSession["user"];
   }
 
   interface User {
     role: UserRole;
+    subscriptionTier: "FREE" | "PREMIUM";
   }
 }
 
@@ -24,6 +26,7 @@ declare module "next-auth/jwt" {
   /** Returned by the `jwt` callback and `auth`, when using JWT sessions */
   interface JWT {
     role: UserRole;
+    subscriptionTier: "FREE" | "PREMIUM";
     sub: string;
   }
 }

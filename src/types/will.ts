@@ -366,3 +366,5 @@ export interface Asset {
 export interface LoanAccount extends BankAccountDetails {
   fromAssets?: boolean;
 }
+
+// Basic scalar types we  

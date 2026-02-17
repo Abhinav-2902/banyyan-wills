@@ -29,9 +29,10 @@ import { DownloadPDFButton } from "./download-pdf-button";
 interface MultiStepWillFormProps {
   initialData?: Partial<CompleteWillFormData>;
   willId?: string;
+  isPremiumEdit?: boolean;
 }
 
-export function MultiStepWillForm({ initialData, willId }: MultiStepWillFormProps) {
+export function MultiStepWillForm({ initialData, willId, isPremiumEdit = false }: MultiStepWillFormProps) {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
@@ -283,7 +284,7 @@ export function MultiStepWillForm({ initialData, willId }: MultiStepWillFormProp
 
     const timer = setTimeout(() => {
       handleSaveDraft();
-    }, 5000); // Auto-save after 5 seconds of inactivity (increased to reduce interruptions)
+    }, 2000); // Auto-save after 2 seconds of inactivity (reduced from 5s for better responsiveness)
 
     return () => clearTimeout(timer);
   }, [formState.isDirty, handleSaveDraft]);
@@ -483,8 +484,8 @@ export function MultiStepWillForm({ initialData, willId }: MultiStepWillFormProp
                 </Button>
                 <div className="h-6 w-px bg-gray-200 mx-2" />
                 <div className="flex items-center gap-2 text-sm text-gray-500 font-medium">
-                   <div className="w-2 h-2 rounded-full bg-green-500" />
-                   Changes Saved
+                   <div className={`w-2 h-2 rounded-full ${isSaving ? "bg-amber-500 animate-pulse" : "bg-green-500"}`} />
+                   {isSaving ? "Saving..." : "Changes Saved"}
                 </div>
               </div>
            </header>
@@ -502,6 +503,14 @@ export function MultiStepWillForm({ initialData, willId }: MultiStepWillFormProp
                 />
               </div>
            </div>
+
+           {/* Premium Edit Banner */}
+           {isPremiumEdit && (
+             <div className="bg-amber-50 border-b border-amber-200 px-4 py-2 flex items-center justify-center gap-2 text-sm text-amber-800 sticky top-16 z-20">
+               <span className="font-bold">✨ Premium Edit Mode:</span>
+               <span>You are editing a completed will. Changes will be saved as a new version in your history.</span>
+             </div>
+           )}
 
            {/* Form Container */}
            <main className="flex-1 p-2 lg:p-4">

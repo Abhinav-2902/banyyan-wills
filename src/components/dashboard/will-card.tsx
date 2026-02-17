@@ -5,6 +5,7 @@ import Link from "next/link";
 import { FileText, ArrowRight } from "lucide-react";
 import { DownloadPDFButton } from "@/components/editor/download-pdf-button";
 import { WillDashboardDTO } from "@/types";
+import { WillHistory } from "./will-history";
 
 interface WillCardProps {
   will: WillDashboardDTO;
@@ -44,6 +45,10 @@ export function WillCard({ will }: WillCardProps) {
           {will.status === "DRAFT" ? "Draft" : will.status}
         </span>
         
+        <div onClick={(e) => e.stopPropagation()}>
+           <WillHistory willId={will.id} />
+        </div>
+
         {isCompleted ? (
           <div onClick={(e) => e.stopPropagation()}>
             <DownloadPDFButton 

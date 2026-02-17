@@ -43,7 +43,16 @@ export function UserNav() {
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{session.user.name || "User"}</p>
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-medium leading-none">{session.user.name || "User"}</p>
+              <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
+                session.user.subscriptionTier === "PREMIUM" 
+                  ? "bg-amber-100 text-amber-700 border border-amber-200" 
+                  : "bg-gray-100 text-gray-600 border border-gray-200"
+              }`}>
+                {session.user.subscriptionTier === "PREMIUM" ? "PREMIUM" : "FREE"}
+              </span>
+            </div>
             <p className="text-xs leading-none text-muted-foreground">
               {session.user.email}
             </p>

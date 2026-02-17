@@ -15,12 +15,14 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { WillHistory } from "./will-history";
 
 interface WillCardStubProps {
   will: WillDashboardDTO;
+  canEdit?: boolean;
 }
 
-export function WillCardStub({ will }: WillCardStubProps) {
+export function WillCardStub({ will, canEdit = false }: WillCardStubProps) {
   const [isDeleting, startTransition] = useTransition();
   const [open, setOpen] = useState(false);
 
@@ -38,7 +40,8 @@ export function WillCardStub({ will }: WillCardStubProps) {
   };
 
   // Determine if the Will is editable/deletable
-  const isEditable = will.status === "DRAFT";
+  // Editable if DRAFT OR if user has edit permissions (Premium/Dev Bypass)
+  const isEditable = will.status === "DRAFT" || canEdit;
 
   const handleDelete = () => {
     startTransition(async () => {
@@ -68,6 +71,11 @@ export function WillCardStub({ will }: WillCardStubProps) {
             {will.status}
           </span>
           
+          {/* History Button */}
+          <div onClick={(e) => e.stopPropagation()}>
+             <WillHistory willId={will.id} />
+          </div>
+
           {/* Delete Button - Only for DRAFT */}
           {isEditable && (
             <AlertDialog open={open} onOpenChange={setOpen}>

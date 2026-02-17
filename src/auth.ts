@@ -16,10 +16,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (user) {
         if (user.id) token.sub = user.id;
         token.role = user.role;
+        token.subscriptionTier = user.subscriptionTier;
       }
 
       if (trigger === "update" && session?.user) {
         token.role = session.user.role;
+        token.subscriptionTier = session.user.subscriptionTier;
+      }
+
+      // Dev Bypass Logic
+      const isDevBypass = process.env.DEV_TEST_BYPASS_KEY && process.env.DEV_TEST_BYPASS_KEY === "banyyan-dev-test-2024";
+      if (isDevBypass) {
+        token.subscriptionTier = "PREMIUM";
       }
 
       return token;
@@ -28,6 +36,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (token.sub && session.user) {
         session.user.id = token.sub;
         session.user.role = token.role as UserRole;
+        session.user.subscriptionTier = token.subscriptionTier as "FREE" | "PREMIUM";
       }
       return session;
     },

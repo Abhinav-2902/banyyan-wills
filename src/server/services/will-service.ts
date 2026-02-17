@@ -2,6 +2,8 @@ import { findWillsByUser, upsertWill } from "@/server/data/will";
 import { WillDashboardDTO } from "@/types";
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
+import { calculateWillDiff } from "@/lib/utils/will-diff";
+import { CompleteWillFormData } from "@/lib/validations/will";
 
 export async function getUserDashboard(userId: string): Promise<WillDashboardDTO[]> {
   try {
@@ -29,19 +31,52 @@ export async function saveWillDraft(
   willId?: string,
   name?: string
 ) {
-  // If updating an existing will, validate it's not finalized
+  // Check user subscription status
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { subscriptionTier: true },
+  });
+
+  if (!user) throw new Error("User not found");
+
+  // If updating an existing will, handle permissions and versioning
   if (willId) {
     const existingWill = await prisma.will.findUnique({
       where: { id: willId, userId },
-      select: { status: true },
+      select: { status: true, data: true },
     });
 
     if (!existingWill) {
       throw new Error("Will not found or you don't have permission to edit it");
     }
 
-    if (existingWill.status === "PAID" || existingWill.status === "COMPLETED") {
-      throw new Error("Cannot edit a finalized will");
+    const isFinalized = existingWill.status === "PAID" || existingWill.status === "COMPLETED";
+
+    if (isFinalized) {
+      // Check for dev bypass key or premium subscription
+      const isDevBypass = process.env.DEV_TEST_BYPASS_KEY && process.env.DEV_TEST_BYPASS_KEY === "banyyan-dev-test-2024";
+      
+      if (user.subscriptionTier !== "PREMIUM" && !isDevBypass) {
+        throw new Error("Cannot edit a finalized will. Upgrade to Premium to unlock editing.");
+      }
+
+      // Premium Logic: Create Version if data changed
+      const oldData = existingWill.data as unknown as Partial<CompleteWillFormData>;
+      const newData = data as unknown as Partial<CompleteWillFormData>;
+      const diff = calculateWillDiff(oldData, newData);
+
+      if (diff.changes.length > 0) {
+        // Create a version snapshot of the PREVIOUS state
+        await prisma.willVersion.create({
+          data: {
+            willId,
+            snapshot: existingWill.data as Prisma.InputJsonValue,
+            changes: diff.changes as unknown as Prisma.InputJsonValue,
+            commitMsg: diff.summary,
+            versionNum: await prisma.willVersion.count({ where: { willId } }) + 1
+          },
+        });
+      }
     }
   }
 
