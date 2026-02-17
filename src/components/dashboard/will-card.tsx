@@ -2,10 +2,11 @@
 "use client";
 
 import Link from "next/link";
-import { FileText, ArrowRight } from "lucide-react";
+import { FileText, Download } from "lucide-react";
 import { DownloadPDFButton } from "@/components/editor/download-pdf-button";
 import { WillDashboardDTO } from "@/types";
 import { WillHistory } from "./will-history";
+import { RazorpayBtn } from "@/components/payment/razorpay-btn";
 
 interface WillCardProps {
   will: WillDashboardDTO;
@@ -57,11 +58,14 @@ export function WillCard({ will }: WillCardProps) {
               size="icon"
               className="h-8 w-8 rounded-full hover:bg-[#FF6B6B]/10 hover:text-[#FF6B6B] p-0"
             >
+              <Download className="h-4 w-4" />
               <span className="sr-only">Download PDF</span>
             </DownloadPDFButton>
           </div>
         ) : (
-          <ArrowRight className="h-5 w-5 text-gray-400 group-hover:text-[#FF6B6B]" />
+           <div onClick={(e) => e.stopPropagation()}>
+              <RazorpayBtn willId={will.id} onSuccess={() => window.location.reload()} />
+           </div>
         )}
       </div>
     </div>

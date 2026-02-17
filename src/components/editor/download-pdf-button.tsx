@@ -93,15 +93,23 @@ export function DownloadPDFButton({
       size={size}
     >
       {isDownloading ? (
-        <>
-          <Loader2 className="h-4 w-4 animate-spin mr-2" />
-          {children || "Generating..."}
-        </>
+        size === "icon" ? (
+           <Loader2 className="h-4 w-4 animate-spin" />
+        ) : (
+           <>
+             <Loader2 className="h-4 w-4 animate-spin mr-2" />
+             {children || "Generating..."}
+           </>
+        )
       ) : (
-        <>
-          <Download className="h-4 w-4 mr-2" />
-          {children || "Download PDF"}
-        </>
+        size === "icon" ? (
+           children || <Download className="h-4 w-4" />
+        ) : (
+           <>
+             <Download className="h-4 w-4 mr-2" />
+             {children || "Download PDF"}
+           </>
+        )
       )}
     </Button>
   );

@@ -19,16 +19,25 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.subscriptionTier = user.subscriptionTier;
       }
 
+      // Fetch fresh user data to ensure UI reflects DB changes (e.g. via Prisma Studio)
+      if (token.sub) {
+          const freshUser = await prisma.user.findUnique({
+              where: { id: token.sub },
+              select: { role: true, subscriptionTier: true }
+          });
+          if (freshUser) {
+              token.role = freshUser.role;
+              token.subscriptionTier = freshUser.subscriptionTier;
+          }
+      }
+
       if (trigger === "update" && session?.user) {
         token.role = session.user.role;
         token.subscriptionTier = session.user.subscriptionTier;
       }
 
-      // Dev Bypass Logic
-      const isDevBypass = process.env.DEV_TEST_BYPASS_KEY && process.env.DEV_TEST_BYPASS_KEY === "banyyan-dev-test-2024";
-      if (isDevBypass) {
-        token.subscriptionTier = "PREMIUM";
-      }
+      // Note: Dev Bypass logic removed from session to allow testing Free tier in UI.
+      // Backend services may still check the key for specific permissions.
 
       return token;
     },

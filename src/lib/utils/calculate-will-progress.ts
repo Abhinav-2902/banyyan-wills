@@ -7,47 +7,81 @@ import { CompleteWillFormData } from "@/lib/validations/will";
  */
 export function calculateWillProgress(data: Partial<CompleteWillFormData>): number {
   let completedSteps = 0;
-  const totalSteps = 7;
+  // Total data steps is 12 (Step 13 is Review)
+  const totalSteps = 12;
 
-  // Step 1: Testator Details
-  if (data.step1?.fullName && data.step1?.dateOfBirth && data.step1?.residentialAddress?.city) {
+  // Step 1: Testator Details (Required)
+  if (data.step1?.fullName && data.step1?.dateOfBirth) {
     completedSteps++;
   }
 
-  // Step 2: Family Details
-  if (data.step2?.father && data.step2?.mother) {
+  // Step 2: Will Details/Declaration (Required)
+  if (data.step2?.signingDate && data.step2?.signingPlace) {
     completedSteps++;
   }
 
-  // Step 3: Asset Details
-  if (data.step3) {
+  // Step 3: Executor Details (Required)
+  if (data.step3?.executor) {
     completedSteps++;
   }
 
-  // Step 4: Beneficiaries
-  if (data.step4?.beneficiaries && data.step4.beneficiaries.length > 0) {
-    const totalPercentage = data.step4.beneficiaries.reduce(
-      (sum, b) => sum + (b.sharePercentage || 0),
-      0
-    );
-    if (totalPercentage === 100) {
+  // Step 4: Dispute Resolver (Optional - counts if object exists)
+  if (data.step4) {
+    completedSteps++;
+  }
+
+  // Step 5: Witness Details (Conditional)
+  // If witnesses NOT known (default), it's valid/complete.
+  // If known, requires names.
+  if (data.step5) {
+    if (!data.step5.witnessesKnown) {
+      completedSteps++;
+    } else if (data.step5.witness1?.name && data.step5.witness2?.name) {
       completedSteps++;
     }
   }
 
-  // Step 5: Guardianship (conditional - only if has minor children)
-  if (data.step5?.hasMinorChildren === false || data.step5?.primaryGuardian) {
+  // Step 6: Beneficiaries (Required - min 1)
+  if (data.step6?.beneficiaries && data.step6.beneficiaries.length > 0) {
     completedSteps++;
   }
 
-  // Step 6: Executor
-  if (data.step6?.primaryExecutor) {
+  // Step 7: Charities (Optional)
+  if (data.step7) {
     completedSteps++;
   }
 
-  // Step 7: Additional Provisions
-  if (data.step7?.witness1 && data.step7?.witness2 && data.step7?.placeOfExecution) {
+  // Step 8: Assets (Optional)
+  if (data.step8) {
     completedSteps++;
+  }
+
+  // Step 9: Residuary Clause (Optional)
+  if (data.step9) {
+    completedSteps++;
+  }
+
+  // Step 10: Special Wishes (Optional)
+  if (data.step10) {
+    completedSteps++;
+  }
+
+  // Step 11: Loan Repayment (Optional)
+  if (data.step11) {
+    completedSteps++;
+  }
+
+  // Step 12: Organ Donation (Conditional)
+  // If choice is 'specific', requires selection. Otherwise valid.
+  if (data.step12) {
+    if (data.step12.donationChoice !== 'specific') {
+      completedSteps++;
+    } else if (
+      (data.step12.selectedOrgans && data.step12.selectedOrgans.length > 0) || 
+      (data.step12.selectedTissues && data.step12.selectedTissues.length > 0)
+    ) {
+      completedSteps++;
+    }
   }
 
   // Calculate percentage

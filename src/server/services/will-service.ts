@@ -7,8 +7,24 @@ import { CompleteWillFormData } from "@/lib/validations/will";
 
 export async function getUserDashboard(userId: string): Promise<WillDashboardDTO[]> {
   try {
-    const wills = await findWillsByUser(userId);
-    // Future business logic (e.g., filtering archived wills) goes here.
+    const [user, wills] = await Promise.all([
+      prisma.user.findUnique({ 
+        where: { id: userId }, 
+        select: { subscriptionTier: true } 
+      }),
+      findWillsByUser(userId)
+    ]);
+
+    if (!user) throw new Error("User not found");
+
+    if (user.subscriptionTier === "PREMIUM") {
+      return wills.map(will => ({
+        ...will,
+        // Visual override: If draft, show as PAID so download button appears
+        status: will.status === "DRAFT" ? "PAID" : will.status
+      }));
+    }
+
     return wills;
   } catch (error) {
     console.error("Error fetching user dashboard:", error);

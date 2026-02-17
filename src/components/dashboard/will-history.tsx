@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useState } from "react";
 import { 
   Dialog, 
@@ -9,7 +7,7 @@ import {
   DialogTrigger 
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Clock, History } from "lucide-react";
+import { Clock, History, Lock } from "lucide-react";
 import { getWillHistory } from "@/server/actions/will-history";
 import { format } from "date-fns";
 
@@ -30,17 +28,18 @@ interface WillVersion {
   }[];
 }
 
-
-
 export function WillHistory({ willId }: WillHistoryProps) {
   const [open, setOpen] = useState(false);
   const [history, setHistory] = useState<WillVersion[]>([]);
   const [loading, setLoading] = useState(false);
+  const [requiresPremium, setRequiresPremium] = useState(false);
 
   const handleOpenChange = (isOpen: boolean) => {
     setOpen(isOpen);
     if (isOpen) {
       setLoading(true);
+      setRequiresPremium(false);
+      setHistory([]);
     }
   };
 
@@ -59,6 +58,8 @@ export function WillHistory({ willId }: WillHistoryProps) {
                 changes: (item.changes as unknown) as WillVersion['changes']
              }));
              setHistory(parsedHistory);
+          } else if (result.error === "REQUIRES_PREMIUM") {
+             setRequiresPremium(true);
           }
         })
         .finally(() => setLoading(false));
@@ -91,6 +92,18 @@ export function WillHistory({ willId }: WillHistoryProps) {
             <div className="flex justify-center py-8">
                <div className="animate-spin h-6 w-6 border-2 border-[#FF6B6B] border-t-transparent rounded-full" />
             </div>
+          ) : requiresPremium ? (
+             <div className="flex flex-col items-center justify-center py-8 text-center space-y-4">
+                 <div className="bg-amber-100 p-4 rounded-full">
+                     <Lock className="h-8 w-8 text-amber-600" />
+                 </div>
+                 <div>
+                     <h3 className="font-semibold text-lg text-gray-900">Premium Feature</h3>
+                     <p className="text-gray-500 max-w-[280px] mx-auto mt-2 text-sm leading-relaxed">
+                         Upgrade to <span className="font-semibold text-amber-600">Premium</span> to view and restore previous versions of your Will.
+                     </p>
+                 </div>
+             </div>
           ) : history.length === 0 ? (
             <p className="text-center text-gray-500 py-4">No version history available.</p>
           ) : (

@@ -1,5 +1,7 @@
 import { CompleteWillFormData } from "@/lib/validations/will";
-import { WillFieldValue } from "@/types/will";
+
+// Define locally to avoid import issues
+export type WillFieldValue = string | number | boolean | null | undefined | object | unknown[];
 
 export interface WillChange {
   field: string;
@@ -97,6 +99,7 @@ export function calculateWillDiff(
 
   // Step 2: Declaration
   compare("Declaration", 2, "Signing Date", d => d.step2?.signingDate);
+  compare("Declaration", 2, "Signing Place", d => d.step2?.signingPlace);
   
   // Step 3: Executors
   compare("Executors", 3, "Primary Executor", d => d.step3?.executor);
@@ -109,84 +112,83 @@ export function calculateWillDiff(
   compare("Witnesses", 5, "Witness 1", d => d.step5?.witness1?.name);
   compare("Witnesses", 5, "Witness 2", d => d.step5?.witness2?.name);
 
-  // Step 6: Beneficiaries
-  const oldBenecifiaries = (Array.isArray(oldData.step6?.beneficiaries) ? normalizeValue(oldData.step6?.beneficiaries) : []) as any[];
-  const newBeneficiaries = (Array.isArray(newData.step6?.beneficiaries) ? normalizeValue(newData.step6?.beneficiaries) : []) as any[];
-  
-  // normalizeValue returns "" for empty arrays, so handle that
-  const safeOldBen = Array.isArray(oldBenecifiaries) ? oldBenecifiaries : [];
-  const safeNewBen = Array.isArray(newBeneficiaries) ? newBeneficiaries : [];
-
-  if (safeOldBen.length !== safeNewBen.length) {
+  // Step 6: Beneficiaries (Array)
+  const normOldBen = normalizeValue(oldData.step6?.beneficiaries);
+  const normNewBen = normalizeValue(newData.step6?.beneficiaries);
+  if (JSON.stringify(normOldBen) !== JSON.stringify(normNewBen)) {
     changes.push({
-      field: "Beneficiaries Count",
+      section: "Beneficiaries",
       step: 6,
-      oldValue: safeOldBen.length,
-      newValue: safeNewBen.length,
-      section: "Beneficiaries"
+      field: "Beneficiaries List",
+      oldValue: normOldBen as WillFieldValue,
+      newValue: normNewBen as WillFieldValue
     });
-  } else {
-    // Check names if count is same
-    for (let i = 0; i < safeNewBen.length; i++) {
-        // Safe access in case item is normalized to string/empty
-        const oldItem = safeOldBen[i];
-        const newItem = safeNewBen[i];
-        
-        const oldName = (typeof oldItem === 'object' && oldItem) ? oldItem.name : undefined;
-        const newName = (typeof newItem === 'object' && newItem) ? newItem.name : undefined;
-        
-        if (oldName !== newName) {
-             changes.push({
-                field: `Beneficiary ${i+1} Name`,
-                step: 6,
-                oldValue: oldName,
-                newValue: newName,
-                section: "Beneficiaries"
-            });
-        }
-    }
   }
 
-  // Step 7: Charities
-  const oldCharities = (Array.isArray(oldData.step7?.charities) ? normalizeValue(oldData.step7?.charities) : []) as any[];
-  const newCharities = (Array.isArray(newData.step7?.charities) ? normalizeValue(newData.step7?.charities) : []) as any[];
-  
-  const safeOldCharities = Array.isArray(oldCharities) ? oldCharities : [];
-  const safeNewCharities = Array.isArray(newCharities) ? newCharities : [];
-
-  if (safeOldCharities.length !== safeNewCharities.length) {
+  // Step 7: Charities (Array)
+  const normOldCharities = normalizeValue(oldData.step7?.charities);
+  const normNewCharities = normalizeValue(newData.step7?.charities);
+  if (JSON.stringify(normOldCharities) !== JSON.stringify(normNewCharities)) {
     changes.push({
-      field: "Charities Count",
+      section: "Charities",
       step: 7,
-      oldValue: safeOldCharities.length,
-      newValue: safeNewCharities.length,
-      section: "Charities"
+      field: "Charities List",
+      oldValue: normOldCharities as WillFieldValue,
+      newValue: normNewCharities as WillFieldValue
     });
   }
 
-  // Step 8: Assets
-  const oldAssets = (Array.isArray(oldData.step8?.assets) ? normalizeValue(oldData.step8?.assets) : []) as any[];
-  const newAssets = (Array.isArray(newData.step8?.assets) ? normalizeValue(newData.step8?.assets) : []) as any[];
-
-  const safeOldAssets = Array.isArray(oldAssets) ? oldAssets : [];
-  const safeNewAssets = Array.isArray(newAssets) ? newAssets : [];
-
-  if (safeOldAssets.length !== safeNewAssets.length) {
+  // Step 8: Assets (Array)
+  const normOldAssets = normalizeValue(oldData.step8?.assets);
+  const normNewAssets = normalizeValue(newData.step8?.assets);
+  if (JSON.stringify(normOldAssets) !== JSON.stringify(normNewAssets)) {
     changes.push({
-      field: "Assets Count",
+      section: "Assets",
       step: 8,
-      oldValue: safeOldAssets.length,
-      newValue: safeNewAssets.length,
-      section: "Assets"
+      field: "Assets List",
+      oldValue: normOldAssets as WillFieldValue,
+      newValue: normNewAssets as WillFieldValue
     });
   }
   
-  // Step 9: Residuary
-  compare("Residuary", 9, "Distribution", d => d.step9?.distribution);
+  // Step 9: Residuary Clause
+  compare("Residuary Clause", 9, "Distribution", d => d.step9?.distribution);
+  compare("Residuary Clause", 9, "Recipients", d => d.step9?.selectedRecipients);
 
   // Step 10: Special Wishes
   compare("Special Wishes", 10, "Funeral Wish", d => d.step10?.funeralWish);
+  compare("Special Wishes", 10, "Other Arrangements", d => d.step10?.otherArrangements);
   
+  const normOldMessages = normalizeValue(oldData.step10?.messages);
+  const normNewMessages = normalizeValue(newData.step10?.messages);
+  if (JSON.stringify(normOldMessages) !== JSON.stringify(normNewMessages)) {
+      changes.push({
+          section: "Special Wishes",
+          step: 10,
+          field: "Messages",
+          oldValue: normOldMessages as WillFieldValue,
+          newValue: normNewMessages as WillFieldValue
+      });
+  }
+
+  // Step 11: Loans (Array)
+  const normOldLoans = normalizeValue(oldData.step11?.accounts);
+  const normNewLoans = normalizeValue(newData.step11?.accounts);
+  if (JSON.stringify(normOldLoans) !== JSON.stringify(normNewLoans)) {
+    changes.push({
+      section: "Loans",
+      step: 11,
+      field: "Loan Accounts",
+      oldValue: normOldLoans as WillFieldValue,
+      newValue: normNewLoans as WillFieldValue
+    });
+  }
+
+  // Step 12: Organ Donation
+  compare("Organ Donation", 12, "Donation Choice", d => d.step12?.donationChoice);
+  compare("Organ Donation", 12, "Selected Organs", d => d.step12?.selectedOrgans);
+  compare("Organ Donation", 12, "Selected Tissues", d => d.step12?.selectedTissues);
+
   // Generate Summary
   let summary = "";
   if (changes.length === 0) {

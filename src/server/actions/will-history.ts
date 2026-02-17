@@ -19,6 +19,19 @@ export async function getWillHistory(willId: string) {
       return { success: false, error: "Will not found" };
     }
 
+    // Check subscription tier
+    const user = await prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: { subscriptionTier: true }
+    });
+
+    // Check for dev bypass or premium
+    const isDevBypass = process.env.DEV_TEST_BYPASS_KEY && process.env.DEV_TEST_BYPASS_KEY === "banyyan-dev-test-2024";
+
+    if (user?.subscriptionTier !== "PREMIUM" && !isDevBypass) {
+        return { success: false, error: "REQUIRES_PREMIUM" };
+    }
+
     const history = await prisma.willVersion.findMany({
       where: { willId },
       orderBy: { createdAt: 'desc' },

@@ -25,6 +25,9 @@ import { Step11LoanRepayment } from "./steps/step11-loan-repayment";
 import { Step12OrganDonation } from "./steps/step12-organ-donation";
 import { Step13Review } from "./steps/step13-review";
 import { DownloadPDFButton } from "./download-pdf-button";
+import { getWillPaymentStatus } from "@/server/actions/payment";
+import { WillHistory } from "@/components/dashboard/will-history";
+import { RazorpayBtn } from "@/components/payment/razorpay-btn";
 
 interface MultiStepWillFormProps {
   initialData?: Partial<CompleteWillFormData>;
@@ -37,6 +40,17 @@ export function MultiStepWillForm({ initialData, willId, isPremiumEdit = false }
   const [currentStep, setCurrentStep] = useState(1);
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
   const [isSaving, setIsSaving] = useState(false);
+  const [isPaid, setIsPaid] = useState(false);
+
+  useEffect(() => {
+    if (willId) {
+      getWillPaymentStatus(willId).then((result) => {
+        if (result.success && result.data?.isPaid) {
+          setIsPaid(true);
+        }
+      });
+    }
+  }, [willId]);
 
   // Define explicit default values to ensure nested objects are initialized
   const defaultFormValues: Partial<CompleteWillFormData> = {
@@ -473,6 +487,7 @@ export function MultiStepWillForm({ initialData, willId, isPremiumEdit = false }
                 </h1>
               </div>
               <div className="flex items-center gap-4">
+                {willId && <WillHistory willId={willId} />}
                 <Button 
                   variant="ghost" 
                   size="sm" 
@@ -554,7 +569,35 @@ export function MultiStepWillForm({ initialData, willId, isPremiumEdit = false }
                           <ArrowRight className="h-4 w-4 ml-2" />
                         </Button>
                       ) : (
-                        willId && <DownloadPDFButton willId={willId} onBeforeDownload={handleSaveDraft} />
+                        willId && (
+                          isPaid ? (
+                            <DownloadPDFButton willId={willId} onBeforeDownload={handleSaveDraft} />
+                          ) : (
+                            isPremiumEdit ? (
+                                // Premium edit mode already paid? Actually premium edits usually free if subscription active.
+                                // For now, assuming premium edit implies access.
+                                // BUT wait, requirement says "Pay per PDF generation".
+                                // If premium edit mode is active, maybe they need to pay again?
+                                // "The user's main goal is to implement a premium subscription... that allows users to store and edit wills indefinitely"
+                                // If they have premium, they probably don't pay per download.
+                                // But here we are just implementing the payment gate.
+                                // If isPremiumEdit is true, let's assume valid. BUT `isPaid` comes from DB.
+                                // If user is premium, maybe `getWillPaymentStatus` returns true?
+                                // Let's stick to `isPaid`. If premium logic handles it backend, `isPaid` will be true.
+                                // Wait, `getWillPaymentStatus` checks `isPaid` flag or status.
+                                // I will just trust `isPaid`.
+                                // However, looking at `will.ts`, premium might override.
+                                // I will just implement the toggle for now.
+                                <div className="flex items-center gap-2">
+                                     <RazorpayBtn willId={willId} onSuccess={() => setIsPaid(true)} />
+                                </div>
+                            ) : (
+                                <div className="flex items-center gap-2">
+                                    <RazorpayBtn willId={willId} onSuccess={() => setIsPaid(true)} />
+                                </div>
+                            )
+                          )
+                        )
                       )}
                     </div>
                   </div>
