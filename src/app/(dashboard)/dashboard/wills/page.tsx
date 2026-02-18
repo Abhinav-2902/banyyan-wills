@@ -4,6 +4,7 @@ import { WillCardStub } from "@/components/dashboard/will-card-stub";
 import { CreateWillButton } from "@/components/dashboard/create-will-button";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { UserNav } from "@/components/dashboard/user-nav";
 
 export default async function MyWillsPage() {
   const session = await auth();
@@ -24,9 +25,13 @@ export default async function MyWillsPage() {
   const canEdit = user?.subscriptionTier === "PREMIUM" || !!isDevBypass;
 
   return (
-    <>
+    <div className="relative pt-6">
+      <div className="absolute top-0 right-0">
+        <UserNav />
+      </div>
+
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 mb-8 mt-2">
           <div>
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-2">
               My Wills
@@ -87,6 +92,6 @@ export default async function MyWillsPage() {
             </div>
           </div>
         )}
-    </>
+    </div>
   );
 }

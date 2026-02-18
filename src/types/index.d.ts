@@ -17,10 +17,13 @@ export type ActionResponse<T = null> = {
   fieldErrors?: Record<string, string[]>;
 };
 
+import { DashboardWillData } from "./dashboard";
+
 export interface WillDashboardDTO {
   id: string;
   status: 'DRAFT' | 'PAID' | 'COMPLETED'; // Match your Prisma Enum
   lastEdited: Date;
   title: string; // Extracted from the JSON blob
   progress: number; // A calculated percentage (0-100)
+  data: DashboardWillData; // The full JSON data needed for visualizations
 }

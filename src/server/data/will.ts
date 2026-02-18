@@ -31,6 +31,7 @@ export async function findWillsByUser(userId: string): Promise<WillDashboardDTO[
       lastEdited: will.updatedAt,
       title: title,
       progress: calculateWillProgress(will.data as Partial<CompleteWillFormData>),
+      data: will.data,
     };
   });
 }
